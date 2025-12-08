@@ -26,7 +26,7 @@ const Header = () => {
       <div className="flex flex-col sm:flex-row items-center w-full sm:w-auto">
         <div
           className="relative flex items-center"
-          style={{ minWidth: 160, minHeight: 48 }}
+          style={{ minWidth: 170, minHeight: 48 }}
         >
           <div className="absolute left-0 top-1/2 -translate-y-1/2">
             {showNavIcon && (
@@ -41,26 +41,26 @@ const Header = () => {
               </div>
             )}
           </div>
-          <div className="flex items-center justify-center w-16 h-12 ml-20">
-            <img
-              src={logo}
-              alt="Logo"
-              className="h-12 w-12 sm:h-16 sm:w-auto mb-2 sm:mb-0"
-            />
-          </div>
+          <div className="flex items-center justify-center w-18 h-18 ml-20">
+  <img
+    src={logo}
+    alt="Logo"
+    className="h-18 w-18 sm:h-18 sm:w-18 sm:mb-0"
+  />
+</div>
         </div>
         <div className="flex flex-col justify-center items-center sm:items-start text-center sm:text-left w-full">
           <span
             className="text-white text-2xl sm:text-4xl font-semibold tracking-wide leading-tight mt-1"
             style={{ fontFamily: "Times New Roman, Times, serif" }}
           >
-            Unique Services
+            Smart Enterprise
           </span>
           <span
             className="text-blue-50 text-sm sm:text-lg font-medium mb-1"
             style={{ fontFamily: "Montserrat, sans-serif" }}
           >
-            12, Sakharitola Street, Kolkata - 700014
+            3A Gangaram Palit Lane, Kolkata - 700013
           </span>
         </div>
       </div>

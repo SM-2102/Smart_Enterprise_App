@@ -14,11 +14,11 @@
 - [x] **ChangePasswordPage** – Change password
 
 ### Dashboard Module
-- [x] **MenuDashboardPage** – Main dashboard for menu navigation
+- [ ] **MenuDashboardPage** – Main dashboard for menu navigation
 - [x] **PageNotFound** – 404 error page
 - [x] **PageNotAvailable** – Maintenance/feature unavailable page
 
-### Master Module
+<!-- ### Master Module
 - [x] **MasterCreatePage** - Create Master record
 - [x] **MasterUpdatePage** - Update Master record
 - [x] **ServiceCenterCreatePage** - Add Service Center
@@ -59,7 +59,7 @@
 - [x] **OutOFWarrantyChallanPrintPage** - Out Of Warranty Vendor Challan Print
 - [x] **OutOFWarrantyChallanSettleUserPage** - Out Of Warranty Challan Propose to Settle
 - [x] **OutOFWarrantyChallanSettleAdminPage** - Out Of Warranty Challan Settlement [ADMIN]
-- [x] **OutOFWarrantyEnquiryPage** - Out Of Warranty Enquiry Page
+- [x] **OutOFWarrantyEnquiryPage** - Out Of Warranty Enquiry Page -->
 
 ---
 
@@ -78,7 +78,7 @@
 - [x] **/user/delete_user** - [ADMIN]
 - [x] **/user/reset_password**
 
-### Menu Module
+<!-- ### Menu Module
 - [x] **/menu/dashboard**
 
 ### Master Module
@@ -166,7 +166,7 @@
 - [x] **out_of_warranty/estimate_print**
 
 ### ServiceCharge Module
-- [x] **service_charge/service_charge**
+- [x] **service_charge/service_charge** -->
 
 
 ---
@@ -174,18 +174,18 @@
 ## Application Development
 
 - [x] **Authorization**
-- [x] **Database Schema**
+- [ ] **Database Schema**
 - [x] **Initial Deployment**
 - [x] **Backup**
-- [x] **Login & Menu**
+- [ ] **Login & Menu**
 - [x] **User**
-- [x] **Master**
-- [x] **Retail**
-- [x] **Market**
-- [x] **Challan**
-- [x] **Warranty**
-- [x] **Out of Warranty**
-- [x] **Final Deployment**
+<!-- - [ ] **Master**
+- [ ] **Retail**
+- [ ] **Market**
+- [ ] **Challan**
+- [ ] **Warranty**
+- [ ] **Out of Warranty** -->
+- [ ] **Final Deployment**
 
 ---
 

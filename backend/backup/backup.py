@@ -68,7 +68,7 @@ def export_table_to_csv(cursor, table_name, backup_dir):
 def backup_database():
     """Main backup function."""
     print("\n────────────────────────────────────────────────────────────")
-    print("         Unique Services DB Backup Utility")
+    print("         Smart Enterprise DB Backup Utility")
     print("────────────────────────────────────────────────────────────")
     print("────────────────────────────────────────────────────────────")
     print("[START] Connecting to database ...")

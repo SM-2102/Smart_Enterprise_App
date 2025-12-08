@@ -1,6 +1,6 @@
 # Set the target directory (defaults to current directory if not provided)
 param (
-    [string]$TargetDir = "D:\Unique_Services_App\backend\src"
+    [string]$TargetDir = "D:\DAD_OFFICE\Smart_Enterprise_App\backend\src"
 )
 
 Write-Host "Cleaning Python codebase in: $TargetDir"
