@@ -147,7 +147,7 @@ const RetailSettledPieChart = ({ data }) => {
         <Pie
           data={pieData}
           options={options}
-          plugins={[centerTextPlugin]}
+          // plugins={[centerTextPlugin]}
           style={{
             width: "100%",
             height: "100%",
