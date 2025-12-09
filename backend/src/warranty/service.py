@@ -227,6 +227,8 @@ class WarrantyService:
         Generates a PDF for the given SRF number.
         """
         # Query warranty and master data
+        if len(srf_number) != 6:
+            srf_number = "R" + srf_number.zfill(5)
         statement = (
             select(Warranty, Master)
             .join(Master, Warranty.code == Master.code)
@@ -465,7 +467,8 @@ class WarrantyService:
     async def print_cnf_challan(
         self, challan_number: str, token: dict, session: AsyncSession
     ) -> io.BytesIO:
-
+        if len(challan_number) != 6:
+            challan_number = "U" + challan_number.zfill(5)
         # Query warranty and master data
         statement = (
             select(Warranty, Master)

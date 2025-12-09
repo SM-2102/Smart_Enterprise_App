@@ -241,6 +241,8 @@ class OutOfWarrantyService:
         self, srf_number: OutOfWarrantySRFNumber, token: dict, session: AsyncSession
     ) -> io.BytesIO:
         # Query out_of_warranty and master data for SRF
+        if len(srf_number) != 6:
+            srf_number = "S" + srf_number.zfill(5)
         statement = (
             select(
                 OutOfWarranty.srf_number,
@@ -479,6 +481,8 @@ class OutOfWarrantyService:
         self, challan_number: str, token: dict, session: AsyncSession
     ) -> io.BytesIO:
         # Query out_of_warranty data for challan_number
+        if len(challan_number) != 6:
+            challan_number = "V" + challan_number.zfill(5)
         statement = select(
             OutOfWarranty.challan_number,
             OutOfWarranty.vendor_date1,
