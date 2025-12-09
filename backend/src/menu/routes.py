@@ -24,7 +24,6 @@ Returns dashboard data:
 - challan_rolling_months,
 - division_wise_donut_retail,
 - settled_vs_unsettled_pie_chart_retail,
-- status_per_division_stacked_bar_chart_market,
 - division_wise_pending_completed_bar_graph_warranty,
 - srf_vs_delivery_month_wise_bar_graph_warranty,
 - srf_receive_vs_delivery_bar_graph_out_of_warranty,
@@ -43,7 +42,6 @@ async def get_dashboard_data(
     challan = await menu_service.challan_overview(session)
     warranty = await menu_service.warranty_overview(session)
     ow = await menu_service.out_of_warranty_overview(session)
-    market = await menu_service.market_overview(session)
 
     number_of_customers = master["master_count"]
     number_of_asc_names = master["asc_count"]
@@ -55,9 +53,6 @@ async def get_dashboard_data(
     number_of_challan = challan["challan_count"]
     challan_number_of_items = challan["items_count"]
     challan_rolling_months = challan["rolling"]
-
-    market_status_per_division = market["status_list"]
-    total_markets = market["total_markets"]
 
     warranty_pending_completed_per_division = warranty["pending_completed"]
     warranty_srf_delivery = warranty["srf_delivery"]
@@ -81,10 +76,6 @@ async def get_dashboard_data(
         "retail": {
             "division_wise_donut": retail_division_wise_data,
             "settled_vs_unsettled_pie_chart": retail_received_settled_unsettled,
-        },
-        "market": {
-            "status_per_division_stacked_bar_chart": market_status_per_division,
-            "total_markets": ((total_markets // 10) * 10),
         },
         "warranty": {
             "division_wise_pending_completed_bar_graph": warranty_pending_completed_per_division,

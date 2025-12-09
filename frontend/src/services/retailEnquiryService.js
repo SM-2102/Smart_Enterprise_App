@@ -3,7 +3,6 @@ import API_ENDPOINTS from "../config/api";
 import { authFetch } from "./authFetchService";
 
 /**
- * Fetch market enquiry records with optional filters
  * @param {Object} params - Filter params: final_status, name, division, delivery_date
  * @returns {Promise<Array>} List of retail enquiry records
  */

@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MenuCard from "../components/MenuCard";
 import CustomerChart from "../charts/CustomerChart";
 import ChallanChart from "../charts/ChallanChart";
-import MarketStatusChart from "../charts/MarketStatusChart";
 import WarrantyStatusChart from "../charts/WarrantyStatusChart";
 import OutOfWarrantyStatusChart from "../charts/OutOfWarrantyStatusChart";
 import OutOfWarrantyTimeline from "../charts/OutOfWarrantyTimeline";
@@ -136,20 +135,6 @@ const MenuDashboardPageInner = () => {
                     <div className="w-full md:px-0">
                       <RetailSettledPieChart data={data} />
                     </div>
-                  </div>
-                ))}
-              {key === "market" &&
-                (loading ? (
-                  <div className="w-full flex justify-center items-center">
-                    <SpinnerLoading text="Loading Market Data ..." />
-                  </div>
-                ) : error ? (
-                  <div className="w-full flex justify-center items-center">
-                    <SpinnerLoading text={`Error Loading ...`} />
-                  </div>
-                ) : (
-                  <div className="mt-2">
-                    <MarketStatusChart data={data} />
                   </div>
                 ))}
               {key === "warranty" &&

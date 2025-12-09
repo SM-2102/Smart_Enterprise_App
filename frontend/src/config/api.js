@@ -28,15 +28,6 @@ const API_ENDPOINTS = {
   CHALLAN_LAST_NUMBER: `${BASE_API_URL}challan/last_challan_number`,
   CHALLAN_PRINT: `${BASE_API_URL}challan/print`,
 
-  MARKET_NEXT_NUMBER: `${BASE_API_URL}market/next_mcode`,
-  MARKET_CREATE: `${BASE_API_URL}market/create`,
-  MARKET_UPDATE: `${BASE_API_URL}market/update/`, //append mcode
-  MARKET_ENQUIRY: `${BASE_API_URL}market/enquiry`, //append params
-  MARKET_PENDING: `${BASE_API_URL}market/list_pending`,
-  MARKET_SEARCH_CODE: `${BASE_API_URL}market/by_mcode`,
-  MARKET_DELIVERED_BY: `${BASE_API_URL}market/list_delivered_by`,
-  MARKET_INVOICE_NUMBER: `${BASE_API_URL}market/list_invoice_number`,
-
   RETAIL_NEXT_RCODE: `${BASE_API_URL}retail/next_rcode`,
   RETAIL_CREATE: `${BASE_API_URL}retail/create`,
   RETAIL_ENQUIRY: `${BASE_API_URL}retail/enquiry`, //append params

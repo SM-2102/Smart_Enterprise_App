@@ -4,7 +4,6 @@ from sqlalchemy import case, func, select, union_all
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from challan.models import Challan
-from market.models import Market
 from master.models import Master
 from out_of_warranty.models import OutOfWarranty
 from retail.models import Retail
@@ -31,7 +30,6 @@ class MenuService:
             select(Master.code),
             select(Retail.code),
             select(Challan.code),
-            select(Market.code),
             select(Warranty.code),
             select(OutOfWarranty.code),
         ).cte("combined_cte")
@@ -328,40 +326,4 @@ class MenuService:
             ]
         }
 
-    # ---------------------------
-    # MARKET (grouped — status + total)
-    # ---------------------------
-    async def market_overview(self, session: AsyncSession):
-        """
-        Returns:
-        {
-            "status_list": [
-                {"division": "...", "final_status": "...", "count": ...},
-                ...
-            ],
-            "total_markets": <sum of Market.quantity>
-        }
-        """
-
-        status_stmt = (
-            select(
-                Market.division,
-                Market.final_status,
-                func.count().label("count")
-            )
-            .group_by(Market.division, Market.final_status)
-            .order_by(Market.division)
-        )
-
-        total_stmt = select(func.coalesce(func.sum(Market.quantity), 0))
-
-        status_rows = (await session.execute(status_stmt)).all()
-        total_markets = (await session.execute(total_stmt)).scalar()
-
-        status_list = [
-            {"division": division, "final_status": final_status, "count": count}
-            for division, final_status, count in status_rows
-        ]
-
-        return {"status_list": status_list, "total_markets": total_markets}
 

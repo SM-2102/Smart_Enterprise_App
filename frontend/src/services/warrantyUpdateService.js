@@ -2,8 +2,7 @@ import API_ENDPOINTS from "../config/api";
 import { authFetch } from "./authFetchService";
 
 /**
- * Update a market record (PATCH)
- * @param {string} srf_number - Market code (max 5 chars, e.g., C1234)
+ * @param {string} srf_number
  * @param {object} warrantyData - Data to update (delivery_by, delivery_date, final_status, remark)
  * @returns {Promise<object>} Response data
  */

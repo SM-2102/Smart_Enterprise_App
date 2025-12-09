@@ -66,9 +66,6 @@ class RoadChallanNotFound(BaseException):
     """Road Challan Not Found"""
 
 
-class MarketNotFound(BaseException):
-    """Market Not Found"""
-
 
 class ServiceCenterNotFound(BaseException):
     """Service Center Not Found"""
@@ -248,18 +245,6 @@ def register_exceptions(app: FastAPI):
                 "message": "Road Challan Not Found",
                 "resolution": "Please check the challan number",
                 "error_code": "road_challan_not_found",
-            },
-        ),
-    )
-
-    app.add_exception_handler(
-        MarketNotFound,
-        create_exception_handler(
-            status_code=status.HTTP_404_NOT_FOUND,
-            initial_detail={
-                "message": "Market Not Found",
-                "resolution": "Please check the market code",
-                "error_code": "market_not_found",
             },
         ),
     )

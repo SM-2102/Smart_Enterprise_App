@@ -26,6 +26,10 @@ const divisionOptions = [
   "IWH",
   "SWH",
   "COOLER",
+  "HT MOTOR",
+  "LT MOTOR",
+  "FHP MOTOR",
+  "ALTERNATOR",
   "OTHERS",
 ];
 

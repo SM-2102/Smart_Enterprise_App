@@ -18,12 +18,7 @@ const submenuOrder = {
     "Create SRF Record",
     "Update SRF Record",
     "Print SRF Record",
-    "Print Estimate Receipt",
-    "Create Vendor Challan",
-    "Print Vendor Challan",
-    "Settle Vendor Record",
     "Settle SRF Record",
-    "Settle Final Vendor",
     "Settle Final SRF",
     "Enquiry",
   ],
@@ -35,6 +30,12 @@ const submenuOrder = {
     "Final Settlement",
     "Enquiry",
   ],
+  challan : [
+    "Create Smart Challan",
+    "Print Smart Challan",
+    "Create Unique Challan",
+    "Print Unique Challan",
+  ]
 };
 
 // Helper to sort actions by submenuOrder

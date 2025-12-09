@@ -27,10 +27,6 @@
 - [x] **RoadChallanCreatePage** - Create Road Challan record
 - [x] **RoadChallanPrintPage** - Print Road Challan record
 
-### Market Module
-- [x] **MarketCreatePage** - Create Market record
-- [x] **MarketUpdatePage** - Update Market record
-- [x] **MarketEnquiryPage** - Market Enquiry
 
 ### Retail Module
 - [x] **RetailCreatePage** - Create Retail record
@@ -95,16 +91,6 @@
 - [x] **/road_challan/create**
 - [x] **/road_challan/last_challan_code**
 - [x] **/road_challan/print**
-
-### Market Module
-- [x] **/market/next_code** 
-- [x] **/market/pending**
-- [x] **/market/create**
-- [x] **/market/by_code** 
-- [x] **/market/update{code}**
-- [x] **/market/enquiry{params}**
-- [x] **/market/list_delivered_by**
-- [x] **/market/list_invoice_number**
 
 ### Retail Module
 - [x] **/retail/next_code**
@@ -181,7 +167,6 @@
 - [x] **User**
 <!-- - [ ] **Master**
 - [ ] **Retail**
-- [ ] **Market**
 - [ ] **Challan**
 - [ ] **Warranty**
 - [ ] **Out of Warranty** -->

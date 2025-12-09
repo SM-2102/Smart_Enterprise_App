@@ -11,13 +11,14 @@ import { MdOutlineBuild } from "react-icons/md";
 export const menuConfig = [
   {
     key: "customer",
-    title: "Customer Entry",
+    title: "Master Entry",
     icon: FaUser,
     bgColor: "#ffe4ec",
     actions: [
-      { label: "Add Record", path: "/CreateCustomerRecord" },
-      { label: "Update Record", path: "/UpdateCustomerRecord" },
+      { label: "Add Master Record", path: "/CreateCustomerRecord" },
+      { label: "Update Master Record", path: "/UpdateCustomerRecord" },
       { label: "Add ASC Name", path: "/CreateASCName" },
+      { label: "Add Model Record", path: "/CreateModel" },
     ],
   },
   {
@@ -41,27 +42,10 @@ export const menuConfig = [
     bgColor: "#e6fff7",
     actions: [
       { label: "Create SRF Record", path: "/CreateOutOfWarrantySRF" },
-      {
-        label: "Create Vendor Challan",
-        path: "/CreateOutOfWarrantyVendorChallan",
-      },
       { label: "Update SRF Record", path: "/UpdateOutOfWarrantySRF" },
-      {
-        label: "Print Vendor Challan",
-        path: "/PrintOutOfWarrantyVendorChallan",
-      },
       { label: "Print SRF Record", path: "/PrintOutOfWarrantySRF" },
-      { label: "Print Estimate Receipt", path: "/PrintOutOfWarrantyEstimate" },
       { label: "Settle SRF Record", path: "/ProposeToSettleOutOfWarrantySRF" },
-      {
-        label: "Settle Vendor Record",
-        path: "/ProposeToSettleOutOfWarrantyVendor",
-      },
       { label: "Settle Final SRF", path: "/FinalSettlementOutOfWarrantySRF" },
-      {
-        label: "Settle Final Vendor",
-        path: "/FinalSettlementOutOfWarrantyVendor",
-      },
       {
         label: "Enquiry",
         path: "/OutOfWarrantyEnquiry",
@@ -70,17 +54,26 @@ export const menuConfig = [
     ],
   },
   {
-    key: "market",
-    title: "Direct Market Replacement",
+    key: "vendor",
+    title: "Vendor Activity",
     icon: FaShoppingBag,
     bgColor: "#f0f4f8",
     actions: [
-      { label: "Add Record", path: "/CreateMarketRecord" },
-      { label: "Update Record", path: "/UpdateMarketRecord" },
       {
-        label: "Enquiry",
-        path: "/MarketRecordEnquiry",
-        showInDashboard: false,
+        label: "Create Vendor Challan",
+        path: "/CreateVendorChallan",
+      },
+      {
+        label: "Print Vendor Challan",
+        path: "/PrintVendorChallan",
+      },
+      {
+        label: "Settle Vendor Record",
+        path: "/ProposeToSettleVendor",
+      },
+      {
+        label: "Settle Final Vendor",
+        path: "/FinalSettlementVendor",
       },
     ],
   },
@@ -90,8 +83,10 @@ export const menuConfig = [
     icon: FaReceipt,
     bgColor: "#faf6c0ff",
     actions: [
-      { label: "Create Challan", path: "/CreateRoadChallan" },
-      { label: "Print Challan", path: "/PrintRoadChallan" },
+      { label: "Create Unique Challan", path: "/CreateUniqueServicesRoadChallan" },
+      { label: "Create Smart Challan", path: "/CreateSmartEnterpriseRoadChallan" },
+      { label: "Print Unique Challan", path: "/PrintUniqueServicesRoadChallan" },
+      { label: "Print Smart Challan", path: "/PrintSmartEnterpriseRoadChallan" },
     ],
   },
   {

@@ -11,7 +11,6 @@ from src.master.models import Master
 from src.service_center.models import ServiceCentre
 from src.service_charge.models import ServiceCharge
 from src.retail.models import Retail
-from src.market.models import Market
 from src.challan.models import Challan
 from src.warranty.models import Warranty
 from src.out_of_warranty.models import OutOfWarranty

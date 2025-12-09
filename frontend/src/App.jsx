@@ -12,9 +12,6 @@ import MasterCreatePage from "./pages/MasterCreatePage.jsx";
 import MasterUpdatePage from "./pages/MasterUpdatePage.jsx";
 import RoadChallanPrintPage from "./pages/RoadChallanPrintPage.jsx";
 import RoadChallanCreatePage from "./pages/RoadChallanCreatePage.jsx";
-import MarketCreatePage from "./pages/MarketCreatePage.jsx";
-import MarketUpdatePage from "./pages/MarketUpdatePage.jsx";
-import MarketEnquiryPage from "./pages/MarketEnquiryPage.jsx";
 import RetailSettleAdminPage from "./pages/RetailSettleAdminPage.jsx";
 import RetailCreatePage from "./pages/RetailCreatePage.jsx";
 import RetailEnquiryPage from "./pages/RetailEnquiryPage.jsx";
@@ -43,6 +40,7 @@ import ChangePasswordPage from "./pages/UserChangePasswordPage.jsx";
 import CreateUserPage from "./pages/UserCreatePage.jsx";
 import ShowStandardUsersPage from "./pages/UserShowStandardPage.jsx";
 import ShowAllUsersPage from "./pages/UserShowAllPage.jsx";
+import PageNotAvailable from "./pages/PageNotAvailable.jsx";
 
 function AppRoutesWithNav() {
   return (
@@ -131,7 +129,7 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/CreateRoadChallan"
             element={
               <PrivateRoute>
@@ -147,30 +145,7 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/CreateMarketRecord"
-            element={
-              <PrivateRoute>
-                <MarketCreatePage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/UpdateMarketRecord"
-            element={
-              <PrivateRoute>
-                <MarketUpdatePage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/MarketRecordEnquiry"
-            element={
-              <PrivateRoute>
-                <MarketEnquiryPage />
-              </PrivateRoute>
-            }
-          />
+          */}
           <Route
             path="/CreateRetailRecord"
             element={
@@ -219,7 +194,7 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/CreateWarrantySRF"
             element={
               <PrivateRoute>
@@ -354,7 +329,7 @@ function AppRoutesWithNav() {
                 <OutOfWarrantySettleVendorUserPage />
               </PrivateRoute>
             }
-          />
+          /> */}
         </Routes>
       </div>
       <Footer />

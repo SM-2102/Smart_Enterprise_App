@@ -2,9 +2,8 @@ import API_ENDPOINTS from "../config/api";
 import { authFetch } from "./authFetchService";
 
 /**
- * Search market by srf_number
  * @param {string} srf_number
- * @returns {Promise<object>} Market data
+ * @returns {Promise<object>} 
  */
 async function searchOutOfWarrantyBySRFNumber(srf_number) {
   const response = await authFetch(
