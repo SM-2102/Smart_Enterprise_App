@@ -18,15 +18,16 @@
 - [x] **PageNotFound** – 404 error page
 - [x] **PageNotAvailable** – Maintenance/feature unavailable page
 
-<!-- ### Master Module
+### Master Module
 - [x] **MasterCreatePage** - Create Master record
 - [x] **MasterUpdatePage** - Update Master record
 - [x] **ServiceCenterCreatePage** - Add Service Center
 
 ### Road Challan Module
-- [x] **RoadChallanCreatePage** - Create Road Challan record
-- [x] **RoadChallanPrintPage** - Print Road Challan record
-
+- [x] **RoadChallanSmartCreatePage** - Create Road Challan record for Smart
+- [x] **RoadChallanSmartPrintPage** - Print Road Challan record for Smart
+- [ ] **RoadChallanUniqueCreatePage** - Create Road Challan record for Unique
+- [ ] **RoadChallanUniquePrintPage** - Print Road Challan record for Unique
 
 ### Retail Module
 - [x] **RetailCreatePage** - Create Retail record
@@ -36,7 +37,7 @@
 - [x] **RetailSettleUserPage** - Proposed For Settlement
 - [x] **RetailSettleAdminPage** - Settled Retail Record [ADMIN]
 
-### Warranty Module
+<!--### Warranty Module
 - [x] **WarrantyCreatePage** - Create Warranty record
 - [x] **WarrantyUpdatePage** - Update Warranty record
 - [x] **WarrantySRFPrintPage** - Warranty SRF Print
@@ -74,7 +75,7 @@
 - [x] **/user/delete_user** - [ADMIN]
 - [x] **/user/reset_password**
 
-<!-- ### Menu Module
+### Menu Module
 - [x] **/menu/dashboard**
 
 ### Master Module
@@ -87,10 +88,14 @@
 - [x] **/master/fetch_address**
 
 ### Challan Module
-- [x] **/road_challan/next_code**
-- [x] **/road_challan/create**
-- [x] **/road_challan/last_challan_code**
-- [x] **/road_challan/print**
+- [x] **/challan_smart/next_code**
+- [x] **/challan_smart/create**
+- [x] **/challan_smart/last_challan_code**
+- [x] **/challan_smart/print**
+- [x] **/challan_unique/next_code**
+- [x] **/challan_unique/create**
+- [x] **/challan_unique/last_challan_code**
+- [x] **/challan_unique/print**
 
 ### Retail Module
 - [x] **/retail/next_code**
@@ -105,7 +110,11 @@
 - [x] **/reetail/print**
 - [x] **/retail/enquiry{params}**
 
-### Warranty Module
+### Service Center Module
+- [x] **/service_center/list_names**
+- [x] **/service_center/create**
+
+<!--### Warranty Module
 - [x] **warranty/next_srf_number**
 - [x] **warranty/create**
 - [x] **warranty/list_pending**
@@ -120,10 +129,6 @@
 - [x] **warranty/create_cnf_challan**
 - [x] **warranty/cnf_challan_print**
 - [x] **warranty/enquiry{params}**
-
-### Service Center Module
-- [x] **/service_center/list_names**
-- [x] **/service_center/create**
 
 ### OutOfWarranty Module - [ADMIN]
 - [x] **out_of_warranty/next_srf_number**
@@ -163,13 +168,13 @@
 - [ ] **Database Schema**
 - [x] **Initial Deployment**
 - [x] **Backup**
-- [ ] **Login & Menu**
+- [x] **Login & Menu**
 - [x] **User**
-<!-- - [ ] **Master**
-- [ ] **Retail**
+- [x] **Master**
+- [x] **Retail**
 - [ ] **Challan**
 - [ ] **Warranty**
-- [ ] **Out of Warranty** -->
+- [ ] **Out of Warranty**
 - [ ] **Final Deployment**
 
 ---

@@ -6,7 +6,7 @@ import API_ENDPOINTS from "../config/api";
  * Returns { next_challan_number: string }
  */
 async function fetchNextChallanNumber() {
-  const response = await authFetch(API_ENDPOINTS.CHALLAN_NEXT_NUMBER, {
+  const response = await authFetch(API_ENDPOINTS.CHALLAN_SMART_NEXT_NUMBER, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });

@@ -10,8 +10,6 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { DashboardDataProvider } from "./context/DashboardDataContext.jsx";
 import MasterCreatePage from "./pages/MasterCreatePage.jsx";
 import MasterUpdatePage from "./pages/MasterUpdatePage.jsx";
-import RoadChallanPrintPage from "./pages/RoadChallanPrintPage.jsx";
-import RoadChallanCreatePage from "./pages/RoadChallanCreatePage.jsx";
 import RetailSettleAdminPage from "./pages/RetailSettleAdminPage.jsx";
 import RetailCreatePage from "./pages/RetailCreatePage.jsx";
 import RetailEnquiryPage from "./pages/RetailEnquiryPage.jsx";
@@ -41,6 +39,10 @@ import CreateUserPage from "./pages/UserCreatePage.jsx";
 import ShowStandardUsersPage from "./pages/UserShowStandardPage.jsx";
 import ShowAllUsersPage from "./pages/UserShowAllPage.jsx";
 import PageNotAvailable from "./pages/PageNotAvailable.jsx";
+import RoadChallanSmartCreatePage from "./pages/RoadChallanSmartCreatePage.jsx";
+import RoadChallanSmartPrintPage from "./pages/RoadChallanSmartPrintPage.jsx";
+import RoadChallanUniqueCreatePage from "./pages/RoadChallanUniqueCreatePage.jsx";
+import RoadChallanUniquePrintPage from "./pages/RoadChallanUniquePrintPage.jsx";
 
 function AppRoutesWithNav() {
   return (
@@ -129,23 +131,38 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          {/* <Route
-            path="/CreateRoadChallan"
+          <Route
+            path="/CreateSmartEnterpriseRoadChallan"
             element={
               <PrivateRoute>
-                <RoadChallanCreatePage />
+                <RoadChallanSmartCreatePage />
               </PrivateRoute>
             }
           />
           <Route
-            path="/PrintRoadChallan"
+            path="/PrintSmartEnterpriseRoadChallan"
             element={
               <PrivateRoute>
-                <RoadChallanPrintPage />
+                <RoadChallanSmartPrintPage />
               </PrivateRoute>
             }
           />
-          */}
+          <Route
+            path="/CreateUniqueServicesRoadChallan"
+            element={
+              <PrivateRoute>
+                <RoadChallanUniqueCreatePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/PrintUniqueServicesRoadChallan"
+            element={
+              <PrivateRoute>
+                <RoadChallanUniquePrintPage />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/CreateRetailRecord"
             element={

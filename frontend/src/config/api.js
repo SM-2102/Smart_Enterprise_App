@@ -23,10 +23,14 @@ const API_ENDPOINTS = {
   MASTER_SEARCH_NAME: `${BASE_API_URL}master/by_name`,
   MASTER_SEARCH_ADDRESS: `${BASE_API_URL}master/fetch_address`,
 
-  CHALLAN_CREATE: `${BASE_API_URL}challan/create`,
-  CHALLAN_NEXT_NUMBER: `${BASE_API_URL}challan/next_code_with_challan_date`,
-  CHALLAN_LAST_NUMBER: `${BASE_API_URL}challan/last_challan_number`,
-  CHALLAN_PRINT: `${BASE_API_URL}challan/print`,
+  CHALLAN_SMART_CREATE: `${BASE_API_URL}challan_smart/create`,
+  CHALLAN_SMART_NEXT_NUMBER: `${BASE_API_URL}challan_smart/next_code_with_challan_date`,
+  CHALLAN_SMART_LAST_NUMBER: `${BASE_API_URL}challan_smart/last_challan_number`,
+  CHALLAN_SMART_PRINT: `${BASE_API_URL}challan_smart/print`,
+  CHALLAN_UNIQUE_CREATE: `${BASE_API_URL}challan_unique/create`,
+  CHALLAN_UNIQUE_NEXT_NUMBER: `${BASE_API_URL}challan_unique/next_code_with_challan_date`,
+  CHALLAN_UNIQUE_LAST_NUMBER: `${BASE_API_URL}challan_unique/last_challan_number`,
+  CHALLAN_UNIQUE_PRINT: `${BASE_API_URL}challan_unique/print`,
 
   RETAIL_NEXT_RCODE: `${BASE_API_URL}retail/next_rcode`,
   RETAIL_CREATE: `${BASE_API_URL}retail/create`,

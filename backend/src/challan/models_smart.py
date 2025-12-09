@@ -5,8 +5,8 @@ from sqlalchemy import ForeignKey
 from sqlmodel import Column, Field, SQLModel
 
 
-class Challan(SQLModel, table=True):
-    __tablename__ = "challan"
+class ChallanSmart(SQLModel, table=True):
+    __tablename__ = "challan_smart"
     challan_number: str = Field(primary_key=True, index=True)
     code: str = Field(
         sa_column=Column(

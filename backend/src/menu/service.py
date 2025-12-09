@@ -3,7 +3,8 @@ from datetime import date, timedelta
 from sqlalchemy import case, func, select, union_all
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from challan.models import Challan
+from challan.models_smart import ChallanSmart
+from challan.models_unique import ChallanUnique
 from master.models import Master
 from out_of_warranty.models import OutOfWarranty
 from retail.models import Retail
@@ -29,7 +30,7 @@ class MenuService:
         combined_cte = union_all(
             select(Master.code),
             select(Retail.code),
-            select(Challan.code),
+            select(ChallanSmart.code),
             select(Warranty.code),
             select(OutOfWarranty.code),
         ).cte("combined_cte")
@@ -114,44 +115,63 @@ class MenuService:
     # ---------------------------
     async def challan_overview(self, session: AsyncSession):
         """
-        Returns:
-        {
-            "challan_count": int,
-            "items_count": int,
-            "rolling": [{"month": "YYYY-MM", "total_challans": int, "total_quantity": int}, ...]
-        }
+        Returns combined stats from ChallanSmart + ChallanUnique.
         """
-        qty_total = (
-            func.coalesce(func.sum(Challan.qty1), 0)
-            + func.coalesce(func.sum(Challan.qty2), 0)
-            + func.coalesce(func.sum(Challan.qty3), 0)
-            + func.coalesce(func.sum(Challan.qty4), 0)
-            + func.coalesce(func.sum(Challan.qty5), 0)
-            + func.coalesce(func.sum(Challan.qty6), 0)
-            + func.coalesce(func.sum(Challan.qty7), 0)
-            + func.coalesce(func.sum(Challan.qty8), 0)
+
+        # ---- 1) Create UNION ALL subquery for both tables ----
+
+        qty_expr = (
+            func.coalesce(ChallanSmart.qty1, 0)
+            + func.coalesce(ChallanSmart.qty2, 0)
+            + func.coalesce(ChallanSmart.qty3, 0)
+            + func.coalesce(ChallanSmart.qty4, 0)
+            + func.coalesce(ChallanSmart.qty5, 0)
+            + func.coalesce(ChallanSmart.qty6, 0)
+            + func.coalesce(ChallanSmart.qty7, 0)
+            + func.coalesce(ChallanSmart.qty8, 0)
         )
 
-        challan_count_stmt = select(func.count(Challan.challan_number))
-        items_stmt = select(qty_total)
+        # Build a SELECT for Smart
+        smart_sel = select(
+            ChallanSmart.challan_number,
+            ChallanSmart.challan_date,
+            qty_expr.label("qty"),
+        )
 
+        # Build a SELECT for Unique (schema same)
+        unique_sel = select(
+            ChallanUnique.challan_number,
+            ChallanUnique.challan_date,
+            qty_expr.label("qty"),
+        )
+
+        # UNION both tables
+        union_subq = smart_sel.union_all(unique_sel).subquery()
+
+        # ---- 2) Aggregation queries on the union ----
+
+        # Total challan count
+        challan_count_stmt = select(func.count(union_subq.c.challan_number))
+
+        # Total quantity across all rows
+        items_stmt = select(func.coalesce(func.sum(union_subq.c.qty), 0))
+
+        # Rolling monthly totals
         cutoff_date = date.today().replace(day=1) - timedelta(days=150)
-        month_expr = func.to_char(func.date_trunc("month", Challan.challan_date), "YYYY-MM")
+        month_expr = func.to_char(func.date_trunc("month", union_subq.c.challan_date), "YYYY-MM")
+
         rolling_stmt = (
             select(
                 month_expr.label("month"),
                 func.count().label("total_challans"),
-                func.coalesce(func.sum(
-                    func.coalesce(Challan.qty1, 0) + func.coalesce(Challan.qty2, 0) +
-                    func.coalesce(Challan.qty3, 0) + func.coalesce(Challan.qty4, 0) +
-                    func.coalesce(Challan.qty5, 0) + func.coalesce(Challan.qty6, 0) +
-                    func.coalesce(Challan.qty7, 0) + func.coalesce(Challan.qty8, 0)
-                ), 0).label("total_quantity"),
+                func.sum(union_subq.c.qty).label("total_quantity"),
             )
-            .where(Challan.challan_date >= cutoff_date)
+            .where(union_subq.c.challan_date >= cutoff_date)
             .group_by(month_expr)
             .order_by(month_expr)
         )
+
+        # ---- 3) Execute (only 3 total DB hits) ----
 
         challan_count = (await session.execute(challan_count_stmt)).scalar() or 0
         items_count = (await session.execute(items_stmt)).scalar() or 0

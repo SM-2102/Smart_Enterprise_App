@@ -15,12 +15,12 @@ from master.service import MasterService
 from utils.date_utils import parse_date
 from utils.file_utils import safe_join, split_text_to_lines
 
-from .models import Challan
+from .models_unique import ChallanUnique
 
 master_service = MasterService()
 
 
-class ChallanService:
+class ChallanUniqueService:
 
     async def create_challan(
         self, session: AsyncSession, challan: CreateChallan, token: dict
@@ -40,7 +40,7 @@ class ChallanService:
                         challan_data_dict[date_field]
                     )
             challan_data_dict.pop("name", None)
-            new_challan = Challan(**challan_data_dict)
+            new_challan = ChallanUnique(**challan_data_dict)
             session.add(new_challan)
             try:
                 await session.commit()
@@ -50,27 +50,27 @@ class ChallanService:
 
     async def next_challan_number(self, session: AsyncSession):
         statement = (
-            select(Challan.challan_number)
-            .order_by(Challan.challan_number.desc())
+            select(ChallanUnique.challan_number)
+            .order_by(ChallanUnique.challan_number.desc())
             .limit(1)
         )
         result = await session.execute(statement)
         last_challan_number = result.scalar()
         last_number = last_challan_number[1:] if last_challan_number else "0"
         next_challan_number = int(last_number) + 1
-        next_challan_number = "N" + str(next_challan_number).zfill(5)
+        next_challan_number = "U" + str(next_challan_number).zfill(5)
         return next_challan_number
 
     async def challan_max_date(self, session: AsyncSession):
-        statement = select(func.max(Challan.challan_date))
+        statement = select(func.max(ChallanUnique.challan_date))
         result = await session.execute(statement)
         max_date = result.scalar()
         return max_date if max_date else "2025-01-01"
 
     async def last_challan_number(self, session: AsyncSession):
         statement = (
-            select(Challan.challan_number)
-            .order_by(Challan.challan_number.desc())
+            select(ChallanUnique.challan_number)
+            .order_by(ChallanUnique.challan_number.desc())
             .limit(1)
         )
         result = await session.execute(statement)
@@ -81,10 +81,10 @@ class ChallanService:
         self, challan_number: ChallanNumber, session: AsyncSession
     ):
         if len(challan_number) != 6:
-            challan_number = "N" + challan_number.zfill(5)
-        if not challan_number.startswith("N") or not challan_number[1:].isdigit():
+            challan_number = "U" + challan_number.zfill(5)
+        if not challan_number.startswith("U") or not challan_number[1:].isdigit():
             raise IncorrectCodeFormat()
-        statement = select(Challan).where(Challan.challan_number == challan_number)
+        statement = select(ChallanUnique).where(ChallanUnique.challan_number == challan_number)
         result = await session.execute(statement)
         challan = result.scalar()
         if challan:

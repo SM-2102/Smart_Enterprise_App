@@ -8,7 +8,7 @@ import API_ENDPOINTS from "../config/api";
  * @returns {Promise<Blob>} PDF blob
  */
 async function printRoadChallan(challanNumber) {
-  const response = await authFetch(API_ENDPOINTS.CHALLAN_PRINT, {
+  const response = await authFetch(API_ENDPOINTS.CHALLAN_UNIQUE_PRINT, {
     method: "POST",
     headers: {
       Accept: "application/pdf",

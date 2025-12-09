@@ -11,10 +11,10 @@ import {
 import { AiOutlinePrinter } from "react-icons/ai";
 import Toast from "../components/Toast";
 
-import { fetchLastChallanNumber } from "../services/roadChallanLastCodeService";
-import { printRoadChallan } from "../services/roadChallanPrintService";
+import { fetchLastChallanNumber } from "../services/roadChallanSmartLastCodeService";
+import { printRoadChallan } from "../services/roadChallanSmartPrintService";
 
-const RoadChallanPrintPage = () => {
+const RoadChallanSmartPrintPage = () => {
   const [challanNumber, setChallanNumber] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [error, setError] = useState("");
@@ -59,7 +59,7 @@ const RoadChallanPrintPage = () => {
         }}
       >
         <h2 className="text-xl font-semibold text-blue-800 mb-4 pb-2 border-b border-blue-500 justify-center flex items-center gap-2">
-          Print Road Challan
+          Print Smart Enterprise Road Challan
         </h2>
         <form noValidate className="w-full flex flex-col gap-3">
           <div className="flex items-center gap-2">
@@ -161,4 +161,4 @@ const RoadChallanPrintPage = () => {
   );
 };
 
-export default RoadChallanPrintPage;
+export default RoadChallanSmartPrintPage;

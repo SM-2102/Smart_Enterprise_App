@@ -6,7 +6,7 @@ import { authFetch } from "./authFetchService";
  * @returns {Promise<void>} Throws on error
  */
 async function createRoadChallan(roadChallanData) {
-  const response = await authFetch(API_ENDPOINTS.CHALLAN_CREATE, {
+  const response = await authFetch(API_ENDPOINTS.CHALLAN_UNIQUE_CREATE, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
