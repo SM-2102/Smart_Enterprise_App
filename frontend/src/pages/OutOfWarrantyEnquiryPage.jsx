@@ -57,6 +57,7 @@ const divisionOptions = [
   "SDA",
   "IWH",
   "SWH",
+  "UPS",
   "COOLER",
   "OTHERS",
 ];
@@ -766,6 +767,7 @@ const OutOfWarrantyEnquiryPage = () => {
             data={data}
             columns={columns}
             title="Out Of Warranty Enquiry List"
+            sum_column="final_amount"
             noDataMessage={
               searched && data.length === 0 ? (
                 <tr>

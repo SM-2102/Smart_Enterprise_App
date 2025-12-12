@@ -23,8 +23,29 @@ const EnquiryTable = ({
   columns = [],
   title = "Enquiry Table",
   noDataMessage = null,
+  sum_column = null,
 }) => {
   const tableRef = useRef();
+
+  // Compute sum for the given column key (if provided)
+  const computeSum = (key) => {
+    if (!key || !Array.isArray(data) || data.length === 0) return 0;
+    const sum = data.reduce((acc, row) => {
+      let val = row && row[key];
+      if (val === null || val === undefined || val === "") return acc;
+      if (typeof val === "number") return acc + val;
+      // Try to parse string numbers (remove commas)
+      const cleaned = String(val).replace(/,/g, "");
+      const num = parseFloat(cleaned);
+      if (Number.isNaN(num)) return acc;
+      return acc + num;
+    }, 0);
+    return sum;
+  };
+
+  const sumValue = computeSum(sum_column);
+  const formattedSum = typeof sumValue === "number" ? sumValue.toFixed(2) : "0.00";
+  const sumLabel = (columns && columns.find((c) => c.key === sum_column) && columns.find((c) => c.key === sum_column).label) || sum_column;
 
   const handlePrint = () => {
     const printContents = tableRef.current.innerHTML;
@@ -114,7 +135,29 @@ const EnquiryTable = ({
             </span>
           </Typography>
         </Box>
-        <Box>{/* Right side empty for now */}</Box>
+        {sum_column && (
+        <Box display="flex" alignItems="center">
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1976d2",
+                  fontWeight: 700,
+                  fontSize: 17,
+                  background: "#e3eafc",
+                  px: 2,
+                  py: 0.5,
+                  borderRadius: 2,
+                  boxShadow: "0 1px 4px rgba(25,118,210,0.07)",
+                  display: "inline-block",
+                }}
+              >
+                <span style={{ letterSpacing: 0.5 }}>Total Amount:</span>{" "}
+                <span style={{ color: "#0d47a1", fontWeight: 600 }}>
+                  ₹ {formattedSum}
+                </span>
+              </Typography>
+            </Box>
+        )}
       </Box>
       <div ref={tableRef}>
         <TableContainer

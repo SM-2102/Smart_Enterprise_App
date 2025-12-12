@@ -26,10 +26,6 @@ const divisionOptions = [
   "IWH",
   "SWH",
   "COOLER",
-  "HT MOTOR",
-  "LT MOTOR",
-  "FHP MOTOR",
-  "ALTERNATOR",
   "OTHERS",
 ];
 
@@ -514,6 +510,7 @@ const RetailEnquiryPage = () => {
             data={data}
             columns={columns}
             title="Retail Enquiry List"
+            sum_column="amount"
             noDataMessage={
               searched && data.length === 0 ? (
                 <tr>

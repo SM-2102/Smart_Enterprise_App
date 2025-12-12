@@ -16,7 +16,7 @@ class Retail(SQLModel, table=True):
             pg.VARCHAR(5), ForeignKey("master.code"), nullable=False, index=True
         )
     )
-    details: str = Field(sa_column=Column(pg.VARCHAR(40), nullable=False))
+    details: str = Field(sa_column=Column(pg.VARCHAR(50), nullable=False))
     amount: int = Field(sa_column=Column(pg.INTEGER, nullable=False))
     received: str = Field(sa_column=Column(pg.CHAR(1), nullable=False, default="N"))
     settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))

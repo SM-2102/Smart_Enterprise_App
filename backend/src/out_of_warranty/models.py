@@ -8,43 +8,60 @@ from sqlmodel import Column, Field, SQLModel
 
 class OutOfWarranty(SQLModel, table=True):
     __tablename__ = "out_of_warranty"
-
     srf_number: str = Field(primary_key=True, index=True)
-    srf_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
     code: str = Field(
         sa_column=Column(
             pg.VARCHAR(5), ForeignKey("master.code"), nullable=False, index=True
         )
     )
+    srf_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
+    head: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
     division: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
-    # FANS, PUMP, LIGHT, SDA, IWH, SWH, COOLER, OTHERS
-    head: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
-    service_charge: int = Field(sa_column=Column(pg.INTEGER, nullable=False))
-    service_charge_waive: str = Field(
-        sa_column=Column(pg.CHAR(1), nullable=False, default="N")
-    )
-    collection_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    waive_details: str = Field(sa_column=Column(pg.VARCHAR(40), nullable=True))
     model: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=False))
-    serial_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
-    problem: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=True))
+    serial_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=False))
+    problem: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=False))
     remark: str = Field(sa_column=Column(pg.VARCHAR(40), nullable=True))
+    complaint_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
+    customer_challan_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
+    customer_challan_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
     challan_number: str = Field(sa_column=Column(pg.VARCHAR(6), nullable=True))
-    # V00001, V0002
     challan_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    challan: str = Field(sa_column=Column(pg.CHAR(1), nullable=False, default="N"))
-    received_by: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
-    estimate_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    vendor_date1: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    received_by: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=True))
+    service_charge: float = Field(sa_column=Column(pg.FLOAT, nullable=False, default=0))
+    service_charge_waive: str = Field(
+        sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
+    )
+    waive_details: str = Field(sa_column=Column(pg.VARCHAR(40), nullable=False))
+    receive_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    invoice_number: str = Field(sa_column=Column(pg.VARCHAR(16), nullable=True))
+    invoice_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    repair_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    work_done: str = Field(sa_column=Column(pg.VARCHAR(50), nullable=True))
     vendor_date2: date = Field(sa_column=Column(pg.DATE, nullable=True))
     vendor_cost1: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     vendor_cost2: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
+    vendor_bill_number: str = Field(sa_column=Column(pg.VARCHAR(8), nullable=True))
     vendor_settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     vendor_settled: str = Field(
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )
-    repair_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    work_done: str = Field(sa_column=Column(pg.VARCHAR(50), nullable=True))
+    vendor_paint: str = Field(
+        sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
+    )
+    vendor_paint_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
+    paint_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True))  
+    vendor_stator: str = Field(
+        sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
+    )
+    vendor_stator_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True)) 
+    stator_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True))  
+    vendor_leg: str = Field(
+        sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
+    )
+    vendor_leg_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True)) 
+    leg_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True))  
+    vendor_cost: float = Field(sa_column=Column(pg.FLOAT, nullable=True))    
+    rewinding_done: str = Field(sa_column=Column(pg.CHAR(1), nullable=False, default="N"))
     rewinding_cost: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     other_cost: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     spare1: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
@@ -67,14 +84,16 @@ class OutOfWarranty(SQLModel, table=True):
     gst_amount: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     final_amount: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     round_off: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
-    receive_amount: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     delivery_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    delivered_by: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
+    collection_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    dealer_name: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=True))
+    rpm: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
     pc_number: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
-    invoice_number: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
-    vendor_bill_number: str = Field(sa_column=Column(pg.VARCHAR(8), nullable=True))
-    final_status: str = Field(
-        sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
-    )
+    purchase_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    purchase_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=True))
+    receive_amount: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
+    final_status: str = Field(sa_column=Column(pg.CHAR(1), nullable=False, default="N"))
     settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     final_settled: str = Field(
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
@@ -87,4 +106,4 @@ class OutOfWarranty(SQLModel, table=True):
     )
 
     def __repr__(self):
-        return f"<Out of Warranty {self.srf_number} - {self.srf_date}>"
+        return f"<Out Of Warranty {self.srf_number} - {self.srf_date}>"
