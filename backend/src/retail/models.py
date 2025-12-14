@@ -22,10 +22,10 @@ class Retail(SQLModel, table=True):
     settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     final_status: str = Field(sa_column=Column(pg.CHAR(1), nullable=False, default="N"))
     created_by: str = Field(
-        sa_column=Column(pg.VARCHAR(15), ForeignKey("users.username"), nullable=False)
+        sa_column=Column(pg.VARCHAR(30), ForeignKey("users.username"), nullable=False)
     )
     updated_by: str = Field(
-        sa_column=Column(pg.VARCHAR(15), ForeignKey("users.username"), nullable=True)
+        sa_column=Column(pg.VARCHAR(30), ForeignKey("users.username"), nullable=True)
     )
 
     def __repr__(self):

@@ -132,7 +132,7 @@ class ChallanUniqueService:
         # Path to the static PDF template (use absolute path for portability, with path injection protection)
         base_dir = os.path.dirname(os.path.abspath(__file__))
         static_dir = os.path.normpath(os.path.join(base_dir, "..", "static"))
-        template_path = safe_join(static_dir, "road_challan.pdf")
+        template_path = safe_join(static_dir, "unique_challan.pdf")
 
         # Read the template PDF
         try:

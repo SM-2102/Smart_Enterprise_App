@@ -41,6 +41,7 @@ import CreateVendorPage from "./pages/VendorCreatePage.jsx";
 import VendorPrintPage from "./pages/VendorPrintPage.jsx";
 import SettleVendorUserPage from "./pages/VendorSettleUserPage.jsx";
 import VendorSettleAdminPage from "./pages/VendorSettleAdminPage.jsx";
+import ModelCreatePage from "./pages/ModelCreatePage.jsx";
 
 function AppRoutesWithNav() {
   return (
@@ -126,6 +127,14 @@ function AppRoutesWithNav() {
             element={
               <PrivateRoute requiredRole="ADMIN">
                 <ServiceCenterCreatePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/CreateModel"
+            element={
+              <PrivateRoute>
+                <ModelCreatePage />
               </PrivateRoute>
             }
           />

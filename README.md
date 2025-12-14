@@ -42,8 +42,6 @@
 - [ ] **WarrantyCreatePage** - Create Warranty record
 - [ ] **WarrantyUpdatePage** - Update Warranty record
 - [ ] **WarrantySRFPrintPage** - Warranty SRF Print
-- [ ] **WarrantyChallanPage** - Warranty Challan
-- [ ] **WarrantyChallanPrintPage** - Warranty Challan Print
 - [ ] **WarrantyEnquiryPage** - Warranty Enquiry Page
 
 ### OutOfWarranty Module
@@ -118,7 +116,7 @@
 - [x] **/service_center/create** - [ADMIN]
 
 ### Model Module
-- [x] **/model/get_rewinding_rate**
+- [x] **/model/get_rewinding_rate_for_update**
 
 ### Warranty Module
 - [x] **warranty/next_srf_number**

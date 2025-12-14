@@ -64,6 +64,10 @@ const API_ENDPOINTS = {
 
   SERVICE_CHARGE: `${BASE_API_URL}service_charge/service_charge`,
 
+  MODEL_CREATE: `${BASE_API_URL}model/create`,
+  MODEL_GET_REWINDING_FOR_CREATION: `${BASE_API_URL}model/rewinding-rate-for-model`,
+  MODEL_GET_REWINDING_FOR_UPDATION: `${BASE_API_URL}model/rewinding-rate-for-update`,
+
   OUT_OF_WARRANTY_NEXT_CODE: `${BASE_API_URL}out_of_warranty/next_srf_number`,
   OUT_OF_WARRANTY_CREATE: `${BASE_API_URL}out_of_warranty/create`,
   OUT_OF_WARRANTY_LIST_PENDING: `${BASE_API_URL}out_of_warranty/list_pending`,

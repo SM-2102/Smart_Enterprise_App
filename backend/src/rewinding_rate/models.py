@@ -20,7 +20,7 @@ class RewindingRate(SQLModel, table=True):
     leg_charge: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
     stator_charge: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
     created_by: str = Field(
-        sa_column=Column(pg.VARCHAR(15), ForeignKey("users.username"), nullable=False)
+        sa_column=Column(pg.VARCHAR(30), ForeignKey("users.username"), nullable=False)
     )
 
     def __repr__(self):

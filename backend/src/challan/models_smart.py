@@ -44,7 +44,7 @@ class ChallanSmart(SQLModel, table=True):
     invoice_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     remark: str = Field(sa_column=Column(pg.VARCHAR(50), nullable=False))
     created_by: str = Field(
-        sa_column=Column(pg.VARCHAR(15), ForeignKey("users.username"), nullable=False)
+        sa_column=Column(pg.VARCHAR(30), ForeignKey("users.username"), nullable=False)
     )
 
     def __repr__(self):

@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from auth.dependencies import AccessTokenBearer
 from db.db import get_session
-from model.schemas import ModelRequest
+from model.schemas import ModelRequest, RewindingCharge
 from model.service import ModelService
 
 model_router = APIRouter()
@@ -19,12 +19,28 @@ Get rewinding rate details by division and model
 """
 
 
-@model_router.post("/rewinding-rate", status_code=status.HTTP_200_OK)
-async def get_rewinding_rate(
+@model_router.post("/rewinding-rate-for-update", status_code=status.HTTP_200_OK)
+async def get_rewinding_rate_for_updation(
     data: ModelRequest,
     session: AsyncSession = Depends(get_session),
     _=Depends(access_token_bearer),
 ):
 
     rewinding_cost = await model_service.get_rewinding_rate(session, data.division, data.model)
+    return JSONResponse(content={"rewinding_cost": rewinding_cost})
+
+
+"""
+Get rewinding rate details for model creation
+"""
+
+
+@model_router.post("/rewinding-rate-for-model", status_code=status.HTTP_200_OK)
+async def get_rewinding_rate_for_creation(
+    data: RewindingCharge,
+    session: AsyncSession = Depends(get_session),
+    _=Depends(access_token_bearer),
+):
+
+    rewinding_cost = await model_service.get_rewinding_rate_for_model(session, data)
     return JSONResponse(content={"rewinding_cost": rewinding_cost})
