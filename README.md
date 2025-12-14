@@ -21,13 +21,14 @@
 ### Master Module
 - [x] **MasterCreatePage** - Create Master record
 - [x] **MasterUpdatePage** - Update Master record
-- [x] **ServiceCenterCreatePage** - Add Service Center
+- [x] **ServiceCenterCreatePage** - Add Service Center [ADMIN]
+- [ ] **ModelCreatePage** - Add Model record
 
 ### Road Challan Module
 - [x] **RoadChallanSmartCreatePage** - Create Road Challan record for Smart
 - [x] **RoadChallanSmartPrintPage** - Print Road Challan record for Smart
-- [ ] **RoadChallanUniqueCreatePage** - Create Road Challan record for Unique
-- [ ] **RoadChallanUniquePrintPage** - Print Road Challan record for Unique
+- [x] **RoadChallanUniqueCreatePage** - Create Road Challan record for Unique
+- [x] **RoadChallanUniquePrintPage** - Print Road Challan record for Unique
 
 ### Retail Module
 - [x] **RetailCreatePage** - Create Retail record
@@ -37,26 +38,28 @@
 - [x] **RetailSettleUserPage** - Proposed For Settlement
 - [x] **RetailSettleAdminPage** - Settled Retail Record [ADMIN]
 
-<!--### Warranty Module
-- [x] **WarrantyCreatePage** - Create Warranty record
-- [x] **WarrantyUpdatePage** - Update Warranty record
-- [x] **WarrantySRFPrintPage** - Warranty SRF Print
-- [x] **WarrantyChallanPage** - Warranty Challan
-- [x] **WarrantyChallanPrintPage** - Warranty Challan Print
-- [x] **WarrantyEnquiryPage** - Warranty Enquiry Page
+### Warranty Module
+- [ ] **WarrantyCreatePage** - Create Warranty record
+- [ ] **WarrantyUpdatePage** - Update Warranty record
+- [ ] **WarrantySRFPrintPage** - Warranty SRF Print
+- [ ] **WarrantyChallanPage** - Warranty Challan
+- [ ] **WarrantyChallanPrintPage** - Warranty Challan Print
+- [ ] **WarrantyEnquiryPage** - Warranty Enquiry Page
 
 ### OutOfWarranty Module
-- [x] **OutOFWarrantyCreatePage** - Create Out Of Warranty record
-- [x] **OutOFWarrantyUpdatePage** - Update Out Of Warranty record
-- [x] **OutOFWarrantySRFPrintPage** - Out Of Warranty SRF Print
-- [x] **OutOFWarrantySRFSettleUserPage** - Out Of Warranty SRF Propose to Settle
-- [x] **OutOFWarrantySRFSettleAdminPage** - Out Of Warranty SRF Settlement [ADMIN]
-- [x] **OutOfWarrantyEstimatePrintPage** - Out Of Warranty Estimate Print
+- [ ] **OutOFWarrantyCreatePage** - Create Out Of Warranty record
+- [ ] **OutOFWarrantyUpdatePage** - Update Out Of Warranty record
+- [ ] **OutOFWarrantySRFPrintPage** - Out Of Warranty SRF Print
+- [ ] **OutOFWarrantySRFSettleUserPage** - Out Of Warranty SRF Propose to Settle
+- [ ] **OutOFWarrantySRFSettleAdminPage** - Out Of Warranty SRF Settlement [ADMIN]
+- [ ] **OutOFWarrantyEnquiryPage** - Out Of Warranty Enquiry Page
+
+### Vendor Module
 - [x] **OutOFWarrantyCreateVendorPage** - Out Of Warranty Vendor Challan
 - [x] **OutOFWarrantyChallanPrintPage** - Out Of Warranty Vendor Challan Print
 - [x] **OutOFWarrantyChallanSettleUserPage** - Out Of Warranty Challan Propose to Settle
 - [x] **OutOFWarrantyChallanSettleAdminPage** - Out Of Warranty Challan Settlement [ADMIN]
-- [x] **OutOFWarrantyEnquiryPage** - Out Of Warranty Enquiry Page -->
+
 
 ---
 
@@ -112,9 +115,12 @@
 
 ### Service Center Module
 - [x] **/service_center/list_names**
-- [x] **/service_center/create**
+- [x] **/service_center/create** - [ADMIN]
 
-<!--### Warranty Module
+### Model Module
+- [x] **/model/get_rewinding_rate**
+
+### Warranty Module
 - [x] **warranty/next_srf_number**
 - [x] **warranty/create**
 - [x] **warranty/list_pending**
@@ -122,42 +128,43 @@
 - [x] **warranty/update/{srf_number}**
 - [x] **warranty/list_delivered_by**
 - [x] **warranty/last_srf_number**
-- [x] **warranty/srf_print**
-- [x] **warranty/next_cnf_challan_code**
-- [x] **warranty/last_cnf_challan_code**
-- [x] **warranty/list_cnf_challan**
-- [x] **warranty/create_cnf_challan**
-- [x] **warranty/cnf_challan_print**
-- [x] **warranty/enquiry{params}**
+- [ ] **warranty/srf_print**
+- [ ] **warranty/next_cnf_challan_code**
+- [ ] **warranty/last_cnf_challan_code**
+- [ ] **warranty/list_cnf_challan**
+- [ ] **warranty/create_cnf_challan**
+- [ ] **warranty/cnf_challan_print**
+- [ ] **warranty/enquiry{params}**
 
-### OutOfWarranty Module - [ADMIN]
+### OutOfWarranty Module
 - [x] **out_of_warranty/next_srf_number**
-- [x] **out_of_warranty/create**
-- [x] **out_of_warranty/list_pending**
-- [x] **out_of_warranty/by_srf_number**
-- [x] **out_of_warranty/update/{srf_number}**
+- [ ] **out_of_warranty/create**
+- [ ] **out_of_warranty/list_pending**
+- [ ] **out_of_warranty/by_srf_number**
+- [ ] **out_of_warranty/update/{srf_number}**
 - [x] **out_of_warranty/last_srf_number**
-- [x] **out_of_warranty/srf_print**
-- [x] **out_of_warranty/next_vendor_challan_code**
-- [x] **out_of_warranty/last_vendor_challan_code**
-- [x] **out_of_warranty/list_vendor_challan**
-- [x] **out_of_warranty/create_vendor_challan**
-- [x] **out_of_warranty/vendor_challan_print**
-- [x] **out_of_warranty/enquiry{params}**
-- [x] **out_of_warranty/list_received_by**
-- [x] **out_of_warranty/vendor_not_settled**
-- [x] **out_of_warranty/update_vendor_unsettled**
-- [x] **out_of_warranty/list_of_final_vendor_settlement**
-- [x] **out_of_warranty/update_final_vendor_settlement**
-- [x] **out_of_warranty/srf_not_settled**
-- [x] **out_of_warranty/update_srf_unsettled**
-- [x] **out_of_warranty/list_of_final_srf_settlement**
-- [x] **out_of_warranty/update_final_srf_settlement**
-- [x] **out_of_warranty/show_receipt_names**
-- [x] **out_of_warranty/estimate_print**
+- [ ] **out_of_warranty/srf_print**
+- [ ] **out_of_warranty/enquiry{params}**
+- [ ] **out_of_warranty/srf_not_settled**
+- [ ] **out_of_warranty/update_srf_unsettled**
+- [ ] **out_of_warranty/list_of_final_srf_settlement**
+- [ ] **out_of_warranty/update_final_srf_settlement**
+
+### Vendor Module
+- [x] **vendor/next_vendor_challan_code**
+- [x] **vendor/last_vendor_challan_code**
+- [x] **vendor/list_vendor_challan**
+- [x] **vendor/create_vendor_challan**
+- [x] **vendor/vendor_challan_print**
+- [x] **vendor/vendor_not_settled**
+- [x] **vendor/update_vendor_unsettled**
+- [x] **vendor/list_of_final_vendor_settlement**
+- [x] **vendor/update_final_vendor_settlement**
+- [x] **vendor/list_received_by**
+
 
 ### ServiceCharge Module
-- [x] **service_charge/service_charge** -->
+- [x] **service_charge/service_charge**
 
 
 ---
@@ -172,7 +179,8 @@
 - [x] **User**
 - [x] **Master**
 - [x] **Retail**
-- [ ] **Challan**
+- [x] **Challan**
+- [x] **Vendor**
 - [ ] **Warranty**
 - [ ] **Out of Warranty**
 - [ ] **Final Deployment**

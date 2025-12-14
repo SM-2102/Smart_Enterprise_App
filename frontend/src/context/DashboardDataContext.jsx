@@ -50,6 +50,7 @@ export const DashboardDataProvider = ({ children }) => {
           top_customers: [],
         },
         challan: { number_of_challans: 0, number_of_items: 0 },
+        vendor: { status_per_division_stacked_bar_chart: [], total_vendors: 0 },
         retail: { division_wise_donut: [], settled_vs_unsettled_pie_chart: [] },
         warranty: {
           division_wise_pending_completed_bar_graph: [],

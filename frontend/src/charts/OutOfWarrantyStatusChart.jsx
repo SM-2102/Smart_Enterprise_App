@@ -155,9 +155,9 @@ const OutOfWarrantyStatusChart = ({ data, loading, error }) => {
                 >
                   {/* Fixed width label */}
                   <span
-                    className="text-xs font-medium text-gray-700 text-right mr-1"
+                    className="text-[10px] font-medium text-gray-700 text-right mr-1"
                     style={{
-                      width: "50px",
+                      width: "57px",
                       flexShrink: 0,
                       display: "inline-block",
                       overflow: "hidden",

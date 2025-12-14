@@ -22,32 +22,30 @@ import WarrantyCreateCNFPage from "./pages/WarrantyCNFCreatePage.jsx";
 import WarrantyCNFPrintPage from "./pages/WarrantyCNFPrintPage.jsx";
 import WarrantyUpdatePage from "./pages/WarrantyUpdatePage.jsx";
 import WarrantyEnquiryPage from "./pages/WarrantyEnquiryPage.jsx";
-import OutOfWarrantyVendorPrintPage from "./pages/OutOfWarrantyVendorPrintPage.jsx";
 import OutOfWarrantySRFPrintPage from "./pages/OutOfWarrantySRFPrintPage.jsx";
-import OutOfWarrantyCreateVendorPage from "./pages/OutOfWarrantyVendorCreatePage.jsx";
-import OutOfWarrantySettleVendorUserPage from "./pages/OutOfWarrantyVendorSettleUserPage.jsx";
-import OutOfWarrantyVendorSettleAdminPage from "./pages/OutOfWarrantyVendorSettleAdminPage.jsx";
 import OutOfWarrantySettleSRFUserPage from "./pages/OutOfWarrantySRFSettleUserPage.jsx";
 import OutOfWarrantySettleSRFAdminPage from "./pages/OutOfWarrantySRFSettleAdminPage.jsx";
 import OutOfWarrantyEnquiryPage from "./pages/OutOfWarrantyEnquiryPage.jsx";
 import OutOfWarrantyCreatePage from "./pages/OutOfWarrantyCreatePage.jsx";
-import OutOfWarrantyEstimatePrintPage from "./pages/OutOfWarrantyEstimatePrintPage.jsx";
 import ServiceCenterCreatePage from "./pages/ServiceCenterCreatePage.jsx";
 import OutOfWarrantyUpdatePage from "./pages/OutOfWarrantyUpdatePage.jsx";
 import ChangePasswordPage from "./pages/UserChangePasswordPage.jsx";
 import CreateUserPage from "./pages/UserCreatePage.jsx";
 import ShowStandardUsersPage from "./pages/UserShowStandardPage.jsx";
 import ShowAllUsersPage from "./pages/UserShowAllPage.jsx";
-import PageNotAvailable from "./pages/PageNotAvailable.jsx";
 import RoadChallanSmartCreatePage from "./pages/RoadChallanSmartCreatePage.jsx";
 import RoadChallanSmartPrintPage from "./pages/RoadChallanSmartPrintPage.jsx";
 import RoadChallanUniqueCreatePage from "./pages/RoadChallanUniqueCreatePage.jsx";
 import RoadChallanUniquePrintPage from "./pages/RoadChallanUniquePrintPage.jsx";
+import CreateVendorPage from "./pages/VendorCreatePage.jsx";
+import VendorPrintPage from "./pages/VendorPrintPage.jsx";
+import SettleVendorUserPage from "./pages/VendorSettleUserPage.jsx";
+import VendorSettleAdminPage from "./pages/VendorSettleAdminPage.jsx";
 
 function AppRoutesWithNav() {
   return (
     <>
-      <Header />
+    <Header />
       <div className="pt-[5.5rem] pb-[1.5rem] min-h-screen bg-white">
         <Routes>
           <Route path="/" element={<LoginPage />} />
@@ -218,7 +216,7 @@ function AppRoutesWithNav() {
                 <WarrantyCreatePage />
               </PrivateRoute>
             }
-          />
+          />*/}
           <Route
             path="/CreateWarrantyCNFChallan"
             element={
@@ -235,6 +233,7 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
+          {/*
           <Route
             path="/PrintWarrantyCNFChallan"
             element={
@@ -290,39 +289,32 @@ function AppRoutesWithNav() {
                 <OutOfWarrantySettleSRFUserPage />
               </PrivateRoute>
             }
-          />
+          />*/}
           <Route
-            path="/CreateOutOfWarrantyVendorChallan"
+            path="/CreateVendorChallan"
             element={
               <PrivateRoute>
-                <OutOfWarrantyCreateVendorPage />
+                <CreateVendorPage />
               </PrivateRoute>
             }
           />
           <Route
-            path="/PrintOutOfWarrantyVendorChallan"
+            path="/PrintVendorChallan"
             element={
               <PrivateRoute>
-                <OutOfWarrantyVendorPrintPage />
+                <VendorPrintPage />
               </PrivateRoute>
             }
           />
           <Route
-            path="/PrintOutOfWarrantyEstimate"
-            element={
-              <PrivateRoute>
-                <OutOfWarrantyEstimatePrintPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/FinalSettlementOutOfWarrantyVendor"
+            path="/FinalSettlementVendor"
             element={
               <PrivateRoute requiredRole="ADMIN">
-                <OutOfWarrantyVendorSettleAdminPage />
+                <VendorSettleAdminPage />
               </PrivateRoute>
             }
           />
+          {/* 
           <Route
             path="/OutOfWarrantyEnquiry"
             element={
@@ -338,15 +330,15 @@ function AppRoutesWithNav() {
                 <OutOfWarrantySettleSRFAdminPage />
               </PrivateRoute>
             }
-          />
+          />*/}
           <Route
-            path="/ProposeToSettleOutOfWarrantyVendor"
+            path="/ProposeToSettleVendor"
             element={
               <PrivateRoute>
-                <OutOfWarrantySettleVendorUserPage />
+                <SettleVendorUserPage />
               </PrivateRoute>
             }
-          /> */}
+          /> 
         </Routes>
       </div>
       <Footer />

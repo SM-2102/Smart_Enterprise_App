@@ -1,23 +1,25 @@
-// Warranty Division Bar Chart
+// Vendor Status Stacked Bar Chart
 import React, { useEffect, useState } from "react";
-const WarrantyStatusChart = ({ data }) => {
+
+const VendorStatusChart = ({ data }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    if (data?.warranty?.division_wise_pending_completed_bar_graph) {
+    if (data?.vendor?.status_per_division_stacked_bar_chart) {
       // Group data by division
       const groupedData =
-        data.warranty.division_wise_pending_completed_bar_graph.reduce(
+        data.vendor.status_per_division_stacked_bar_chart.reduce(
           (acc, item) => {
             const division = item.division;
             if (!acc[division]) {
               acc[division] = { division, Y: 0, N: 0 };
             }
-            acc[division][item.final_status] = item.count;
+            acc[division][item.vendor_settled] = item.count;
             return acc;
           },
           {},
         );
+
       setChartData(Object.values(groupedData));
     }
   }, [data]);
@@ -44,6 +46,25 @@ const WarrantyStatusChart = ({ data }) => {
     });
   };
   const handleMouseOut = () => setTooltip({ ...tooltip, show: false });
+  const StylishCounter = ({ total }) => {
+    return (
+      <div className="w-full flex justify-center">
+        <div
+          className="
+          flex items-center gap-2
+        "
+        >
+          <span className="text-2xl font-extrabold text-yellow-500 tracking-tight">
+            {total} +
+          </span>
+
+          <span className="text-md font-semibold text-purple-800 tracking-wide">
+            Vendor Challans Issued
+          </span>
+        </div>
+      </div>
+    );
+  };
 
   // Animation state for each bar: animate green first, then red
   const [barStates, setBarStates] = useState([]);
@@ -72,21 +93,7 @@ const WarrantyStatusChart = ({ data }) => {
   }, [chartData]);
 
   return (
-    <div
-      className="relative w-full overflow-hidden"
-      style={{
-        marginTop: "15px",
-        padding: "0 8px 12px 0",
-        width: "100%",
-        height: 200,
-        minWidth: 0,
-        minHeight: 0,
-        boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
+    <div className="bg-[#f0f4f8] p-1 rounded-lg relative w-full max-w-full overflow-x-auto">
       {/* Tooltip */}
       {tooltip.show && (
         <div
@@ -108,65 +115,15 @@ const WarrantyStatusChart = ({ data }) => {
           </span>
         </div>
       )}
-      {data?.warranty?.warranty_heads && (
-        <div className="w-full flex flex-col items-center gap-3 mb-3 mt-1 ml-1 mr-1">
-          {/* Replace */}
-          <div
-            className="
-        flex flex-col items-center px-1 py-0.5 rounded-md w-fit
-        bg-gradient-to-r from-blue-50 to-blue-100 
-        border border-blue-300/60 
-        shadow-[0_2px_4px_rgba(0,0,0,0.08)]
-        backdrop-blur-sm
-      "
-            style={{
-              boxShadow:
-                "inset 0 0 4px rgba(59,130,246,0.15), 0 2px 5px rgba(0,0,0,0.08)",
-            }}
-          >
-            <span
-              className="
-    text-blue-700 font-semibold 
-    whitespace-nowrap
-    text-[clamp(9px,1.6vw,14px)]
-  "
-            >
-              {data.warranty.warranty_heads.replace} Items Replaced
-            </span>
-          </div>
-
-          {/* Repair */}
-          <div
-            className="
-        flex flex-col items-center px-1 py-0.5 rounded-md w-fit
-        bg-gradient-to-r from-pink-50 to-pink-100 
-        border border-pink-300/60
-        shadow-[0_2px_4px_rgba(0,0,0,0.08)]
-        backdrop-blur-sm
-      "
-            style={{
-              boxShadow:
-                "inset 0 0 4px rgba(236,72,153,0.15), 0 2px 5px rgba(0,0,0,0.08)",
-            }}
-          >
-            <span
-              className="
-    text-pink-700 font-semibold 
-    whitespace-nowrap
-    text-[clamp(9px,1.6vw,14px)]
-  "
-            >
-              {data.warranty.warranty_heads.repair} Items Repaired
-            </span>
-          </div>
-        </div>
+      {data?.vendor?.total_vendors !== undefined && (
+        <StylishCounter total={data.vendor.total_vendors} />
       )}
 
-      <div className="flex flex-row items-start justify-start gap-0 w-full h-full">
+      <div className="flex flex-row items-center justify-center gap-8 w-full">
         {/* Horizontal bars and labels */}
         <div
-          className="flex flex-col gap-2 w-full min-w-0 overflow-y-auto"
-          style={{ height: "100%" }}
+          className="flex flex-row gap-2 w-full items-center mt-5"
+          style={{ minHeight: 0, maxHeight: "140px" }}
         >
           {chartData.map((item, idx) => {
             const total = item.Y + item.N;
@@ -174,28 +131,17 @@ const WarrantyStatusChart = ({ data }) => {
             const nPercentage = total > 0 ? (item.N / total) * 100 : 0;
             const barState = barStates[idx] || { green: false, red: false };
             return (
-              <div key={item.division} className="flex items-center">
-                {/* Fixed width label */}
-                <span
-                  className="text-[10px] font-medium text-gray-700 text-right mr-1"
-                  style={{
-                    width: "57px",
-                    flexShrink: 0,
-                    display: "inline-block",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {item.division}
-                </span>
-                {/* Stacked horizontal bar: green left, red right */}
-                <div className="relative flex flex-row h-4 w-full rounded overflow-hidden">
-                  {/* Completed (Y) - green left */}
+              <div
+                key={item.division}
+                className="flex flex-col items-center w-12 mx-auto"
+              >
+                {/* Stacked vertical bar: green bottom, red top */}
+                <div className="relative flex flex-col-reverse h-30 w-9 rounded overflow-hidden border border-gray-200 bg-gray-100">
+                  {/* Completed (Y) - purple bottom */}
                   <div
-                    className="bg-green-500 h-full transition-all duration-700 cursor-pointer relative"
+                    className="bg-purple-500 w-full transition-all duration-700 cursor-pointer relative"
                     style={{
-                      width: barState.green ? `${yPercentage}%` : 0,
+                      height: barState.green ? `${yPercentage}%` : 0,
                       transitionDelay: "0ms",
                     }}
                     onMouseOver={(e) =>
@@ -208,11 +154,11 @@ const WarrantyStatusChart = ({ data }) => {
                     }
                     onMouseOut={handleMouseOut}
                   ></div>
-                  {/* Pending (N) - red right */}
+                  {/* Pending (N) - yellow top */}
                   <div
-                    className="bg-red-500 h-full transition-all duration-700 cursor-pointer relative"
+                    className="bg-yellow-400 w-full transition-all duration-700 cursor-pointer relative"
                     style={{
-                      width: barState.red ? `${nPercentage}%` : 0,
+                      height: barState.red ? `${nPercentage}%` : 0,
                       transitionDelay: "0ms",
                     }}
                     onMouseOver={(e) =>
@@ -226,6 +172,14 @@ const WarrantyStatusChart = ({ data }) => {
                     onMouseOut={handleMouseOut}
                   ></div>
                 </div>
+                {/* Division label */}
+                <span
+                  className="text-xs font-medium text-gray-700 text-center mt-1 truncate w-full"
+                  title={item.division}
+                  style={{ maxWidth: "48px" }}
+                >
+                  {item.division}
+                </span>
               </div>
             );
           })}
@@ -233,14 +187,23 @@ const WarrantyStatusChart = ({ data }) => {
       </div>
       <style>{`
         @media (max-width: 600px) {
-          .warranty-status-bar-label {
+          .vendor-status-bar-label {
             font-size: 0.7rem;
             width: 32px !important;
           }
         }
+          @keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
       `}</style>
     </div>
   );
 };
 
-export default WarrantyStatusChart;
+export default VendorStatusChart;

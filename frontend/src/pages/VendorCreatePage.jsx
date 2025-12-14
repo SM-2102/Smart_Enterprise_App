@@ -11,13 +11,14 @@ import {
   Box,
 } from "@mui/material";
 import Toast from "../components/Toast";
-import { fetchWarrantyCNFChallanList } from "../services/warrantyCNFChallanListService";
-import { fetchNextWarrantyCNFChallanCode } from "../services/warrantyCNFChallanNextCodeService";
-import { createWarrantyCNFChallan } from "../services/warrantyCNFChallanCreateService";
+import { createVendorChallan } from "../services/vendorChallanCreateService";
+import { fetchVendorChallanList } from "../services/vendorChallanListService";
+import { fetchNextVendorChallanCode } from "../services/vendorChallanNextCodeService";
+import { fetchReceivedBy } from "../services/vendorReceivedByService";
 
 const columns = [
   { key: "srf_number", label: "SRF Number" },
-  { key: "name", label: "Customer Name" },
+  { key: "division", label: "Division" },
   { key: "model", label: "Model" },
   { key: "serial_number", label: "Serial Number" },
   { key: "challan", label: "Challan" },
@@ -26,21 +27,12 @@ const columns = [
 const initialForm = {
   challan_code: "",
   challan_date: new Date().toLocaleDateString("en-CA"),
-  division: "",
+  received_by: "",
 };
 
-const divisionOptions = [
-  "FANS",
-  "PUMP",
-  "LIGHT",
-  "SDA",
-  "IWH",
-  "SWH",
-  "COOLER",
-  "OTHERS",
-];
+// Suggestions for Received By
 
-const WarrantyCreateCNFPage = () => {
+const CreateVendorPage = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -48,8 +40,10 @@ const WarrantyCreateCNFPage = () => {
   const tableRef = useRef();
   const [updating, setUpdating] = useState(false);
   const [form, setForm] = useState(initialForm);
-  const [selectedDivision, setSelectedDivision] = useState("");
-  const [searching, setSearching] = useState(false);
+  const [receivedBySuggestions, setReceivedBySuggestions] = useState([]);
+  const [showReceivedBySuggestions, setShowReceivedBySuggestions] =
+    useState(false);
+
   // Handler for Create Challan button
   const handleCreateChallan = async () => {
     setUpdating(true);
@@ -61,6 +55,7 @@ const WarrantyCreateCNFPage = () => {
         challan_number: form.challan_code,
         challan_date: form.challan_date,
         challan: row.challan,
+        received_by: form.received_by,
       }));
     if (payload.length === 0) {
       setError({
@@ -68,7 +63,7 @@ const WarrantyCreateCNFPage = () => {
         type: "warning",
         resolution: "Please select at least one record.",
       });
-      setShowToast(true); 
+      setShowToast(true);
       setUpdating(false);
       return;
     }
@@ -82,8 +77,17 @@ const WarrantyCreateCNFPage = () => {
       setUpdating(false);
       return;
     }
+    if (!form.received_by) {
+      setError({
+        message: "Received By is required.",
+        type: "warning",
+      });
+      setShowToast(true);
+      setUpdating(false);
+      return;
+    }
     try {
-      await createWarrantyCNFChallan(payload);
+      await createVendorChallan(payload);
       setError({
         message: "Challan created successfully!",
         type: "success",
@@ -107,12 +111,12 @@ const WarrantyCreateCNFPage = () => {
   // Fetch next Challan Code on mount
   useEffect(() => {
     let mounted = true;
-    fetchNextWarrantyCNFChallanCode()
+    fetchNextVendorChallanCode()
       .then((data) => {
         if (mounted && data) {
           setForm((prev) => ({
             ...prev,
-            challan_code: data.next_cnf_challan_code || "",
+            challan_code: data.next_vendor_challan_code || "",
           }));
         }
       })
@@ -127,41 +131,50 @@ const WarrantyCreateCNFPage = () => {
     };
   }, []);
 
-  // Handler for division select change
-  const handleDivisionChange = (e) => {
-    setSelectedDivision(e.target.value);
+  // Handler for Received By input change
+  const handleReceivedByChange = async (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, received_by: value }));
+    if (value.length > 0) {
+      try {
+        const suggestions = await fetchReceivedBy(value);
+        setReceivedBySuggestions(Array.isArray(suggestions) ? suggestions : []);
+        setShowReceivedBySuggestions(suggestions.length > 0);
+      } catch {
+        setReceivedBySuggestions([]);
+        setShowReceivedBySuggestions(false);
+      }
+    } else {
+      setShowReceivedBySuggestions(false);
+    }
   };
 
-  // Handler for Search button
-  const handleSearch = async () => {
-    if (!selectedDivision) {
-      setError({
-        message: "Division is required",
-        type: "warning",
-        resolution: "Please select a division before searching.",
+  // Fetch data on mount
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    fetchVendorChallanList()
+      .then((result) => {
+        if (mounted) {
+          setData(Array.isArray(result) ? result : []);
+        }
+      })
+      .catch((err) => {
+        setError({
+          message: err.message || "Failed to fetch records.",
+          type: "error",
+          resolution: "Please try again later.",
+        });
+        setShowToast(true);
+        setData([]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      setShowToast(true);
-      return;
-    }
-    setSearching(true);
-    setError("");
-    try {
-      const result = await fetchWarrantyCNFChallanList({
-        division: selectedDivision,
-      });
-      setData(Array.isArray(result) ? result : []);
-    } catch (err) {
-      setError({
-        message: err.message || "Failed to fetch records.",
-        type: "error",
-        resolution: "Please try again later.",
-      });
-      setShowToast(true);
-      setData([]);
-    } finally {
-      setSearching(false);
-    }
-  };
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Handler for editing challan
   const handleReceivedChange = (idx, value) => {
@@ -200,7 +213,7 @@ const WarrantyCreateCNFPage = () => {
         }}
       >
         <h2 className="text-xl font-semibold text-blue-800 mb-4 pb-2 border-b border-blue-500 justify-center flex items-center gap-2">
-          Warranty CNF Challan Creation
+          Vendor Challan Creation
         </h2>
 
         {/* Form Section - reference WarrantyCreatePage styling */}
@@ -225,41 +238,77 @@ const WarrantyCreateCNFPage = () => {
               style={{ minWidth: 120 }}
             />
           </div>
-          {/* SRF Date and Division Row */}
-          <div className="flex items-center justify-center mb-2 mt-3 gap-2">
+          {/* SRF Date and Received By Row */}
+          <div
+            className="flex items-center justify-center mb-2 mt-3 gap-5"
+            style={{ position: "relative" }}
+          >
             <label
-              htmlFor="division"
+              htmlFor="received_by"
               className="text-md font-medium text-gray-700 w-25"
             >
-              Division<span className="text-red-500">*</span>
+              Received By<span className="text-red-500">*</span>
             </label>
-            <select
-              id="division"
-              name="division"
-              value={selectedDivision}
-              onChange={handleDivisionChange}
-              className="w-35 text-center px-2 py-1 rounded-lg border border-gray-300 text-gray-900 font-small focus:outline-none focus:ring-2 focus:ring-blue-400"
-              style={{ minWidth: 120 }}
+            <div
+              className="w-35"
+              style={{ minWidth: 300, position: "relative" }}
             >
-              <option value="" disabled></option>
-              {divisionOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-          {/* Search Button Row */}
-          <div className="flex justify-center mb-2 mt-6">
-            <button
-              type="button"
-              className="py-1.5 px-6 rounded-lg bg-blue-500 text-white font-bold text-base shadow hover:bg-blue-900 transition-colors duration-200 w-fit "
-              style={{ minWidth: 100 }}
-              disabled={searching}
-              onClick={handleSearch}
-            >
-              {searching ? "Searching..." : "Search"}
-            </button>
+              <input
+                id="received_by"
+                name="received_by"
+                type="text"
+                value={form.received_by}
+                onChange={handleReceivedByChange}
+                required
+                maxLength={20}
+                className="w-full px-2 py-1 rounded-lg border border-gray-300 text-gray-900 font-small focus:outline-none focus:ring-2 focus:ring-blue-400"
+                autoComplete="off"
+                style={{ minWidth: 200 }}
+                onFocus={() => {
+                  if (
+                    form.received_by.length > 0 &&
+                    receivedBySuggestions.length > 0
+                  )
+                    setShowReceivedBySuggestions(true);
+                }}
+                onBlur={() =>
+                  setTimeout(() => setShowReceivedBySuggestions(false), 150)
+                }
+              />
+              {showReceivedBySuggestions && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    zIndex: 10,
+                    background: "#fff",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "0.5rem",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    width: "100%",
+                    maxHeight: 180,
+                    overflowY: "auto",
+                    margin: 0,
+                    padding: 0,
+                    listStyle: "none",
+                  }}
+                >
+                  {receivedBySuggestions.map((n) => (
+                    <li
+                      key={n}
+                      style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
+                      onMouseDown={() => {
+                        setForm((prev) => ({ ...prev, received_by: n }));
+                        setShowReceivedBySuggestions(false);
+                      }}
+                    >
+                      {n}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </form>
 
@@ -429,4 +478,4 @@ const WarrantyCreateCNFPage = () => {
   );
 };
 
-export default WarrantyCreateCNFPage;
+export default CreateVendorPage;

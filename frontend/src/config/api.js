@@ -71,23 +71,23 @@ const API_ENDPOINTS = {
   OUT_OF_WARRANTY_UPDATE: `${BASE_API_URL}out_of_warranty/update/`, //append srf_number
   OUT_OF_WARRANTY_LAST_SRF_NUMBER: `${BASE_API_URL}out_of_warranty/last_srf_number`,
   OUT_OF_WARRANTY_SRF_PRINT: `${BASE_API_URL}out_of_warranty/srf_print`,
-  OUT_OF_WARRANTY_NEXT_VENDOR_CHALLAN_CODE: `${BASE_API_URL}out_of_warranty/next_vendor_challan_code`,
-  OUT_OF_WARRANTY_LAST_VENDOR_CHALLAN_CODE: `${BASE_API_URL}out_of_warranty/last_vendor_challan_code`,
-  OUT_OF_WARRANTY_LIST_VENDOR_CHALLAN: `${BASE_API_URL}out_of_warranty/list_vendor_challan_details`,
-  OUT_OF_WARRANTY_CREATE_VENDOR_CHALLAN: `${BASE_API_URL}out_of_warranty/create_vendor_challan`,
-  OUT_OF_WARRANTY_VENDOR_CHALLAN_PRINT: `${BASE_API_URL}out_of_warranty/vendor_challan_print`,
-  OUT_OF_WARRANTY_LIST_RECEIVED_BY: `${BASE_API_URL}out_of_warranty/list_received_by`,
-  OUT_OF_WARRANTY_VENDOR_NOT_SETTLED: `${BASE_API_URL}out_of_warranty/vendor_not_settled`,
-  OUT_OF_WARRANTY_UPDATE_VENDOR_UNSETTLED: `${BASE_API_URL}out_of_warranty/update_vendor_unsettled`,
-  OUT_OF_WARRANTY_VENDOR_FINAL_SETTLED: `${BASE_API_URL}out_of_warranty/list_of_final_vendor_settlement`,
-  OUT_OF_WARRANTY_UPDATE_FINAL_VENDOR_SETTLED: `${BASE_API_URL}out_of_warranty/update_final_vendor_settlement`,
   OUT_OF_WARRANTY_SRF_NOT_SETTLED: `${BASE_API_URL}out_of_warranty/srf_not_settled`,
   OUT_OF_WARRANTY_UPDATE_SRF_UNSETTLED: `${BASE_API_URL}out_of_warranty/update_srf_unsettled`,
   OUT_OF_WARRANTY_LIST_FINAL_SRF_SETTLEMENT: `${BASE_API_URL}out_of_warranty/list_of_final_srf_settlement`,
   OUT_OF_WARRANTY_UPDATE_FINAL_SRF_SETTLEMENT: `${BASE_API_URL}out_of_warranty/update_final_srf_settlement`,
   OUT_OF_WARRANTY_ENQUIRY: `${BASE_API_URL}out_of_warranty/enquiry`, //append params
-  OUT_OF_WARRANTY_ESTIMATE_PRINT_DETAILS: `${BASE_API_URL}out_of_warranty/show_receipt_names`,
-  OUT_OF_WARRANTY_ESTIMATE_PRINT: `${BASE_API_URL}out_of_warranty/estimate_print`,
+
+  VENDOR_NEXT_CHALLAN_CODE: `${BASE_API_URL}vendor/next_vendor_challan_code`,
+  VENDOR_LAST_CHALLAN_CODE: `${BASE_API_URL}vendor/last_vendor_challan_code`,
+  VENDOR_LIST_CHALLAN: `${BASE_API_URL}vendor/list_vendor_challan_details`,
+  VENDOR_CREATE: `${BASE_API_URL}vendor/create_vendor_challan`,
+  VENDOR_CHALLAN_PRINT: `${BASE_API_URL}vendor/vendor_challan_print`,
+  VENDOR_LIST_RECEIVED_BY: `${BASE_API_URL}vendor/list_received_by`,
+  VENDOR_NOT_SETTLED: `${BASE_API_URL}vendor/vendor_not_settled`,
+  VENDOR_UPDATE_UNSETTLED: `${BASE_API_URL}vendor/update_vendor_unsettled`,
+  VENDOR_FINAL_SETTLED: `${BASE_API_URL}vendor/list_of_final_vendor_settlement`,
+  VENDOR_UPDATE_FINAL_SETTLED: `${BASE_API_URL}vendor/update_final_vendor_settlement`,
+
 };
 
 export default API_ENDPOINTS;

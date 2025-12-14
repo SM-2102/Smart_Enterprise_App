@@ -9,8 +9,8 @@ import OutOfWarrantyTimeline from "../charts/OutOfWarrantyTimeline";
 import WarrantySRFDeliveryTimelineChart from "../charts/WarrantySRFDeliveryTimelineChart";
 import RetailDivisionDonutChart from "../charts/RetailDivisionDonutChart";
 import RetailSettledPieChart from "../charts/RetailSettledPieChart";
+import VendorStatusChart from "../charts/VendorStatusChart";
 import { useDashboardData } from "../hooks/useDashboardData";
-import { DashboardDataProvider } from "../context/DashboardDataContext.jsx";
 import SpinnerLoading from "../components/SpinnerLoading";
 import { menuConfig } from "../config/menuConfig";
 
@@ -137,6 +137,7 @@ const MenuDashboardPageInner = () => {
                     </div>
                   </div>
                 ))}
+              
               {key === "warranty" &&
                 (loading ? (
                   <div className="w-full flex justify-center items-center">
@@ -154,6 +155,20 @@ const MenuDashboardPageInner = () => {
                     <div className="w-full md:w-3/5 md:pl-0 md:px-0">
                       <WarrantySRFDeliveryTimelineChart data={data} />
                     </div>
+                  </div>
+                ))}
+              {key === "vendor" &&
+                (loading ? (
+                  <div className="w-full flex justify-center items-center">
+                    <SpinnerLoading text="Loading Vendor Data ..." />
+                  </div>
+                ) : error ? (
+                  <div className="w-full flex justify-center items-center">
+                    <SpinnerLoading text={`Error Loading ...`} />
+                  </div>
+                ) : (
+                  <div className="mt-2">
+                    <VendorStatusChart data={data} />
                   </div>
                 ))}
               {key === "out_of_warranty" &&
