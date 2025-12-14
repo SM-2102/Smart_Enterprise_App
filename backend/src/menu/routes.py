@@ -42,6 +42,7 @@ async def get_dashboard_data(
     challan = await menu_service.challan_overview(session)
     warranty = await menu_service.warranty_overview(session)
     ow = await menu_service.out_of_warranty_overview(session)
+    vendor = await menu_service.vendor_overview(session)
 
     number_of_customers = master["master_count"]
     number_of_asc_names = master["asc_count"]
@@ -53,6 +54,9 @@ async def get_dashboard_data(
     number_of_challan = challan["challan_count"]
     challan_number_of_items = challan["items_count"]
     challan_rolling_months = challan["rolling"]
+
+    vendor_status_per_division = vendor["status_list"]
+    total_vendors = vendor["total_vendors"]
 
     warranty_pending_completed_per_division = warranty["pending_completed"]
     warranty_srf_delivery = warranty["srf_delivery"]
@@ -72,6 +76,10 @@ async def get_dashboard_data(
             "number_of_challans": ((number_of_challan // 10) * 10),
             "number_of_items": ((challan_number_of_items // 10) * 10),
             "challan_rolling_months": challan_rolling_months,
+        },
+        "vendor": {
+            "status_per_division_stacked_bar_chart": vendor_status_per_division,
+            "total_vendors": ((total_vendors // 10) * 10),
         },
         "retail": {
             "division_wise_donut": retail_division_wise_data,

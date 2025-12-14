@@ -113,61 +113,6 @@ class OutOfWarrantyUpdate(BaseModel):
     final_status: str = Field(..., max_length=1)
 
 
-class OutOfWarrantyVendorChallanDetails(BaseModel):
-    srf_number: str
-    division: str
-    model: str
-    serial_number: str
-    challan: str
-
-
-class OutOfWarrantyVendorChallanCreate(BaseModel):
-    srf_number: str
-    challan_number: str = Field(..., max_length=6)
-    vendor_date1: date
-    challan: str = Field(..., max_length=1)
-    received_by: str = Field(..., max_length=20)
-
-
-class OutOfWarrantyVendorChallanCode(BaseModel):
-    challan_number: str
-
-
-class OutOfWarrantyVendorNotSettledRecord(BaseModel):
-    srf_number: str
-    division: str
-    model: str
-    challan_number: Optional[str]
-    amount: float
-    vendor_bill_number: Optional[str]
-    received_by: str
-
-
-class UpdateVendorUnsettled(BaseModel):
-    srf_number: str
-    vendor_bill_number: str = Field(..., max_length=8)
-    vendor_settlement_date: date
-
-
-class OutOfWarrantyVendorFinalSettlementRecord(BaseModel):
-    srf_number: str
-    division: str
-    model: str
-    challan_number: Optional[str]
-    vendor_cost1: float
-    vendor_cost2: float
-    vendor_bill_number: Optional[str]
-    received_by: str
-    amount: float
-
-
-class UpdateVendorFinalSettlement(BaseModel):
-    srf_number: str
-    vendor_cost1: float
-    vendor_cost2: float
-    vendor_settled: str = Field(..., max_length=1)
-
-
 class OutOfWarrantySRFSettleRecord(BaseModel):
     srf_number: str
     name: str

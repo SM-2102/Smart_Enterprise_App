@@ -82,6 +82,9 @@ class OutOfWarrantyNotFound(BaseException):
 class ServiceCenterAlreadyExists(BaseException):
     """Service Center Already Exists"""
 
+class VendorNotFound(BaseException):
+    """Vendor Not Found"""
+
 
 def create_exception_handler(
     status_code: int, initial_detail: Any
@@ -293,6 +296,18 @@ def register_exceptions(app: FastAPI):
                 "message": "Service Center Already Exists",
                 "resolution": "Choose a different service center name",
                 "error_code": "service_center_already_exists",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        VendorNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Vendor Not Found",
+                "resolution": "Please check the vendor code",
+                "error_code": "vendor_not_found",
             },
         ),
     )

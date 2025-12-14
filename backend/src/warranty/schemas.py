@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-
 class WarrantyCreate(BaseModel):
     srf_number: str = Field(..., max_length=8)
     name: str = Field(..., max_length=40)
@@ -17,7 +16,12 @@ class WarrantyCreate(BaseModel):
     sticker_number: Optional[str] = Field(None, max_length=15)
     asc_name: Optional[str] = Field(None, max_length=30)
     complaint_number: Optional[str] = Field(None, max_length=20)
-
+    dealer_name: Optional[str] = Field(None, max_length=30)
+    rpm: Optional[int]
+    purchase_number:  Optional[str] = Field(None, max_length=15)
+    purchase_date: Optional[date]
+    customer_challan_number: str = Field(..., max_length=15)
+    customer_challan_date: date
 
 class WarrantyEnquiry(BaseModel):
     srf_number: str
@@ -46,33 +50,106 @@ class WarrantyUpdateResponse(BaseModel):
     name: str
     division: str
     model: str
-    challan_number: Optional[str]
-    challan_date: Optional[str]
-    head: str
-    repair_date: Optional[date]
-    receive_date: Optional[date]
-    invoice_number: Optional[str]
-    invoice_date: Optional[date]
-    delivery_date: Optional[date]
-    delivered_by: Optional[str]
-    final_remark: Optional[str]
-    final_status: str
     srf_date: str
-    courier: Optional[str]
+    serial_number: str
+    cg_srf_number: Optional[str]
+    challan_number: Optional[str]
+    challan_date: Optional[date]
+    received_by: Optional[str]
+    vendor_date2:  Optional[date]
+    vendor_cost2: Optional[float]
+    rewinding_done: str
+    repair_date: Optional[date]
+    other_cost: Optional[float]
+    vendor_paint: str
+    vendor_stator: str
+    vendor_leg: str
+    vendor_paint_cost: Optional[int]
+    vendor_stator_cost: Optional[int]
+    vendor_leg_cost: Optional[int]
+    vendor_cost: Optional[float]
+    work_done: Optional[str]
+    spare1: Optional[str]
+    cost1: Optional[float]
+    spare2: Optional[str]
+    cost2: Optional[float]
+    spare3: Optional[str]
+    cost3: Optional[float]
+    spare4: Optional[str]
+    cost4: Optional[float]
+    spare5: Optional[str]
+    cost5: Optional[float]
+    spare6: Optional[str]
+    cost6: Optional[float]
+    spare_cost: Optional[float]
+    godown_cost: Optional[float]
+    discount: Optional[float]
+    total: Optional[float]
+    gst: Optional[str]
+    gst_amount: Optional[float]
+    round_off: Optional[float]
+    final_amount: Optional[float]
+    receive_amount: Optional[float]
+    delivery_date: Optional[date]
     complaint_number: Optional[str]
-
+    pc_number: Optional[str]
+    invoice_number: Optional[str]
+    dealer_name: Optional[str]
+    rpm: Optional[int]
+    purchase_number: Optional[str]
+    purchase_date: Optional[date]
+    customer_challan_number: Optional[str]
+    customer_challan_date: Optional[date]
 
 class WarrantyUpdate(BaseModel):
+    vendor_date2: Optional[date]
+    vendor_cost1: Optional[float]
+    vendor_cost2: Optional[float]
     repair_date: Optional[date]
-    receive_date: Optional[date]
-    invoice_number: Optional[str] = Field(None, max_length=16)
-    invoice_date: Optional[date]
+    rewinding_done: str = Field(..., max_length=1)
+    rewinding_cost: Optional[float]
+    other_cost: Optional[float]
+    work_done: Optional[str] = Field(None, max_length=50)
+    vendor_paint: str = Field(..., max_length=1)
+    vendor_stator: str = Field(..., max_length=1)
+    vendor_leg: str = Field(..., max_length=1)
+    vendor_paint_cost: Optional[int]
+    vendor_stator_cost: Optional[int]
+    vendor_leg_cost: Optional[int]
+    vendor_cost: Optional[float]
+    spare1: Optional[str] = Field(None, max_length=20)
+    cost1: Optional[float]
+    spare2: Optional[str] = Field(None, max_length=20)
+    cost2: Optional[float]
+    spare3: Optional[str] = Field(None, max_length=20)
+    cost3: Optional[float]
+    spare4: Optional[str] = Field(None, max_length=20)
+    cost4: Optional[float]
+    spare5: Optional[str] = Field(None, max_length=20)
+    cost5: Optional[float]
+    spare6: Optional[str] = Field(None, max_length=20)
+    cost6: Optional[float]
+    spare_cost: Optional[float]
+    godown_cost: Optional[float]
+    discount: Optional[float]
+    total: Optional[float]
+    gst: str = Field(..., max_length=1)
+    gst_amount: Optional[float]
+    round_off: Optional[float]
+    final_amount: Optional[float]
+    receive_amount: Optional[float]
     delivery_date: Optional[date]
-    delivered_by: Optional[str] = Field(None, max_length=20)
-    final_remark: Optional[str] = Field(None, max_length=40)
-    courier: Optional[str] = Field(None, max_length=15)
+    pc_number: Optional[int]
+    invoice_number: Optional[str] = Field(None, max_length=16)
     complaint_number: Optional[str] = Field(None, max_length=20)
-    final_status: Optional[str] = Field(None, max_length=1)
+    cg_srf_number: Optional[str] = Field(None, max_length=10)
+    final_status: str = Field(..., max_length=1)
+    dealer_name: Optional[str] = Field(None, max_length=30)
+    rpm: Optional[int]
+    purchase_number: Optional[str] = Field(None, max_length=15)
+    purchase_date: Optional[date]
+    customer_challan_number: Optional[str] = Field(None, max_length=15)
+    customer_challan_date: Optional[date]
 
 
 class WarrantyCNFChallanDetails(BaseModel):

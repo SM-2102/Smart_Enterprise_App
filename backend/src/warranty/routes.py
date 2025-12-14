@@ -173,126 +173,126 @@ async def print_srf(
     )
 
 
-"""
-Get the next available challan code
-"""
+# """
+# Get the next available challan code
+# """
 
 
-@warranty_router.get("/next_cnf_challan_code", status_code=status.HTTP_200_OK)
-async def next_cnf_challan_code(
-    session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
-):
-    challan_number = await warranty_service.next_cnf_challan_code(session)
-    return JSONResponse(content={"next_cnf_challan_code": challan_number})
+# @warranty_router.get("/next_cnf_challan_code", status_code=status.HTTP_200_OK)
+# async def next_cnf_challan_code(
+#     session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
+# ):
+#     challan_number = await warranty_service.next_cnf_challan_code(session)
+#     return JSONResponse(content={"next_cnf_challan_code": challan_number})
 
 
-"""
-Get the last created challan code.
-"""
+# """
+# Get the last created challan code.
+# """
 
 
-@warranty_router.get("/last_cnf_challan_code", status_code=status.HTTP_200_OK)
-async def last_cnf_challan_code(
-    session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
-):
-    last_challan_number = await warranty_service.last_cnf_challan_code(session)
-    return JSONResponse(content={"last_cnf_challan_code": last_challan_number})
+# @warranty_router.get("/last_cnf_challan_code", status_code=status.HTTP_200_OK)
+# async def last_cnf_challan_code(
+#     session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
+# ):
+#     last_challan_number = await warranty_service.last_cnf_challan_code(session)
+#     return JSONResponse(content={"last_cnf_challan_code": last_challan_number})
 
 
-"""
-List CNF Challan Details
-"""
+# """
+# List CNF Challan Details
+# """
 
 
-@warranty_router.post(
-    "/list_cnf_challan_details",
-    response_model=List[WarrantyCNFChallanDetails],
-    status_code=status.HTTP_200_OK,
-)
-async def list_cnf_challan_details(
-    data: WarrantyCNFRequest,
-    session: AsyncSession = Depends(get_session),
-    _=Depends(access_token_bearer),
-):
-    cnf_list = await warranty_service.list_cnf_challan_details(session, data.division)
-    return cnf_list
+# @warranty_router.post(
+#     "/list_cnf_challan_details",
+#     response_model=List[WarrantyCNFChallanDetails],
+#     status_code=status.HTTP_200_OK,
+# )
+# async def list_cnf_challan_details(
+#     data: WarrantyCNFRequest,
+#     session: AsyncSession = Depends(get_session),
+#     _=Depends(access_token_bearer),
+# ):
+#     cnf_list = await warranty_service.list_cnf_challan_details(session, data.division)
+#     return cnf_list
 
 
-"""
-Update retail records - List of Records
-"""
+# """
+# Update CNF records - List of Records
+# """
 
 
-@warranty_router.patch("/create_cnf_challan", status_code=status.HTTP_202_ACCEPTED)
-async def create_cnf_challan(
-    list_retail: List[WarrantyCNFCreate],
-    session: AsyncSession = Depends(get_session),
-    _=Depends(access_token_bearer),
-):
-    await warranty_service.create_cnf_challan(list_retail, session)
-    return JSONResponse(content={"message": f"CNF Challan Records Updated"})
+# @warranty_router.patch("/create_cnf_challan", status_code=status.HTTP_202_ACCEPTED)
+# async def create_cnf_challan(
+#     list_retail: List[WarrantyCNFCreate],
+#     session: AsyncSession = Depends(get_session),
+#     _=Depends(access_token_bearer),
+# ):
+#     await warranty_service.create_cnf_challan(list_retail, session)
+#     return JSONResponse(content={"message": f"CNF Challan Records Updated"})
 
 
-"""
-Print cnf challan by cnf number.
-"""
+# """
+# Print cnf challan by cnf number.
+# """
 
 
-@warranty_router.post("/cnf_challan_print", status_code=status.HTTP_200_OK)
-async def print_cnf_challan(
-    data: WarrantyCNFChallanCode,
-    session: AsyncSession = Depends(get_session),
-    token=Depends(access_token_bearer),
-):
-    cnf_pdf = await warranty_service.print_cnf_challan(
-        data.challan_number, token, session
-    )
-    return StreamingResponse(
-        cnf_pdf,
-        media_type="application/pdf",
-        headers={
-            "Content-Disposition": f'attachment; filename="{data.challan_number}.pdf"'
-        },
-    )
+# @warranty_router.post("/cnf_challan_print", status_code=status.HTTP_200_OK)
+# async def print_cnf_challan(
+#     data: WarrantyCNFChallanCode,
+#     session: AsyncSession = Depends(get_session),
+#     token=Depends(access_token_bearer),
+# ):
+#     cnf_pdf = await warranty_service.print_cnf_challan(
+#         data.challan_number, token, session
+#     )
+#     return StreamingResponse(
+#         cnf_pdf,
+#         media_type="application/pdf",
+#         headers={
+#             "Content-Disposition": f'attachment; filename="{data.challan_number}.pdf"'
+#         },
+#     )
 
 
-"""
-Warranty enquiry using query parameters.
+# """
+# Warranty enquiry using query parameters.
 
- """
+#  """
 
 
-@warranty_router.get(
-    "/enquiry", response_model=List[WarrantyEnquiry], status_code=status.HTTP_200_OK
-)
-async def enquiry_warranty(
-    final_status: Optional[str] = None,
-    name: Optional[str] = None,
-    division: Optional[str] = None,
-    from_srf_date: Optional[date] = None,
-    to_srf_date: Optional[date] = None,
-    delivered_by: Optional[str] = None,
-    delivered: Optional[str] = None,
-    received: Optional[str] = None,
-    repaired: Optional[str] = None,
-    head: Optional[str] = None,
-    session: AsyncSession = Depends(get_session),
-    _=Depends(access_token_bearer),
-):
-    try:
-        result = await warranty_service.enquiry_warranty(
-            session,
-            final_status,
-            name,
-            division,
-            from_srf_date,
-            to_srf_date,
-            delivered_by,
-            delivered,
-            received,
-            repaired,
-            head,
-        )
-        return result
-    except:
-        return []
+# @warranty_router.get(
+#     "/enquiry", response_model=List[WarrantyEnquiry], status_code=status.HTTP_200_OK
+# )
+# async def enquiry_warranty(
+#     final_status: Optional[str] = None,
+#     name: Optional[str] = None,
+#     division: Optional[str] = None,
+#     from_srf_date: Optional[date] = None,
+#     to_srf_date: Optional[date] = None,
+#     delivered_by: Optional[str] = None,
+#     delivered: Optional[str] = None,
+#     received: Optional[str] = None,
+#     repaired: Optional[str] = None,
+#     head: Optional[str] = None,
+#     session: AsyncSession = Depends(get_session),
+#     _=Depends(access_token_bearer),
+# ):
+#     try:
+#         result = await warranty_service.enquiry_warranty(
+#             session,
+#             final_status,
+#             name,
+#             division,
+#             from_srf_date,
+#             to_srf_date,
+#             delivered_by,
+#             delivered,
+#             received,
+#             repaired,
+#             head,
+#         )
+#         return result
+#     except:
+#         return []

@@ -28,6 +28,7 @@ class Warranty(SQLModel, table=True):
     customer_challan_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
     challan_number: str = Field(sa_column=Column(pg.VARCHAR(6), nullable=True))
     challan_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    challan: str = Field(sa_column=Column(pg.VARCHAR(1), nullable=False, default="N"))
     received_by: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=True))
     cg_srf_number:str = Field(sa_column=Column(pg.VARCHAR(10), nullable=True))
     receive_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
