@@ -19,3 +19,5 @@ class CreateModel(BaseModel):
     hp_rating: Optional[float]
     rewinding_charge: int
     
+class ModelList(BaseModel):
+    division: str

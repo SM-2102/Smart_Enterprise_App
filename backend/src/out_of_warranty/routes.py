@@ -28,26 +28,26 @@ access_token_bearer = AccessTokenBearer()
 role_checker = Depends(RoleChecker(allowed_roles=["ADMIN"]))
 
 
-# """
-# Create new Out Of Warranty record, after checking master name
-# """
+"""
+Create new Out Of Warranty record, after checking master name
+"""
 
 
-# @out_of_warranty_router.post("/create", status_code=status.HTTP_201_CREATED)
-# async def create_out_of_warranty(
-#     out_of_warranty: OutOfWarrantyCreate,
-#     session: AsyncSession = Depends(get_session),
-#     token=Depends(access_token_bearer),
-# ):
-#     new_out_of_warranty = await out_of_warranty_service.create_out_of_warranty(
-#         session, out_of_warranty, token
-#     )
-#     return JSONResponse(
-#         content={
-#             "srf_number": new_out_of_warranty.srf_number,
-#             "message": f"SRF Number : {new_out_of_warranty.srf_number}",
-#         }
-#     )
+@out_of_warranty_router.post("/create", status_code=status.HTTP_201_CREATED)
+async def create_out_of_warranty(
+    out_of_warranty: OutOfWarrantyCreate,
+    session: AsyncSession = Depends(get_session),
+    token=Depends(access_token_bearer),
+):
+    new_out_of_warranty = await out_of_warranty_service.create_out_of_warranty(
+        session, out_of_warranty, token
+    )
+    return JSONResponse(
+        content={
+            "srf_number": new_out_of_warranty.srf_number,
+            "message": f"SRF Number : {new_out_of_warranty.srf_number}",
+        }
+    )
 
 
 """

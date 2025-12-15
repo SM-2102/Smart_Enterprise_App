@@ -88,6 +88,9 @@ class VendorNotFound(BaseException):
 class ModelAlreadyExists(BaseException):
     """Model Already Exists"""
 
+class ModelNotFound(BaseException):
+    """Model Not Found"""
+
 
 def create_exception_handler(
     status_code: int, initial_detail: Any
@@ -311,6 +314,18 @@ def register_exceptions(app: FastAPI):
                 "message": "Vendor Not Found",
                 "resolution": "Please check the vendor code",
                 "error_code": "vendor_not_found",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        ModelNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Model Not Found",
+                "resolution": "Please add model record",
+                "error_code": "model_not_found",
             },
         ),
     )

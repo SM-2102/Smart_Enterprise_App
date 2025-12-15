@@ -4,6 +4,6 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
-class ServiceCharge(BaseModel):
+class ServiceChargeRequest(BaseModel):
     division: str
-    head: Optional[str] = None
+    sub_division: Optional[str] = None

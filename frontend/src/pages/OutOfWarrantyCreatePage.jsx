@@ -10,7 +10,6 @@ const initialForm = {
   srf_number: "",
   name: "",
   srf_date: new Date().toLocaleDateString("en-CA"),
-  head: "",
   division: "",
   service_charge: "",
   service_charge_waive: "N",
@@ -20,6 +19,10 @@ const initialForm = {
   serial_number: "",
   problem: "",
   remark: "",
+  head: "REPAIR",
+  complaint_number: "",
+  customer_challan_number: "",
+  customer_challan_date: "",
 };
 
 const divisionOptions = [
@@ -30,10 +33,14 @@ const divisionOptions = [
   "IWH",
   "SWH",
   "COOLER",
+  "HT MOTOR",
+  "LT MOTOR",
+  "FHP MOTOR",
+  "ALTERNATOR",
   "OTHERS",
 ];
 
-const headOptions = ["STPM", "PRESSURE", "OPENWELL", "SUBMERSIBLE", "MINI"];
+const subDivisionOptions = ["STPM", "PRESSURE", "OPENWELL", "SUBMERSIBLE", "MINI", "AGRICULTURE"];
 
 const OutOfWarrantyCreatePage = () => {
   const [form, setForm] = useState(initialForm);
@@ -50,7 +57,7 @@ const OutOfWarrantyCreatePage = () => {
   const [baseNumber, setBaseNumber] = useState(""); // e.g. R00001
   const [subNumber, setSubNumber] = useState(1);
   // Track if asc_name and sticker_number should be disabled
-  const isRepair = form.head === "REPAIR";
+  const isRepair = form.sub_division === "REPAIR";
   const [codeLoading, setCodeLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState({});
@@ -66,7 +73,7 @@ const OutOfWarrantyCreatePage = () => {
 
   // Track service charge loading
   const [serviceChargeLoading, setServiceChargeLoading] = useState(false);
-  // Fetch service charge when division or head changes
+  // Fetch service charge when division or sub_division changes
   useEffect(() => {
     // Always clear service_charge if division is empty
     if (!form.division) {
@@ -75,15 +82,15 @@ const OutOfWarrantyCreatePage = () => {
     }
     let payload;
     if (form.division === "PUMP") {
-      // For PUMP, require both division and head
-      if (!form.head) {
+      // For PUMP, require both division and sub_division
+      if (!sub_division) {
         setForm((prev) => ({ ...prev, service_charge: "" }));
         return;
       }
-      payload = { division: form.division, head: form.head };
+      payload = { division: form.division };
     } else {
-      // For other divisions, send only division, head=null
-      payload = { division: form.division, head: null };
+      // For other divisions, send only division, sub_division=null
+      payload = { division: form.division };
     }
     setServiceChargeLoading(true);
     fetchOutOfWarrantyServiceCharge(payload)
@@ -95,7 +102,7 @@ const OutOfWarrantyCreatePage = () => {
         }
       })
       .finally(() => setServiceChargeLoading(false));
-  }, [form.division, form.head]);
+  }, [form.division, form.sub_division]);
 
   // For new SRF, always send 'NEW/1' and let backend assign base
   const setNewSrfNumber = () => {
@@ -158,8 +165,8 @@ const OutOfWarrantyCreatePage = () => {
       }
     }
     if (name === "division" && value !== "PUMP") {
-      // Clear head if division is not PUMP
-      setForm((prev) => ({ ...prev, division: value, head: "" }));
+      // Clear sub_division if division is not PUMP
+      setForm((prev) => ({ ...prev, division: value, sub_division: "" }));
     } else {
       setForm((prev) => ({ ...prev, [name]: newValue }));
     }
@@ -187,6 +194,7 @@ const OutOfWarrantyCreatePage = () => {
     let rawPayload = {
       ...form,
       srf_number: srfToSend,
+      head: "REPAIR",
     };
     if (form.service_charge_waive === "Y") {
       rawPayload.service_charge = 0;
@@ -241,6 +249,7 @@ const OutOfWarrantyCreatePage = () => {
         ...initialForm,
         srf_number: `${baseNumber}/${nextSub}`,
         name: initialName,
+        head: "REPAIR",
       }));
     } else {
       // For new SRF, always send 'NEW/1' and let backend assign base
@@ -364,6 +373,45 @@ const OutOfWarrantyCreatePage = () => {
               </div>
             </div>
           </div>
+          {/* Order Number & Order Date - label beside input, w-1/2 each */}
+          <div className="flex items-center w-full">
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="customer_challan_number"
+                className="w-53 text-md font-medium text-gray-700"
+              >
+                Challan No.<span className="text-red-500">*</span>
+              </label>
+              <input
+                id="customer_challan_number"
+                name="customer_challan_number"
+                type="text"
+                value={form.customer_challan_number}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.customer_challan_number ? "border-red-300" : "border-gray-300"} border-gray-300 bg-gray-50 text-gray-900`}
+                maxLength={15}
+                disabled={submitting}
+              />
+            </div>
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="customer_challan_date"
+                className="w-70 text-md font-medium text-gray-700 ml-6"
+              >
+                Challan Date<span className="text-red-500">*</span>
+              </label>
+              <input
+                id="customer_challan_date"
+                name="customer_challan_date"
+                type="date"
+                value={form.customer_challan_date}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.customer_challan_date ? "border-red-300" : "border-gray-300"} border-gray-300 bg-gray-50 text-gray-900`}
+                disabled={submitting}
+                max={new Date().toLocaleDateString("en-CA")}
+              />
+            </div>
+          </div>
           {/* Division & SRF Date - styled to match Model & Serial Number */}
           <div className="flex items-center w-full">
             <div className="flex items-center w-1/2 gap-2">
@@ -415,28 +463,29 @@ const OutOfWarrantyCreatePage = () => {
               />
             </div>
           </div>
+          
           <div className="flex items-center w-full">
             {/* Head & Service Charge - same line */}
 
             <div className="flex items-center w-1/2 gap-2">
               <label
-                htmlFor="head"
+                htmlFor="sub_division"
                 className="w-53.5 text-md font-medium text-gray-700"
               >
-                Head
+                Sub Division
               </label>
               <select
-                id="head"
-                name="head"
-                value={form.head}
+                id="sub_division"
+                name="sub_division"
+                value={form.sub_division}
                 onChange={handleChange}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.head ? "border-red-300" : "border-gray-300"} ${isHeadDisabled ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"} focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.sub_division ? "border-red-300" : "border-gray-300"} ${isHeadDisabled ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"} focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                 disabled={submitting || isHeadDisabled}
               >
                 <option value="" disabled>
                   {isHeadDisabled ? "Disabled for Division" : ""}
                 </option>
-                {headOptions.map((option) => (
+                {subDivisionOptions.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -588,6 +637,47 @@ const OutOfWarrantyCreatePage = () => {
                 onChange={handleChange}
                 className={`w-full px-3 py-1 rounded-lg border ${errs_label.serial_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                 maxLength={15}
+                disabled={submitting}
+              />
+            </div>
+          </div>
+          {/* Model & Serial Number - same line */}
+          <div className="flex items-center w-full">
+            <div className="flex items-center w-2/5 gap-2">
+              <label
+                htmlFor="head"
+                className="w-67 text-md font-medium text-gray-700"
+              >
+                Head<span className="text-red-500">*</span>
+              </label>
+              <input
+                id="head"
+                name="head"
+                type="text"
+                required
+                readOnly
+                value="REPAIR"
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                maxLength={30}
+                disabled={submitting}
+              />
+            </div>
+            <div className="flex items-center w-3/5 gap-2">
+              <label
+                htmlFor="complaint_number"
+                className="w-70 text-md font-medium text-gray-700 ml-6"
+              >
+                Complaint Number
+              </label>
+              <input
+                id="complaint_number"
+                name="complaint_number"
+                type="text"
+                required
+                value={form.complaint_number}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.complaint_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                maxLength={20}
                 disabled={submitting}
               />
             </div>

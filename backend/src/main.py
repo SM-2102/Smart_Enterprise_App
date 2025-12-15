@@ -81,9 +81,9 @@ app.include_router(
 app.include_router(
     rewinding_rate_router, prefix="/rewinding_rate", tags=["Rewinding Rate"]
 )
-# app.include_router(
-#     service_charge_router, prefix="/service_charge", tags=["Service Charge"]
-# )
+app.include_router(
+    service_charge_router, prefix="/service_charge", tags=["Service Charge"]
+)
 app.include_router(
     out_of_warranty_router, prefix="/out_of_warranty", tags=["Out of Warranty"]
 )

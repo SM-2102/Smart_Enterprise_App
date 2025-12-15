@@ -257,7 +257,7 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          {/*<Route
+          <Route
             path="/CreateOutOfWarrantySRF"
             element={
               <PrivateRoute>
@@ -265,6 +265,7 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
+          {/*
           <Route
             path="/UpdateOutOfWarrantySRF"
             element={

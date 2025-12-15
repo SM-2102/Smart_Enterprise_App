@@ -11,12 +11,15 @@ from sqlmodel import Column, Field, SQLModel
 class OutOfWarrantyCreate(BaseModel):
     srf_number: str = Field(..., max_length=8)
     name: str = Field(..., max_length=30)
+    customer_challan_number: str = Field(..., max_length=6)
+    customer_challan_date: date
     division: str = Field(..., max_length=15)
+    head: str = Field(..., max_length=15)
     srf_date: date
-    head: Optional[str] = Field(None, max_length=20)
     model: str = Field(..., max_length=30)
     serial_number: str = Field(..., max_length=15)
-    problem: Optional[str] = Field(None, max_length=30)
+    problem: str = Field(None, max_length=30)
+    complaint_number: Optional[str] = Field(None, max_length=20)
     remark: Optional[str] = Field(None, max_length=40)
     service_charge: int
     service_charge_waive: str = Field(..., max_length=1)

@@ -7,7 +7,7 @@ from sqlmodel import Column, Field, SQLModel
 
 
 class OutOfWarranty(SQLModel, table=True):
-    _tablename_ = "out_of_warranty"
+    __tablename__ = "out_of_warranty"
     srf_number: str = Field(primary_key=True, index=True)
     code: str = Field(
         sa_column=Column(
@@ -22,8 +22,8 @@ class OutOfWarranty(SQLModel, table=True):
     problem: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=False))
     remark: str = Field(sa_column=Column(pg.VARCHAR(40), nullable=True))
     complaint_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
-    challan_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
-    challan_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
+    challan_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=True))
+    challan_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     challan: str = Field(sa_column=Column(pg.VARCHAR(1), nullable=False, default="N"))
     service_charge: float = Field(sa_column=Column(pg.FLOAT, nullable=False, default=0))
     receive_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
@@ -80,8 +80,8 @@ class OutOfWarranty(SQLModel, table=True):
     rpm: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
     purchase_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=True))
     purchase_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    customer_challan_number: str = Field(sa_column=Column(pg.VARCHAR(6), nullable=True))
-    customer_challan_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    customer_challan_number: str = Field(sa_column=Column(pg.VARCHAR(6), nullable=False))
+    customer_challan_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
     receive_amount: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     delivery_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     delivered_by: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
@@ -104,10 +104,9 @@ class OutOfWarranty(SQLModel, table=True):
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )
     estimate_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     final_settled: str = Field(
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )
 
-    def _repr_(self):
+    def __repr__(self):
         return f"<Out Of Warranty {self.srf_number} - {self.srf_date}>"

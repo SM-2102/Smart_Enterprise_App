@@ -14,6 +14,14 @@ function validateOutOfWarrantySRFCreate(form) {
     errs.push("SRF Date is required");
     errs_label.srf_date = true;
   }
+  if (!form.customer_challan_number) {
+    errs.push("Challan Number is required");
+    errs_label.customer_challan_number = true;
+  }
+  if (!form.customer_challan_date) {
+    errs.push("Challan Date is required");
+    errs_label.customer_challan_date = true;
+  }
   if (!form.division) {
     errs.push("Division is required");
     errs_label.division = true;

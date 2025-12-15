@@ -42,3 +42,19 @@ async def create_model(
 ):
     new_model = await model_service.create_model(session, model, token)
     return JSONResponse(content={"message": f"Model Created : {new_model.model}"})
+
+"""
+Get rewinding rate details by division and model
+"""
+
+
+# @model_router.post("/rewinding-rate-for-update", status_code=status.HTTP_200_OK)
+# async def get_rewinding_rate_for_updation(
+#     data: ModelRequest,
+#     session: AsyncSession = Depends(get_session),
+#     _=Depends(access_token_bearer),
+# ):
+
+#     rewinding_cost = await model_service.get_rewinding_rate(session, data.division, data.model)
+#     return JSONResponse(content={"rewinding_cost": rewinding_cost})
+

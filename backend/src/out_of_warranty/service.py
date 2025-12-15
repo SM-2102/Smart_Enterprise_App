@@ -11,9 +11,10 @@ from sqlalchemy import case, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from exceptions import IncorrectCodeFormat, MasterNotFound, OutOfWarrantyNotFound
+from exceptions import IncorrectCodeFormat, ModelNotFound, OutOfWarrantyNotFound
 from master.models import Master
 from master.service import MasterService
+from model.service import ModelService
 from out_of_warranty.models import OutOfWarranty
 from out_of_warranty.schemas import (
     OutOfWarrantyCreate,
@@ -31,6 +32,7 @@ from utils.date_utils import format_date_ddmmyyyy, parse_date
 from utils.file_utils import safe_join, split_text_to_lines
 
 master_service = MasterService()
+model_service = ModelService()
 
 
 class OutOfWarrantyService:
@@ -56,60 +58,64 @@ class OutOfWarrantyService:
         else:
             return 1
 
-    # async def create_out_of_warranty(
-    #     self, session: AsyncSession, out_of_warranty: OutOfWarrantyCreate, token: dict
-    # ):
-    #     parts = out_of_warranty.srf_number.split("/")
-    #     if len(parts) != 2 or not parts[1].isdigit():
-    #         raise IncorrectCodeFormat()
-    #     sub_number = int(parts[1])
-    #     if sub_number < 1 or sub_number > 8:
-    #         raise IncorrectCodeFormat()
+    async def create_out_of_warranty(
+        self, session: AsyncSession, out_of_warranty: OutOfWarrantyCreate, token: dict
+    ):
+        parts = out_of_warranty.srf_number.split("/")
+        if len(parts) != 2 or not parts[1].isdigit():
+            raise IncorrectCodeFormat()
+        sub_number = int(parts[1])
+        if sub_number < 1 or sub_number > 8:
+            raise IncorrectCodeFormat()
+        
+        if out_of_warranty.division in ["PUMP", "LT MOTOR", "FHP MOTOR"]:
+            if not await model_service.check_model_name_available(out_of_warranty.model, session):
+                raise ModelNotFound()
 
-    #     # If frontend requests a new base, generate next base number
-    #     base_part = parts[0]
-    #     if base_part == "NEW":
-    #         for _ in range(3):  # Retry up to 3 times
-    #             next_base = await self.get_next_base_number(session)
-    #             srf_number = f"S{str(next_base).zfill(5)}/1"
-    #             out_of_warranty_dict = out_of_warranty.model_dump()
-    #             out_of_warranty_dict["srf_number"] = srf_number
-    #             master = await master_service.get_master_by_name(
-    #                 out_of_warranty.name, session
-    #             )
-    #             out_of_warranty_dict["created_by"] = token["user"]["username"]
-    #             out_of_warranty_dict["code"] = master.code
-    #             for date_field in ["srf_date", "collection_date"]:
-    #                 if date_field in out_of_warranty_dict:
-    #                     out_of_warranty_dict[date_field] = parse_date(
-    #                         out_of_warranty_dict[date_field]
-    #                     )
-    #             out_of_warranty_dict.pop("name", None)
-    #             new_out_of_warranty = OutOfWarranty(**out_of_warranty_dict)
-    #             session.add(new_out_of_warranty)
-    #             try:
-    #                 await session.commit()
-    #                 return new_out_of_warranty
-    #             except IntegrityError:
-    #                 await session.rollback()
-    #     else:
-    #         # Use the base provided by frontend, just validate sub-number
-    #         out_of_warranty_dict = out_of_warranty.model_dump()
-    #         master = await master_service.get_master_by_name(
-    #             out_of_warranty.name, session
-    #         )
-    #         out_of_warranty_dict["created_by"] = token["user"]["username"]
-    #         out_of_warranty_dict["code"] = master.code
-    #         for date_field in ["srf_date", "collection_date"]:
-    #             if date_field in out_of_warranty_dict:
-    #                 out_of_warranty_dict[date_field] = parse_date(
-    #                     out_of_warranty_dict[date_field]
-    #                 )
-    #         out_of_warranty_dict.pop("name", None)
-    #         new_out_of_warranty = OutOfWarranty(**out_of_warranty_dict)
-    #         session.add(new_out_of_warranty)
-    #         await session.commit()
-    #         return new_out_of_warranty
+        # If frontend requests a new base, generate next base number
+        base_part = parts[0]
+        if base_part == "NEW":
+            for _ in range(3):  # Retry up to 3 times
+                next_base = await self.get_next_base_number(session)
+                srf_number = f"S{str(next_base).zfill(5)}/1"
+                out_of_warranty_dict = out_of_warranty.model_dump()
+                out_of_warranty_dict["srf_number"] = srf_number
+                master = await master_service.get_master_by_name(
+                    out_of_warranty.name, session
+                )
+                out_of_warranty_dict["created_by"] = token["user"]["username"]
+                out_of_warranty_dict["code"] = master.code
+                for date_field in ["srf_date", "collection_date", "customer_challan_date"]:
+                    if date_field in out_of_warranty_dict:
+                        out_of_warranty_dict[date_field] = parse_date(
+                            out_of_warranty_dict[date_field]
+                        )
+                out_of_warranty_dict.pop("name", None)
+                new_out_of_warranty = OutOfWarranty(**out_of_warranty_dict)
+                session.add(new_out_of_warranty)
+                try:
+                    await session.commit()
+                    return new_out_of_warranty
+                except IntegrityError:
+                    await session.rollback()
+        else:
+            # Use the base provided by frontend, just validate sub-number
+            out_of_warranty_dict = out_of_warranty.model_dump()
+            master = await master_service.get_master_by_name(
+                out_of_warranty.name, session
+            )
+            out_of_warranty_dict["created_by"] = token["user"]["username"]
+            out_of_warranty_dict["code"] = master.code
+            for date_field in ["srf_date", "collection_date", "customer_challan_date"]:
+                if date_field in out_of_warranty_dict:
+                    out_of_warranty_dict[date_field] = parse_date(
+                        out_of_warranty_dict[date_field]
+                    )
+            out_of_warranty_dict.pop("name", None)
+            new_out_of_warranty = OutOfWarranty(**out_of_warranty_dict)
+            session.add(new_out_of_warranty)
+            await session.commit()
+            return new_out_of_warranty
 
     async def warranty_next_code(self, session: AsyncSession):
         next_base_number = await self.get_next_base_number(session)
