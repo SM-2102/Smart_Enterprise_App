@@ -37,3 +37,10 @@ class ModelService:
         session.add(new_model)
         await session.commit()
         return new_model
+    
+    async def get_models(self, session: AsyncSession, division: str):
+        statement = select(Model.model).where(
+            Model.division == division,
+        )
+        result = await session.execute(statement)
+        return result.scalars().all()

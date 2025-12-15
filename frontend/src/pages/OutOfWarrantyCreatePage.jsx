@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Toast from "../components/Toast";
 import { fetchMasterNames } from "../services/masterNamesService";
+import { fetchModels } from "../services/modelListService";
 import { fetchNextOutOfWarrantyCode } from "../services/outOfWarrantyNextSrfNumberService";
 import { validateOutOfWarrantySRFCreate } from "../utils/outOfWarrantySRFCreateValidation";
 import { createOutOfWarranty } from "../services/outOfWarrantyCreateService";
@@ -67,6 +68,12 @@ const OutOfWarrantyCreatePage = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const nameInputRef = useRef(null);
   const [nameInputWidth, setNameInputWidth] = useState("100%");
+  // Model suggestions when division is LT MOTOR, FHP MOTOR or PUMP
+  const [modelList, setModelList] = useState([]);
+  const [modelSuggestions, setModelSuggestions] = useState([]);
+  const [showModelSuggestions, setShowModelSuggestions] = useState(false);
+  const modelInputRef = useRef(null);
+  const [modelInputWidth, setModelInputWidth] = useState("100%");
 
   // Popup for add another item
   const [showAddAnother, setShowAddAnother] = useState(false);
@@ -143,6 +150,32 @@ const OutOfWarrantyCreatePage = () => {
     }
   }, [form.name, showSuggestions]);
 
+  useEffect(() => {
+    if (modelInputRef.current) {
+      setModelInputWidth(modelInputRef.current.offsetWidth + "px");
+    }
+  }, [form.model, showModelSuggestions]);
+
+  // Fetch model list when division changes to specific divisions
+  useEffect(() => {
+    const triggerDivisions = ["LT MOTOR", "FHP MOTOR", "PUMP"];
+    if (triggerDivisions.includes(form.division)) {
+      fetchModels({ division: form.division })
+        .then((res) => {
+          if (res && Array.isArray(res.model_list)) {
+            setModelList(res.model_list);
+          } else {
+            setModelList([]);
+          }
+        })
+        .catch(() => setModelList([]));
+    } else {
+      setModelList([]);
+      setModelSuggestions([]);
+      setShowModelSuggestions(false);
+    }
+  }, [form.division]);
+
   const [errs, errs_label] = validateOutOfWarrantySRFCreate(form);
 
   const handleChange = (e) => {
@@ -162,6 +195,19 @@ const OutOfWarrantyCreatePage = () => {
         setShowSuggestions(filtered.length > 0);
       } else {
         setShowSuggestions(false);
+      }
+    }
+    if (name === "model") {
+      if (value.length > 30) return;
+      newValue = value;
+      if (modelList && modelList.length > 0 && newValue.length > 0) {
+        const filtered = modelList.filter((m) =>
+          m.toLowerCase().startsWith(newValue.toLowerCase()),
+        );
+        setModelSuggestions(filtered);
+        setShowModelSuggestions(filtered.length > 0);
+      } else {
+        setShowModelSuggestions(false);
       }
     }
     if (name === "division" && value !== "PUMP") {
@@ -609,17 +655,58 @@ const OutOfWarrantyCreatePage = () => {
               >
                 Model<span className="text-red-500">*</span>
               </label>
-              <input
+              <div style={{ position: "relative", width: "100%" }}>
+                <input
                 id="model"
                 name="model"
                 type="text"
                 required
                 value={form.model}
                 onChange={handleChange}
+                ref={modelInputRef}
+                onFocus={() => {
+                  if (form.model.length > 0 && modelSuggestions.length > 0)
+                    setShowModelSuggestions(true);
+                }}
+                onBlur={() => setTimeout(() => setShowModelSuggestions(false), 150)}
                 className={`w-full px-3 py-1 rounded-lg border ${errs_label.model ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                 maxLength={30}
                 disabled={submitting}
               />
+              {showModelSuggestions && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    zIndex: 10,
+                    background: "#fff",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "0.5rem",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    width: modelInputWidth,
+                    maxHeight: 180,
+                    overflowY: "auto",
+                    margin: 0,
+                    padding: 0,
+                    listStyle: "none",
+                  }}
+                >
+                  {modelSuggestions.map((m) => (
+                    <li
+                      key={m}
+                      style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
+                      onMouseDown={() => {
+                        setForm((prev) => ({ ...prev, model: m }));
+                        setShowModelSuggestions(false);
+                      }}
+                    >
+                      {m}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              </div>
             </div>
             <div className="flex items-center w-1/2 gap-2">
               <label

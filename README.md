@@ -118,6 +118,7 @@
 ### Model Module
 - [x] **/model/get_rewinding_rate**
 - [x] **/model/create**
+- [x] **/model/model_list**
 
 ### Warranty Module
 - [x] **warranty/next_srf_number**
@@ -128,7 +129,7 @@
 - [x] **warranty/list_delivered_by**
 - [x] **warranty/last_srf_number**
 - [x] **warranty/srf_print**
-- [ ] **warranty/enquiry{params}**
+- [x] **warranty/enquiry{params}**
 
 ### OutOfWarranty Module
 - [x] **out_of_warranty/next_srf_number**

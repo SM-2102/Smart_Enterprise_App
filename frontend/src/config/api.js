@@ -60,6 +60,7 @@ const API_ENDPOINTS = {
   SERVICE_CHARGE: `${BASE_API_URL}service_charge/service_charge`,
 
   MODEL_CREATE: `${BASE_API_URL}model/create`,
+  MODEL_LIST: `${BASE_API_URL}model/model_list`,
   // MODEL_GET_REWINDING_FOR_CREATION: `${BASE_API_URL}model/rewinding-rate-for-model`,
 
   REWINDING_RATE_FOR_MODEL:`${BASE_API_URL}rewinding_rate/rewinding_rate`,
