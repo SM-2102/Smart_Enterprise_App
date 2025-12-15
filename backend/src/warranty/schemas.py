@@ -151,25 +151,3 @@ class WarrantyUpdate(BaseModel):
     customer_challan_number: Optional[str] = Field(None, max_length=15)
     customer_challan_date: Optional[date]
 
-
-class WarrantyCNFChallanDetails(BaseModel):
-    srf_number: str
-    name: str
-    model: str
-    serial_number: str
-    challan: str
-
-
-class WarrantyCNFRequest(BaseModel):
-    division: str
-
-
-class WarrantyCNFCreate(BaseModel):
-    srf_number: str
-    challan_number: str = Field(..., max_length=6)
-    challan_date: date
-    challan: str = Field(..., max_length=1)
-
-
-class WarrantyCNFChallanCode(BaseModel):
-    challan_number: str

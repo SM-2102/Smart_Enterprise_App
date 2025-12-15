@@ -28,9 +28,7 @@ export const menuConfig = [
     bgColor: "#fff7e6",
     actions: [
       { label: "Create SRF Record", path: "/CreateWarrantySRF" },
-      { label: "Create CNF Challan", path: "/CreateWarrantyCNFChallan" },
       { label: "Update SRF Record", path: "/UpdateWarrantySRF" },
-      { label: "Print CNF Challan", path: "/PrintWarrantyCNFChallan" },
       { label: "Print SRF Record", path: "/PrintWarrantySRF" },
       { label: "Enquiry", path: "/WarrantyEnquiry", showInDashboard: false },
     ],
@@ -83,10 +81,22 @@ export const menuConfig = [
     icon: FaReceipt,
     bgColor: "#faf6c0ff",
     actions: [
-      { label: "Create Unique Challan", path: "/CreateUniqueServicesRoadChallan" },
-      { label: "Create Smart Challan", path: "/CreateSmartEnterpriseRoadChallan" },
-      { label: "Print Unique Challan", path: "/PrintUniqueServicesRoadChallan" },
-      { label: "Print Smart Challan", path: "/PrintSmartEnterpriseRoadChallan" },
+      {
+        label: "Create Unique Challan",
+        path: "/CreateUniqueServicesRoadChallan",
+      },
+      {
+        label: "Create Smart Challan",
+        path: "/CreateSmartEnterpriseRoadChallan",
+      },
+      {
+        label: "Print Unique Challan",
+        path: "/PrintUniqueServicesRoadChallan",
+      },
+      {
+        label: "Print Smart Challan",
+        path: "/PrintSmartEnterpriseRoadChallan",
+      },
     ],
   },
   {

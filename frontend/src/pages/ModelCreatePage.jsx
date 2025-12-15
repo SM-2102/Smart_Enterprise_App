@@ -58,7 +58,6 @@ const ModelCreatePage = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const [errs, errs_label] = validateModel(form);
 
   const handleSubmit = async (e) => {
@@ -103,7 +102,8 @@ const ModelCreatePage = () => {
 
   // Fetch rewinding charge when division is LT MOTOR or FHP MOTOR
   useEffect(() => {
-    const shouldFetch = form.division === "LT MOTOR" || form.division === "FHP MOTOR";
+    const shouldFetch =
+      form.division === "LT MOTOR" || form.division === "FHP MOTOR";
     if (!shouldFetch) return;
 
     let mounted = true;
@@ -119,7 +119,10 @@ const ModelCreatePage = () => {
         };
         const data = await getRewindingCharge(payload);
         if (!mounted) return;
-        setForm((prev) => ({ ...prev, rewinding_charge: data?.rewinding_cost ?? "" }));
+        setForm((prev) => ({
+          ...prev,
+          rewinding_charge: data?.rewinding_cost ?? "",
+        }));
       } catch (err) {
         setError({
           message: err?.message || "Failed to fetch rewinding charge.",
@@ -154,7 +157,6 @@ const ModelCreatePage = () => {
         </h2>
 
         <div className="flex flex-col gap-4">
-
           {/* Division */}
           <div className="flex items-center gap-3 w-full">
             <label className="w-30 text-md font-medium text-gray-700">
@@ -169,11 +171,11 @@ const ModelCreatePage = () => {
               required
             >
               <option value="" disabled></option>
-                {divisionOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
+              {divisionOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -206,8 +208,16 @@ const ModelCreatePage = () => {
               onChange={handleChange}
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.frame ? "border-red-300" : "border-gray-300"} border-gray-300 focus:ring-2 focus:ring-blue-400 ${!(form.division === "LT MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "LT MOTOR"}
-              placeholder={form.division !== "LT MOTOR" ? "Disabled for selected division" : ""}
-              title={form.division !== "LT MOTOR" ? "Frame is disabled for this division" : ""}
+              placeholder={
+                form.division !== "LT MOTOR"
+                  ? "Disabled for selected division"
+                  : ""
+              }
+              title={
+                form.division !== "LT MOTOR"
+                  ? "Frame is disabled for this division"
+                  : ""
+              }
             />
           </div>
 
@@ -224,8 +234,16 @@ const ModelCreatePage = () => {
               max={5}
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.hp_rating ? "border-red-300" : "border-gray-300"} border-gray-300 focus:ring-2 focus:ring-blue-400 ${!(form.division === "FHP MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "FHP MOTOR"}
-              placeholder={form.division !== "FHP MOTOR" ? "Disabled for selected division" : ""}
-              title={form.division !== "FHP MOTOR" ? "HP Rating is disabled for this division" : ""}
+              placeholder={
+                form.division !== "FHP MOTOR"
+                  ? "Disabled for selected division"
+                  : ""
+              }
+              title={
+                form.division !== "FHP MOTOR"
+                  ? "HP Rating is disabled for this division"
+                  : ""
+              }
             />
           </div>
 
@@ -240,7 +258,11 @@ const ModelCreatePage = () => {
               onChange={handleChange}
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.rewinding_type ? "border-red-300" : "border-gray-300"} focus:ring-2 focus:ring-blue-400 ${!(form.division === "FHP MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "FHP MOTOR"}
-              title={form.division !== "FHP MOTOR" ? "Rewinding Type is disabled for this division" : ""}
+              title={
+                form.division !== "FHP MOTOR"
+                  ? "Rewinding Type is disabled for this division"
+                  : ""
+              }
             >
               <option value=""></option>
               <option value="Copper">Copper</option>
@@ -263,7 +285,6 @@ const ModelCreatePage = () => {
               disabled={submitting}
             />
           </div>
-
         </div>
 
         <div className="flex justify-center mt-6">

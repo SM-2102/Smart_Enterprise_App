@@ -38,7 +38,7 @@ const MenuCard = ({
             a.path === "/ShowAllUsers" ||
             a.path === "/FinalSettlementRetailRecord" ||
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
-            a.path === "/FinalSettlementOutOfWarrantyVendor" ||
+            a.path === "/FinalSettlementVendor" ||
             a.path === "/CreateASCName"
           ),
       );
@@ -52,7 +52,7 @@ const MenuCard = ({
             a.path === "/ShowAllUsers" ||
             a.path === "/FinalSettlementRetailRecord" ||
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
-            a.path === "/FinalSettlementOutOfWarrantyVendor" ||
+            a.path === "/FinalSettlementVendor" ||
             a.path === "/CreateASCName"
           ),
       );
@@ -69,8 +69,9 @@ const MenuCard = ({
   const shouldShowEnquiry = (cardTitle) => {
     const normalizedTitle = cardTitle?.toLowerCase().trim() || "";
     return (
-      !normalizedTitle.includes("customer") &&
-      !normalizedTitle.includes("challan")
+      !normalizedTitle.includes("master") &&
+      !normalizedTitle.includes("challan") &&
+      !normalizedTitle.includes("vendor")
     );
   };
 

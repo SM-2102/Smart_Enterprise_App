@@ -9,10 +9,6 @@ from auth.dependencies import AccessTokenBearer
 from db.db import get_session
 from exceptions import WarrantyNotFound
 from warranty.schemas import (
-    WarrantyCNFChallanCode,
-    WarrantyCNFChallanDetails,
-    WarrantyCNFCreate,
-    WarrantyCNFRequest,
     WarrantyCreate,
     WarrantyEnquiry,
     WarrantyPending,
@@ -171,89 +167,6 @@ async def print_srf(
             "Content-Disposition": f'attachment; filename="{data.srf_number}.pdf"'
         },
     )
-
-
-# """
-# Get the next available challan code
-# """
-
-
-# @warranty_router.get("/next_cnf_challan_code", status_code=status.HTTP_200_OK)
-# async def next_cnf_challan_code(
-#     session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
-# ):
-#     challan_number = await warranty_service.next_cnf_challan_code(session)
-#     return JSONResponse(content={"next_cnf_challan_code": challan_number})
-
-
-# """
-# Get the last created challan code.
-# """
-
-
-# @warranty_router.get("/last_cnf_challan_code", status_code=status.HTTP_200_OK)
-# async def last_cnf_challan_code(
-#     session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
-# ):
-#     last_challan_number = await warranty_service.last_cnf_challan_code(session)
-#     return JSONResponse(content={"last_cnf_challan_code": last_challan_number})
-
-
-# """
-# List CNF Challan Details
-# """
-
-
-# @warranty_router.post(
-#     "/list_cnf_challan_details",
-#     response_model=List[WarrantyCNFChallanDetails],
-#     status_code=status.HTTP_200_OK,
-# )
-# async def list_cnf_challan_details(
-#     data: WarrantyCNFRequest,
-#     session: AsyncSession = Depends(get_session),
-#     _=Depends(access_token_bearer),
-# ):
-#     cnf_list = await warranty_service.list_cnf_challan_details(session, data.division)
-#     return cnf_list
-
-
-# """
-# Update CNF records - List of Records
-# """
-
-
-# @warranty_router.patch("/create_cnf_challan", status_code=status.HTTP_202_ACCEPTED)
-# async def create_cnf_challan(
-#     list_retail: List[WarrantyCNFCreate],
-#     session: AsyncSession = Depends(get_session),
-#     _=Depends(access_token_bearer),
-# ):
-#     await warranty_service.create_cnf_challan(list_retail, session)
-#     return JSONResponse(content={"message": f"CNF Challan Records Updated"})
-
-
-# """
-# Print cnf challan by cnf number.
-# """
-
-
-# @warranty_router.post("/cnf_challan_print", status_code=status.HTTP_200_OK)
-# async def print_cnf_challan(
-#     data: WarrantyCNFChallanCode,
-#     session: AsyncSession = Depends(get_session),
-#     token=Depends(access_token_bearer),
-# ):
-#     cnf_pdf = await warranty_service.print_cnf_challan(
-#         data.challan_number, token, session
-#     )
-#     return StreamingResponse(
-#         cnf_pdf,
-#         media_type="application/pdf",
-#         headers={
-#             "Content-Disposition": f'attachment; filename="{data.challan_number}.pdf"'
-#         },
-#     )
 
 
 # """

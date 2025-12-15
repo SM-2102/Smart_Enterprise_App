@@ -14,7 +14,7 @@ from src.retail.models import Retail
 from src.challan.models_smart import ChallanSmart
 from src.challan.models_unique import ChallanUnique
 from src.warranty.models import Warranty
-# from src.out_of_warranty.models import OutOfWarranty
+from src.out_of_warranty.models import OutOfWarranty
 from src.warranty.models import Warranty
 from src.model.models import Model
 from src.rewinding_rate.models import RewindingRate

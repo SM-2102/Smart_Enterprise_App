@@ -129,18 +129,18 @@ const RetailDivisionDonutChart = ({ data }) => {
           }}
         />
         {total > 10 && !isHovering && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
-          {/* Rounded number */}
-          <span className="font-bold text-xl md:text-2xl text-blue-800 ml-1">
-            {Math.floor(total / 10) * 10}+
-          </span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
+            {/* Rounded number */}
+            <span className="font-bold text-xl md:text-2xl text-blue-800 ml-1">
+              {Math.floor(total / 10) * 10}+
+            </span>
 
-          {/* Subtext */}
-          <span className="text-sm md:text-base font-medium text-gray-600 tracking-wider">
-            Records
-          </span>
-        </div>
-      )}
+            {/* Subtext */}
+            <span className="text-sm md:text-base font-medium text-gray-600 tracking-wider">
+              Records
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

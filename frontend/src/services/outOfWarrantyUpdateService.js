@@ -2,7 +2,7 @@ import API_ENDPOINTS from "../config/api";
 import { authFetch } from "./authFetchService";
 
 /**
- * @param {string} srf_number 
+ * @param {string} srf_number
  * @param {object} outOfWarrantyData - Data to update (delivery_by, delivery_date, final_status, remark)
  * @returns {Promise<object>} Response data
  */

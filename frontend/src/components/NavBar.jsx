@@ -10,8 +10,6 @@ const submenuOrder = {
     "Create SRF Record",
     "Update SRF Record",
     "Print SRF Record",
-    "Create CNF Challan",
-    "Print CNF Challan",
     "Enquiry",
   ],
   out_of_warranty: [
@@ -30,12 +28,12 @@ const submenuOrder = {
     "Final Settlement",
     "Enquiry",
   ],
-  challan : [
+  challan: [
     "Create Smart Challan",
     "Print Smart Challan",
     "Create Unique Challan",
     "Print Unique Challan",
-  ]
+  ],
 };
 
 // Helper to sort actions by submenuOrder

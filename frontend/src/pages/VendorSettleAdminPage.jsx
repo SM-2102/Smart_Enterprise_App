@@ -283,30 +283,28 @@ const VendorSettleAdminPage = () => {
                         }}
                       >
                         {col.key === "service_charge"
-                          ? (row[col.key] !== null && row[col.key] !== undefined && row[col.key] !== "" ? row[col.key] : "-")
+                          ? row[col.key] !== null &&
+                            row[col.key] !== undefined &&
+                            row[col.key] !== ""
+                            ? row[col.key]
+                            : "-"
                           : col.key === "final_amount"
-                          ? (
-                          row[col.key] !== null &&
-                          row[col.key] !== undefined &&
-                          row[col.key] !== "" ? (
-                            `₹ ${(Number(row[col.key]) || 0).toLocaleString(
-                              undefined,
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              },
-                            )}`
-                          ) : (
-                            "-"
-                          )
-
-                        ) : row[col.key] !== null &&
-                          row[col.key] !== undefined &&
-                          row[col.key] !== "" ? (
-                          row[col.key]
-                        ) : (
-                          "-"
-                        )}
+                            ? row[col.key] !== null &&
+                              row[col.key] !== undefined &&
+                              row[col.key] !== ""
+                              ? `₹ ${(Number(row[col.key]) || 0).toLocaleString(
+                                  undefined,
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  },
+                                )}`
+                              : "-"
+                            : row[col.key] !== null &&
+                                row[col.key] !== undefined &&
+                                row[col.key] !== ""
+                              ? row[col.key]
+                              : "-"}
                       </TableCell>
                     ))}
                   </TableRow>

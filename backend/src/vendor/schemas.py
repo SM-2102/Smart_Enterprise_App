@@ -38,7 +38,7 @@ class VendorNotSettledRecord(BaseModel):
     vendor_paint_cost: Optional[float]
     vendor_stator_cost: Optional[float]
     vendor_leg_cost: Optional[float]
-    vendor_cost: float
+    vendor_cost: Optional[float]
     vendor_bill_number: Optional[str]
 
 

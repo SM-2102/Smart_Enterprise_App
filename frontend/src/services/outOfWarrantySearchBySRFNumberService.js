@@ -3,7 +3,7 @@ import { authFetch } from "./authFetchService";
 
 /**
  * @param {string} srf_number
- * @returns {Promise<object>} 
+ * @returns {Promise<object>}
  */
 async function searchOutOfWarrantyBySRFNumber(srf_number) {
   const response = await authFetch(

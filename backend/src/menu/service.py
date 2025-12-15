@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from sqlalchemy import case, func, select, union_all
+from sqlalchemy import case, func, select, union_all, literal
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from challan.models_smart import ChallanSmart
@@ -214,7 +214,7 @@ class MenuService:
             "srf_delivery": [{"srf_number":..., "srf_date":..., "delivery_date":...}, ...]
         }
         """
-        appl_divisions = ["SDA", "IWH", "SWH", "COOLER", "OTHERS", "LIGHT", "FANS", "PUMP"]
+        appl_divisions = ["SDA", "IWH", "SWH", "COOLER", "OTHERS", "LIGHT", "FANS", "PUMP", "ALTERNATOR", "HT MOTOR"]
 
         division_label = case(
             (Warranty.division.in_(appl_divisions), "OTHERS"),
@@ -293,7 +293,7 @@ class MenuService:
             "srf_repair_delivery": [{"srf_number":..., "srf_date":..., "repair_date":..., "delivery_date":...}, ...]
         }
         """
-        appl_divisions = ["IWH", "SWH", "SDA", "COOLER", "OTHERS", "LIGHT", "FANS"]
+        appl_divisions = ["SDA", "IWH", "SWH", "COOLER", "OTHERS", "LIGHT", "FANS", "ALTERNATOR", "HT MOTOR"]
 
         division_label = case(
             (OutOfWarranty.division.in_(appl_divisions), "OTHERS"),
@@ -358,65 +358,85 @@ class MenuService:
             ]
         }
     
-     # ---------------------------
+    # ---------------------------
     # VENDOR (grouped — status + total)
     # ---------------------------
+
     async def vendor_overview(self, session: AsyncSession):
         """
         Returns:
         {
             "status_list": [
-                {"division": "...", "vendor_settled": "...", "count": ...},
+                {
+                "division": "...",
+                "source": "WARRANTY" | "OUT_OF_WARRANTY",
+                "vendor_settled": "Y" | "N",
+                "count": int
+                },
                 ...
             ],
-            "total_vendors": <count of Warranty + OutOfWarranty where challan='Y'>
+            "total_vendors": int
         }
         """
 
-        # Count Warranty and OutOfWarranty rows where challan = 'Y'
-        warranty_count_stmt = select(func.count()).where(Warranty.challan == "Y")
-        outwarranty_count_stmt = select(func.count()).where(OutOfWarranty.challan == "Y")
-        warranty_count = (await session.execute(warranty_count_stmt)).scalar() or 0
-        outwarranty_count = (await session.execute(outwarranty_count_stmt)).scalar() or 0
+        # Total vendors (unchanged)
+        warranty_count = (
+            await session.execute(
+                select(func.count()).where(Warranty.challan == "Y")
+            )
+        ).scalar() or 0
+
+        outwarranty_count = (
+            await session.execute(
+                select(func.count()).where(OutOfWarranty.challan == "Y")
+            )
+        ).scalar() or 0
+
         total_vendors = warranty_count + outwarranty_count
 
-        # Group by division and vendor_settled for both tables, then union
-        warranty_status_stmt = (
-            select(Warranty.division, Warranty.vendor_settled, func.count())
-            .where (Warranty.challan == "Y")
+        # Warranty
+        warranty_stmt = (
+            select(
+                Warranty.division.label("division"),
+                literal("WARRANTY").label("source"),
+                Warranty.vendor_settled.label("vendor_settled"),
+                func.count().label("count"),
+            )
+            .where(Warranty.challan == "Y")
             .group_by(Warranty.division, Warranty.vendor_settled)
         )
-        outwarranty_status_stmt = (
-            select(OutOfWarranty.division, OutOfWarranty.vendor_settled, func.count())
-            .where (OutOfWarranty.challan == "Y")
+
+        # Out of Warranty
+        outwarranty_stmt = (
+            select(
+                OutOfWarranty.division.label("division"),
+                literal("OUT_OF_WARRANTY").label("source"),
+                OutOfWarranty.vendor_settled.label("vendor_settled"),
+                func.count().label("count"),
+            )
+            .where(OutOfWarranty.challan == "Y")
             .group_by(OutOfWarranty.division, OutOfWarranty.vendor_settled)
         )
-        union_stmt = warranty_status_stmt.union_all(outwarranty_status_stmt)
-        status_rows = (await session.execute(union_stmt)).all()
 
-        # Aggregate counts for same division/vendor_settled, with division mapping
-        from collections import defaultdict
-        agg = defaultdict(int)
-        def map_division(division):
-            if division == "LT MOTOR":
-                return "LT"
-            elif division == "HT MOTOR":
-                return "HT"
-            elif division == "FHP MOTOR":
-                return "FHP"
-            elif division == "ALTERNATOR":
-                return "ALT "
-            elif division in ("LIGHT", "SDA", "OTHERS", "COOLER", "IWH", "SWH"):
+        rows = (await session.execute(warranty_stmt.union_all(outwarranty_stmt))).all()
+
+        # Division mapping (same as before)
+        def map_division(d):
+            if d in ("LIGHT", "SDA", "OTHERS", "COOLER", "IWH", "SWH", "ALTERNATOR"):
                 return "OTHERS"
-            return division
-
-        for division, vendor_settled, count in status_rows:
-            mapped_div = map_division(division)
-            agg[(mapped_div, vendor_settled)] += count
+            return d
 
         status_list = [
-            {"division": division, "vendor_settled": vendor_settled, "count": count}
-            for (division, vendor_settled), count in agg.items()
+            {
+                "division": map_division(r.division),
+                "source": r.source,
+                "vendor_settled": r.vendor_settled,
+                "count": r.count,
+            }
+            for r in rows
         ]
 
-        return {"status_list": status_list, "total_vendors": total_vendors}
+        return {
+            "status_list": status_list,
+            "total_vendors": total_vendors,
+        }

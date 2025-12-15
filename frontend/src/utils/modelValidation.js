@@ -18,19 +18,19 @@ function validateModel(form) {
     errors_label.rewinding_charge = true;
   }
   if (form.division == "LT MOTOR") {
-    if(!form.frame) {
-        errors.push("Frame is required");
-        errors_label.frame = true;
+    if (!form.frame) {
+      errors.push("Frame is required");
+      errors_label.frame = true;
     }
   }
   if (form.division == "FHP MOTOR") {
-    if(!form.hp_rating) {
-        errors.push("HP Rating is required");
-        errors_label.hp_rating = true;
+    if (!form.hp_rating) {
+      errors.push("HP Rating is required");
+      errors_label.hp_rating = true;
     }
-    if(!form.rewinding_type) {
-        errors.push("Rewinding type is required");
-        errors_label.rewinding_type = true;
+    if (!form.rewinding_type) {
+      errors.push("Rewinding type is required");
+      errors_label.rewinding_type = true;
     }
   }
   return [errors, errors_label];

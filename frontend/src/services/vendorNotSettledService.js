@@ -7,15 +7,12 @@ import { authFetch } from "./authFetchService";
  * @returns {Promise<Array>} List of users
  */
 async function fetchVendorNotSettled() {
-  const response = await authFetch(
-    API_ENDPOINTS.VENDOR_NOT_SETTLED,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const response = await authFetch(API_ENDPOINTS.VENDOR_NOT_SETTLED, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+  });
   const data = await response.json();
   if (!response.ok) {
     throw {

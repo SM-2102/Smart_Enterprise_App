@@ -42,12 +42,12 @@ const Header = () => {
             )}
           </div>
           <div className="flex items-center justify-center w-18 h-18 ml-20">
-  <img
-    src={logo}
-    alt="Logo"
-    className="h-18 w-18 sm:h-18 sm:w-18 sm:mb-0"
-  />
-</div>
+            <img
+              src={logo}
+              alt="Logo"
+              className="h-18 w-18 sm:h-18 sm:w-18 sm:mb-0"
+            />
+          </div>
         </div>
         <div className="flex flex-col justify-center items-center sm:items-start text-center sm:text-left w-full">
           <span

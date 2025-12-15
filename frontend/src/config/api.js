@@ -52,11 +52,6 @@ const API_ENDPOINTS = {
   WARRANTY_LIST_DELIVERED_BY: `${BASE_API_URL}warranty/list_delivered_by`,
   WARRANTY_LAST_SRF_NUMBER: `${BASE_API_URL}warranty/last_srf_number`,
   WARRANTY_SRF_PRINT: `${BASE_API_URL}warranty/srf_print`,
-  WARRANTY_NEXT_CNF_CHALLAN_CODE: `${BASE_API_URL}warranty/next_cnf_challan_code`,
-  WARRANTY_LAST_CNF_CHALLAN_CODE: `${BASE_API_URL}warranty/last_cnf_challan_code`,
-  WARRANTY_LIST_CNF_CHALLAN: `${BASE_API_URL}warranty/list_cnf_challan_details`,
-  WARRANTY_CREATE_CNF_CHALLAN: `${BASE_API_URL}warranty/create_cnf_challan`,
-  WARRANTY_CNF_PRINT: `${BASE_API_URL}warranty/cnf_challan_print`,
   WARRANTY_ENQUIRY: `${BASE_API_URL}warranty/enquiry`, //append params
 
   SERVICE_CENTER_LIST_NAMES: `${BASE_API_URL}service_center/list_names`,
@@ -91,7 +86,6 @@ const API_ENDPOINTS = {
   VENDOR_UPDATE_UNSETTLED: `${BASE_API_URL}vendor/update_vendor_unsettled`,
   VENDOR_FINAL_SETTLED: `${BASE_API_URL}vendor/list_of_final_vendor_settlement`,
   VENDOR_UPDATE_FINAL_SETTLED: `${BASE_API_URL}vendor/update_final_vendor_settlement`,
-
 };
 
 export default API_ENDPOINTS;

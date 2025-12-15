@@ -18,8 +18,6 @@ import RetailSettleUserPage from "./pages/RetailSettleUserPage.jsx";
 import RetailPrintPage from "./pages/RetailPrintPage.jsx";
 import WarrantyCreatePage from "./pages/WarrantyCreatePage.jsx";
 import WarrantySRFPrintPage from "./pages/WarrantySRFPrintPage.jsx";
-import WarrantyCreateCNFPage from "./pages/WarrantyCNFCreatePage.jsx";
-import WarrantyCNFPrintPage from "./pages/WarrantyCNFPrintPage.jsx";
 import WarrantyUpdatePage from "./pages/WarrantyUpdatePage.jsx";
 import WarrantyEnquiryPage from "./pages/WarrantyEnquiryPage.jsx";
 import OutOfWarrantySRFPrintPage from "./pages/OutOfWarrantySRFPrintPage.jsx";
@@ -46,7 +44,7 @@ import ModelCreatePage from "./pages/ModelCreatePage.jsx";
 function AppRoutesWithNav() {
   return (
     <>
-    <Header />
+      <Header />
       <div className="pt-[5.5rem] pb-[1.5rem] min-h-screen bg-white">
         <Routes>
           <Route path="/" element={<LoginPage />} />
@@ -227,14 +225,6 @@ function AppRoutesWithNav() {
             }
           />*/}
           <Route
-            path="/CreateWarrantyCNFChallan"
-            element={
-              <PrivateRoute>
-                <WarrantyCreateCNFPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
             path="/PrintWarrantySRF"
             element={
               <PrivateRoute>
@@ -243,14 +233,6 @@ function AppRoutesWithNav() {
             }
           />
           {/*
-          <Route
-            path="/PrintWarrantyCNFChallan"
-            element={
-              <PrivateRoute>
-                <WarrantyCNFPrintPage />
-              </PrivateRoute>
-            }
-          />
           <Route
             path="/UpdateWarrantySRF"
             element={
@@ -347,7 +329,7 @@ function AppRoutesWithNav() {
                 <SettleVendorUserPage />
               </PrivateRoute>
             }
-          /> 
+          />
         </Routes>
       </div>
       <Footer />

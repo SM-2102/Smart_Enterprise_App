@@ -137,7 +137,7 @@ const MenuDashboardPageInner = () => {
                     </div>
                   </div>
                 ))}
-              
+
               {key === "warranty" &&
                 (loading ? (
                   <div className="w-full flex justify-center items-center">

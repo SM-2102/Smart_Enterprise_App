@@ -17,10 +17,7 @@ async function createVendorChallan(vendorData) {
   const data = await response.json();
   if (!response.ok) {
     throw {
-      message:
-        data.message ||
-        data.detail ||
-        "Failed to update vendor record",
+      message: data.message || data.detail || "Failed to update vendor record",
       resolution: data.resolution || "",
     };
   }

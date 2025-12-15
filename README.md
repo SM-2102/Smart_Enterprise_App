@@ -14,7 +14,7 @@
 - [x] **ChangePasswordPage** – Change password
 
 ### Dashboard Module
-- [ ] **MenuDashboardPage** – Main dashboard for menu navigation
+- [x] **MenuDashboardPage** – Main dashboard for menu navigation
 - [x] **PageNotFound** – 404 error page
 - [x] **PageNotAvailable** – Maintenance/feature unavailable page
 
@@ -117,6 +117,7 @@
 
 ### Model Module
 - [x] **/model/get_rewinding_rate_for_update**
+- [ ] **/model/get_rewinding_rate_for_model**
 
 ### Warranty Module
 - [x] **warranty/next_srf_number**
@@ -127,11 +128,6 @@
 - [x] **warranty/list_delivered_by**
 - [x] **warranty/last_srf_number**
 - [ ] **warranty/srf_print**
-- [ ] **warranty/next_cnf_challan_code**
-- [ ] **warranty/last_cnf_challan_code**
-- [ ] **warranty/list_cnf_challan**
-- [ ] **warranty/create_cnf_challan**
-- [ ] **warranty/cnf_challan_print**
 - [ ] **warranty/enquiry{params}**
 
 ### OutOfWarranty Module

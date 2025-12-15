@@ -44,8 +44,13 @@ const EnquiryTable = ({
   };
 
   const sumValue = computeSum(sum_column);
-  const formattedSum = typeof sumValue === "number" ? sumValue.toFixed(2) : "0.00";
-  const sumLabel = (columns && columns.find((c) => c.key === sum_column) && columns.find((c) => c.key === sum_column).label) || sum_column;
+  const formattedSum =
+    typeof sumValue === "number" ? sumValue.toFixed(2) : "0.00";
+  const sumLabel =
+    (columns &&
+      columns.find((c) => c.key === sum_column) &&
+      columns.find((c) => c.key === sum_column).label) ||
+    sum_column;
 
   const handlePrint = () => {
     const printContents = tableRef.current.innerHTML;
@@ -136,27 +141,27 @@ const EnquiryTable = ({
           </Typography>
         </Box>
         {sum_column && (
-        <Box display="flex" alignItems="center">
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  color: "#1976d2",
-                  fontWeight: 700,
-                  fontSize: 17,
-                  background: "#e3eafc",
-                  px: 2,
-                  py: 0.5,
-                  borderRadius: 2,
-                  boxShadow: "0 1px 4px rgba(25,118,210,0.07)",
-                  display: "inline-block",
-                }}
-              >
-                <span style={{ letterSpacing: 0.5 }}>Total Amount:</span>{" "}
-                <span style={{ color: "#0d47a1", fontWeight: 600 }}>
-                  ₹ {formattedSum}
-                </span>
-              </Typography>
-            </Box>
+          <Box display="flex" alignItems="center">
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: "#1976d2",
+                fontWeight: 700,
+                fontSize: 17,
+                background: "#e3eafc",
+                px: 2,
+                py: 0.5,
+                borderRadius: 2,
+                boxShadow: "0 1px 4px rgba(25,118,210,0.07)",
+                display: "inline-block",
+              }}
+            >
+              <span style={{ letterSpacing: 0.5 }}>Total Amount:</span>{" "}
+              <span style={{ color: "#0d47a1", fontWeight: 600 }}>
+                ₹ {formattedSum}
+              </span>
+            </Typography>
+          </Box>
         )}
       </Box>
       <div ref={tableRef}>
