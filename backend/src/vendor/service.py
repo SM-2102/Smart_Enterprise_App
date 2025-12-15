@@ -332,7 +332,7 @@ class VendorService:
             )
             .where(
                 (Warranty.final_status == 'Y')
-                & (OutOfWarranty.vendor_date2.isnot(None))
+                & (Warranty.vendor_date2.isnot(None))
                 & (Warranty.vendor_settlement_date.is_(None))
                 & (Master.code == Warranty.code)
             )
