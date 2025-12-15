@@ -16,7 +16,7 @@ from challan.routes_smart import challan_smart_router
 from challan.routes_unique import challan_unique_router
 from model.routes import model_router
 from vendor.routes import vendor_router
-# from rewinding_rate.routes import rewinding_rate_router
+from rewinding_rate.routes import rewinding_rate_router
 
 version = "v1"
 
@@ -77,6 +77,9 @@ app.include_router(
 )
 app.include_router(
     model_router, prefix="/model", tags=["Model"]
+)
+app.include_router(
+    rewinding_rate_router, prefix="/rewinding_rate", tags=["Rewinding Rate"]
 )
 # app.include_router(
 #     service_charge_router, prefix="/service_charge", tags=["Service Charge"]

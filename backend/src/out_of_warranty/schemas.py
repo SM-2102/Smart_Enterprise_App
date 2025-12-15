@@ -143,7 +143,7 @@ class OutOfWarrantyEnquiry(BaseModel):
     model: str
     estimate_date: Optional[str]
     repair_date: Optional[str]
-    vendor_date1: Optional[str]
+    challan_date: Optional[str]
     delivery_date: Optional[str]
     final_amount: Optional[float]
     contact1: str

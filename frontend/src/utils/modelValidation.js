@@ -28,9 +28,9 @@ function validateModel(form) {
       errors.push("HP Rating is required");
       errors_label.hp_rating = true;
     }
-    if (!form.rewinding_type) {
+    if (!form.winding_type) {
       errors.push("Rewinding type is required");
-      errors_label.rewinding_type = true;
+      errors_label.winding_type = true;
     }
   }
   return [errors, errors_label];

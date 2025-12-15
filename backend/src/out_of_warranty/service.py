@@ -230,289 +230,287 @@ class OutOfWarrantyService:
         last_srf_number = last_srf_number.split("/")[0] if last_srf_number else None
         return last_srf_number
 
-    # async def print_srf(
-    #     self, srf_number: OutOfWarrantySRFNumber, token: dict, session: AsyncSession
-    # ) -> io.BytesIO:
-    #     # Query out_of_warranty and master data for SRF
-    #     if len(srf_number) != 6:
-    #         srf_number = "S" + srf_number.zfill(5)
-    #     statement = (
-    #         select(
-    #             OutOfWarranty.srf_number,
-    #             OutOfWarranty.srf_date,
-    #             OutOfWarranty.division,
-    #             OutOfWarranty.model,
-    #             OutOfWarranty.serial_number,
-    #             OutOfWarranty.remark,
-    #             OutOfWarranty.service_charge,
-    #             OutOfWarranty.code,
-    #             Master.name,
-    #             Master.address,
-    #             Master.contact1,
-    #             Master.gst,
-    #             Master.city,
-    #             Master.pin,
-    #             OutOfWarranty.problem,
-    #         )
-    #         .join(Master, OutOfWarranty.code == Master.code)
-    #         .where(OutOfWarranty.srf_number.like(f"{srf_number}%"))
-    #     )
-    #     result = await session.execute(statement)
-    #     rows = result.fetchall()
+    async def print_srf(
+        self, srf_number: OutOfWarrantySRFNumber, token: dict, session: AsyncSession
+    ) -> io.BytesIO:
+        # Query out_of_warranty and master data for SRF
+        if len(srf_number) != 6:
+            srf_number = "S" + srf_number.zfill(5)
+        statement = (
+            select(
+                OutOfWarranty.srf_number,
+                OutOfWarranty.srf_date,
+                OutOfWarranty.division,
+                OutOfWarranty.model,
+                OutOfWarranty.serial_number,
+                OutOfWarranty.remark,
+                OutOfWarranty.service_charge,
+                OutOfWarranty.code,
+                Master.name,
+                Master.address,
+                Master.contact1,
+                Master.gst,
+                Master.city,
+                Master.pin,
+                OutOfWarranty.problem,
+            )
+            .join(Master, OutOfWarranty.code == Master.code)
+            .where(OutOfWarranty.srf_number.like(f"{srf_number}%"))
+        )
+        result = await session.execute(statement)
+        rows = result.fetchall()
 
-    #     if not rows:
-    #         raise OutOfWarrantyNotFound()
+        if not rows:
+            raise OutOfWarrantyNotFound()
 
-    #     srf_no = srf_number[:6]
-    #     srf_date = rows[0][1].strftime("%d-%m-%Y") if rows[0][1] else ""
-    #     code = rows[0][7]
-    #     name = rows[0][8]
-    #     pin = ", " + rows[0][13] if rows[0][13] else ""
-    #     address = rows[0][9] + ", " + rows[0][12] + pin
-    #     contact1 = rows[0][10]
-    #     gst = rows[0][11] if rows[0][11] else ""
-    #     received_by = token["user"]["username"]
+        srf_no = srf_number[:6]
+        srf_date = rows[0][1].strftime("%d-%m-%Y") if rows[0][1] else ""
+        code = rows[0][7]
+        name = rows[0][8]
+        pin = ", " + rows[0][13] if rows[0][13] else ""
+        address = rows[0][9] + ", " + rows[0][12] + pin
+        contact1 = rows[0][10]
+        gst = rows[0][11] if rows[0][11] else ""
+        received_by = token["user"]["username"]
 
-    #     def generate_overlay(
-    #         rows, srf_no, srf_date, code, name, address, contact1, gst, received_by
-    #     ):
-    #         packet = io.BytesIO()
-    #         can = canvas.Canvas(packet, pagesize=A4)
-    #         width, height = A4
+        def generate_overlay(
+            rows, srf_no, srf_date, code, name, address, contact1, gst, received_by
+        ):
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=A4)
+            width, height = A4
 
-    #         can.setFont("Helvetica-Bold", 10)
-    #         can.drawString(110, 736, srf_no)
-    #         can.drawString(480, 736, srf_date)
-    #         can.drawString(300, 736, code)
-    #         can.drawString(190, 680, name)
-    #         can.drawString(190, 655, address)
-    #         can.drawString(190, 630, contact1)
-    #         can.drawString(475, 630, gst)
-    #         can.drawString(410, 140, received_by)
+            can.setFont("Helvetica-Bold", 10)
+            can.drawString(110, 736, srf_no)
+            can.drawString(480, 736, srf_date)
+            can.drawString(300, 736, code)
+            can.drawString(190, 680, name)
+            can.drawString(190, 655, address)
+            can.drawString(190, 630, contact1)
+            can.drawString(475, 630, gst)
+            can.drawString(410, 140, received_by)
 
-    #         start_y = 556
-    #         y = start_y
-    #         line_spacing = 8
-    #         min_row_height = 16
-    #         row_padding = 7
-    #         columns = [
-    #             {"x": 10, "width": 20},
-    #             {"x": 40, "width": 50},
-    #             {"x": 105, "width": 95},
-    #             {"x": 210, "width": 75},
-    #             {"x": 290, "width": 110},
-    #             {"x": 405, "width": 110},
-    #             {"x": 520, "width": 60},
-    #         ]
+            start_y = 556
+            y = start_y
+            line_spacing = 8
+            min_row_height = 16
+            row_padding = 7
+            columns = [
+                {"x": 10, "width": 20},
+                {"x": 40, "width": 50},
+                {"x": 105, "width": 95},
+                {"x": 210, "width": 75},
+                {"x": 290, "width": 110},
+                {"x": 405, "width": 110},
+                {"x": 520, "width": 60},
+            ]
 
-    #         can.setFont("Helvetica", 9)
+            can.setFont("Helvetica", 9)
 
-    #         for idx, row in enumerate(rows, 1):
-    #             division = row[2] or ""
-    #             model = row[3] or ""
-    #             slno = row[4] or ""
-    #             remark = row[5] or ""
-    #             service_charge_raw = row[6]
-    #             service_charge = f"{service_charge_raw:.2f}"
-    #             problem = row[14] or ""
+            for idx, row in enumerate(rows, 1):
+                division = row[2] or ""
+                model = row[3] or ""
+                slno = row[4] or ""
+                remark = row[5] or ""
+                service_charge_raw = row[6]
+                service_charge = f"{service_charge_raw:.2f}"
+                problem = row[14] or ""
 
-    #             row_data = [
-    #                 str(idx),
-    #                 division,
-    #                 model,
-    #                 str(slno),
-    #                 problem,
-    #                 remark,
-    #                 str(service_charge),
-    #             ]
+                row_data = [
+                    str(idx),
+                    division,
+                    model,
+                    str(slno),
+                    problem,
+                    remark,
+                    str(service_charge),
+                ]
 
-    #             row_lines = []
-    #             for col, text in zip(columns, row_data):
-    #                 words = text.split()
-    #                 lines = []
-    #                 line = ""
-    #                 for word in words:
-    #                     test_line = line + (" " if line else "") + word
-    #                     if stringWidth(test_line, "Helvetica", 9) <= col["width"]:
-    #                         line = test_line
-    #                     else:
-    #                         lines.append(line)
-    #                         line = word
-    #                 if line:
-    #                     lines.append(line)
-    #                 row_lines.append(lines)
+                row_lines = []
+                for col, text in zip(columns, row_data):
+                    words = text.split()
+                    lines = []
+                    line = ""
+                    for word in words:
+                        test_line = line + (" " if line else "") + word
+                        if stringWidth(test_line, "Helvetica", 9) <= col["width"]:
+                            line = test_line
+                        else:
+                            lines.append(line)
+                            line = word
+                    if line:
+                        lines.append(line)
+                    row_lines.append(lines)
 
-    #             max_lines = max(len(lines) for lines in row_lines)
-    #             row_height = max(max_lines * line_spacing, min_row_height)
+                max_lines = max(len(lines) for lines in row_lines)
+                row_height = max(max_lines * line_spacing, min_row_height)
 
-    #             if y - row_height < 100:
-    #                 can.showPage()
-    #                 can.setFont("Helvetica", 9)
-    #                 y = height - 50
+                if y - row_height < 100:
+                    can.showPage()
+                    can.setFont("Helvetica", 9)
+                    y = height - 50
 
-    #             for col, lines in zip(columns, row_lines):
-    #                 total_text_height = len(lines) * line_spacing
-    #                 vertical_offset = (row_height - total_text_height) / 2
+                for col, lines in zip(columns, row_lines):
+                    total_text_height = len(lines) * line_spacing
+                    vertical_offset = (row_height - total_text_height) / 2
 
-    #                 for i, ln in enumerate(lines):
-    #                     text_width = stringWidth(ln, "Helvetica", 9)
-    #                     center_x = col["x"] + col["width"] / 2 - text_width / 2
-    #                     y_position = y - vertical_offset - (i * line_spacing)
-    #                     can.drawString(center_x, y_position, ln)
+                    for i, ln in enumerate(lines):
+                        text_width = stringWidth(ln, "Helvetica", 9)
+                        center_x = col["x"] + col["width"] / 2 - text_width / 2
+                        y_position = y - vertical_offset - (i * line_spacing)
+                        can.drawString(center_x, y_position, ln)
 
-    #             y -= row_height + row_padding
+                y -= row_height + row_padding
 
-    #         can.save()
-    #         packet.seek(0)
-    #         return PdfReader(packet)
+            can.save()
+            packet.seek(0)
+            return PdfReader(packet)
 
-    #     # Create overlays
-    #     overlay_customer = generate_overlay(
-    #         rows, srf_no, srf_date, code, name, address, contact1, gst, received_by
-    #     )
-    #     overlay_asc = generate_overlay(
-    #         rows, srf_no, srf_date, code, name, address, contact1, gst, received_by
-    #     )
+        # Create overlays
+        overlay_customer = generate_overlay(
+            rows, srf_no, srf_date, code, name, address, contact1, gst, received_by
+        )
+        overlay_asc = generate_overlay(
+            rows, srf_no, srf_date, code, name, address, contact1, gst, received_by
+        )
 
-    #     # Path to the static PDF template (use absolute path for portability, with path injection protection)
-    #     base_dir = os.path.dirname(os.path.abspath(__file__))
-    #     static_dir = os.path.normpath(os.path.join(base_dir, "..", "static"))
-    #     template_path = safe_join(static_dir, "out_of_warranty_receipt.pdf")
+        # Path to the static PDF template (use absolute path for portability, with path injection protection)
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        static_dir = os.path.normpath(os.path.join(base_dir, "..", "static"))
+        template_path = safe_join(static_dir, "out_of_warranty_srf.pdf")
 
-    #     # Read the template PDF
-    #     try:
-    #         with open(template_path, "rb") as f:
-    #             template_bytes = f.read()
-    #     except FileNotFoundError:
-    #         raise FileNotFoundError(f"Template PDF not found at {template_path}")
-    #     template_buffer = io.BytesIO(template_bytes)
-    #     template_pdf = PdfReader(template_buffer)
+        # Read the template PDF
+        try:
+            with open(template_path, "rb") as f:
+                template_bytes = f.read()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Template PDF not found at {template_path}")
+        template_buffer = io.BytesIO(template_bytes)
+        template_pdf = PdfReader(template_buffer)
 
-    #     # Merge overlays
-    #     writer = PdfWriter()
-    #     page1 = template_pdf.pages[0]
-    #     page1.merge_page(overlay_customer.pages[0])
-    #     writer.add_page(page1)
+        # Merge overlays
+        writer = PdfWriter()
+        page1 = template_pdf.pages[0]
+        page1.merge_page(overlay_customer.pages[0])
+        writer.add_page(page1)
 
-    #     if len(template_pdf.pages) > 1:
-    #         page2 = template_pdf.pages[1]
-    #         page2.merge_page(overlay_asc.pages[0])
-    #         writer.add_page(page2)
+        if len(template_pdf.pages) > 1:
+            page2 = template_pdf.pages[1]
+            page2.merge_page(overlay_asc.pages[0])
+            writer.add_page(page2)
 
-    #     output_stream = io.BytesIO()
-    #     writer.write(output_stream)
-    #     output_stream.seek(0)
-    #     return output_stream
+        output_stream = io.BytesIO()
+        writer.write(output_stream)
+        output_stream.seek(0)
+        return output_stream
 
 
-    # async def enquiry_out_of_warranty(
-    #     self,
-    #     session: AsyncSession,
-    #     final_status: Optional[str] = None,
-    #     name: Optional[str] = None,
-    #     division: Optional[str] = None,
-    #     from_srf_date: Optional[date] = None,
-    #     to_srf_date: Optional[date] = None,
-    #     estimated: Optional[str] = None,
-    #     final_settled: Optional[str] = None,
-    #     challaned: Optional[str] = None,
-    #     vendor_settled: Optional[str] = None,
-    #     delivered: Optional[str] = None,
-    #     repaired: Optional[str] = None,
-    # ):
+    async def enquiry_out_of_warranty(
+        self,
+        session: AsyncSession,
+        final_status: Optional[str] = None,
+        name: Optional[str] = None,
+        division: Optional[str] = None,
+        from_srf_date: Optional[date] = None,
+        to_srf_date: Optional[date] = None,
+        estimated: Optional[str] = None,
+        final_settled: Optional[str] = None,
+        challaned: Optional[str] = None,
+        vendor_settled: Optional[str] = None,
+        delivered: Optional[str] = None,
+        repaired: Optional[str] = None,
+    ):
 
-    #     statement = select(OutOfWarranty, Master).join(
-    #         Master, OutOfWarranty.code == Master.code
-    #     )
+        statement = select(OutOfWarranty, Master).join(
+            Master, OutOfWarranty.code == Master.code
+        )
 
-    #     if final_status:
-    #         statement = statement.where(OutOfWarranty.final_status == final_status)
+        if final_status:
+            statement = statement.where(OutOfWarranty.final_status == final_status)
 
-    #     if name:
-    #         statement = statement.where(Master.name.ilike(f"%{name}%"))
+        if name:
+            statement = statement.where(Master.name.ilike(f"%{name}%"))
 
-    #     if division:
-    #         statement = statement.where(OutOfWarranty.division == division)
+        if division:
+            statement = statement.where(OutOfWarranty.division == division)
 
-    #     if from_srf_date:
-    #         statement = statement.where(OutOfWarranty.srf_date >= from_srf_date)
+        if from_srf_date:
+            statement = statement.where(OutOfWarranty.srf_date >= from_srf_date)
 
-    #     if to_srf_date:
-    #         statement = statement.where(OutOfWarranty.srf_date <= to_srf_date)
+        if to_srf_date:
+            statement = statement.where(OutOfWarranty.srf_date <= to_srf_date)
 
-    #     if final_settled:
-    #         statement = statement.where(OutOfWarranty.final_settled == final_settled)
+        if final_settled:
+            statement = statement.where(OutOfWarranty.final_settled == final_settled)
 
-    #     if vendor_settled:
-    #         statement = statement.where(OutOfWarranty.vendor_settled == vendor_settled)
+        if vendor_settled:
+            statement = statement.where(OutOfWarranty.vendor_settled == vendor_settled)
 
-    #     from sqlalchemy import or_
+        if delivered:
+            if delivered == "Y":
+                statement = statement.where(OutOfWarranty.delivery_date.isnot(None))
+            else:
+                statement = statement.where(OutOfWarranty.delivery_date.is_(None))
 
-    #     if delivered:
-    #         if delivered == "Y":
-    #             statement = statement.where(OutOfWarranty.delivery_date.isnot(None))
-    #         else:
-    #             statement = statement.where(OutOfWarranty.delivery_date.is_(None))
+        if estimated:
+            if estimated == "Y":
+                statement = statement.where(OutOfWarranty.estimate_date.isnot(None))
+            else:
+                statement = statement.where(OutOfWarranty.estimate_date.is_(None))
 
-    #     if estimated:
-    #         if estimated == "Y":
-    #             statement = statement.where(OutOfWarranty.estimate_date.isnot(None))
-    #         else:
-    #             statement = statement.where(OutOfWarranty.estimate_date.is_(None))
+        if repaired:
+            if repaired == "Y":
+                statement = statement.where(OutOfWarranty.repair_date.isnot(None))
+            else:
+                statement = statement.where(OutOfWarranty.repair_date.is_(None))
 
-    #     if repaired:
-    #         if repaired == "Y":
-    #             statement = statement.where(OutOfWarranty.repair_date.isnot(None))
-    #         else:
-    #             statement = statement.where(OutOfWarranty.repair_date.is_(None))
+        if challaned:
+            if challaned == "Y":
+                statement = statement.where(OutOfWarranty.challan_date.isnot(None))
+            else:
+                statement = statement.where(OutOfWarranty.challan_date.is_(None))
 
-    #     if challaned:
-    #         if challaned == "Y":
-    #             statement = statement.where(OutOfWarranty.vendor_date1.isnot(None))
-    #         else:
-    #             statement = statement.where(OutOfWarranty.vendor_date1.is_(None))
+        statement = statement.order_by(OutOfWarranty.srf_number)
 
-    #     statement = statement.order_by(OutOfWarranty.srf_number)
+        result = await session.execute(statement)
+        rows = result.all()
 
-    #     result = await session.execute(statement)
-    #     rows = result.all()
-
-    #     return [
-    #         OutOfWarrantyEnquiry(
-    #             srf_number=row.OutOfWarranty.srf_number,
-    #             srf_date=format_date_ddmmyyyy(row.OutOfWarranty.srf_date),
-    #             name=row.Master.name,
-    #             model=row.OutOfWarranty.model,
-    #             estimate_date=(
-    #                 format_date_ddmmyyyy(row.OutOfWarranty.estimate_date)
-    #                 if row.OutOfWarranty.estimate_date
-    #                 else ""
-    #             ),
-    #             repair_date=(
-    #                 format_date_ddmmyyyy(row.OutOfWarranty.repair_date)
-    #                 if row.OutOfWarranty.repair_date
-    #                 else ""
-    #             ),
-    #             vendor_date1=(
-    #                 format_date_ddmmyyyy(row.OutOfWarranty.vendor_date1)
-    #                 if row.OutOfWarranty.vendor_date1
-    #                 else ""
-    #             ),
-    #             delivery_date=(
-    #                 format_date_ddmmyyyy(row.OutOfWarranty.delivery_date)
-    #                 if row.OutOfWarranty.delivery_date
-    #                 else ""
-    #             ),
-    #             final_amount=(
-    #                 row.OutOfWarranty.final_amount
-    #                 if row.OutOfWarranty.final_amount
-    #                 else 0
-    #             ),
-    #             contact1=row.Master.contact1,
-    #             contact2=row.Master.contact2,
-    #         )
-    #         for row in rows
-    #     ]
+        return [
+            OutOfWarrantyEnquiry(
+                srf_number=row.OutOfWarranty.srf_number,
+                srf_date=format_date_ddmmyyyy(row.OutOfWarranty.srf_date),
+                name=row.Master.name,
+                model=row.OutOfWarranty.model,
+                estimate_date=(
+                    format_date_ddmmyyyy(row.OutOfWarranty.estimate_date)
+                    if row.OutOfWarranty.estimate_date
+                    else ""
+                ),
+                repair_date=(
+                    format_date_ddmmyyyy(row.OutOfWarranty.repair_date)
+                    if row.OutOfWarranty.repair_date
+                    else ""
+                ),
+                challan_date=(
+                    format_date_ddmmyyyy(row.OutOfWarranty.challan_date)
+                    if row.OutOfWarranty.challan_date
+                    else ""
+                ),
+                delivery_date=(
+                    format_date_ddmmyyyy(row.OutOfWarranty.delivery_date)
+                    if row.OutOfWarranty.delivery_date
+                    else ""
+                ),
+                final_amount=(
+                    row.OutOfWarranty.final_amount
+                    if row.OutOfWarranty.final_amount
+                    else 0
+                ),
+                contact1=row.Master.contact1,
+                contact2=row.Master.contact2,
+            )
+            for row in rows
+        ]
 
     # async def list_received_by(self, session: AsyncSession):
     #     statement = (
@@ -524,165 +522,85 @@ class OutOfWarrantyService:
     #     names = result.scalars().all()
     #     return names
 
-    # async def list_vendor_not_settled(self, session: AsyncSession):
-    #     statement = (
-    #         select(OutOfWarranty)
-    #         .where(
-    #             OutOfWarranty.vendor_date2.isnot(None)
-    #             & (OutOfWarranty.vendor_settlement_date.is_(None))
-    #         )
-    #         .order_by(OutOfWarranty.srf_number)
-    #     )
-    #     result = await session.execute(statement)
-    #     rows = result.all()
-    #     return [
-    #         OutOfWarrantyVendorNotSettledRecord(
-    #             srf_number=row.OutOfWarranty.srf_number,
-    #             division=row.OutOfWarranty.division,
-    #             model=row.OutOfWarranty.model,
-    #             challan_number=row.OutOfWarranty.challan_number,
-    #             amount=(row.OutOfWarranty.vendor_cost1 or 0)
-    #             + (row.OutOfWarranty.vendor_cost2 or 0),
-    #             vendor_bill_number=row.OutOfWarranty.vendor_bill_number,
-    #             received_by=row.OutOfWarranty.received_by,
-    #         )
-    #         for row in rows
-    #     ]
 
-    # async def update_vendor_unsettled(
-    #     self, list_vendor: List[UpdateVendorUnsettled], session: AsyncSession
-    # ):
-    #     for vendor in list_vendor:
-    #         statement = select(OutOfWarranty).where(
-    #             OutOfWarranty.srf_number == vendor.srf_number
-    #         )
-    #         result = await session.execute(statement)
-    #         existing_vendor = result.scalar_one_or_none()
-    #         if existing_vendor:
-    #             existing_vendor.vendor_settlement_date = vendor.vendor_settlement_date
-    #             existing_vendor.vendor_bill_number = vendor.vendor_bill_number
-    #     await session.commit()
+    async def list_srf_not_settled(self, session: AsyncSession):
+        statement = (
+            select(OutOfWarranty, Master)
+            .join(Master, OutOfWarranty.code == Master.code)
+            .where(
+                OutOfWarranty.settlement_date.is_(None)
+                & (OutOfWarranty.final_status == "Y")
+            )
+            .order_by(OutOfWarranty.srf_number)
+        )
+        result = await session.execute(statement)
+        rows = result.all()
+        return [
+            OutOfWarrantySRFSettleRecord(
+                srf_number=row.OutOfWarranty.srf_number,
+                name=row.Master.name,
+                model=row.OutOfWarranty.model,
+                delivery_date=row.OutOfWarranty.delivery_date,
+                final_amount=row.OutOfWarranty.final_amount,
+                received_by=row.OutOfWarranty.received_by,
+                pc_number=row.OutOfWarranty.pc_number,
+                invoice_number=row.OutOfWarranty.invoice_number,
+                service_charge=row.OutOfWarranty.service_charge,
+                waive_details=row.OutOfWarranty.waive_details,
+            )
+            for row in rows
+        ]
 
-    # async def list_final_vendor_settlement(self, session: AsyncSession):
-    #     statement = (
-    #         select(OutOfWarranty)
-    #         .where(
-    #             (OutOfWarranty.vendor_settlement_date.isnot(None))
-    #             & (OutOfWarranty.vendor_settled == "N")
-    #         )
-    #         .order_by(OutOfWarranty.srf_number)
-    #     )
-    #     result = await session.execute(statement)
-    #     rows = result.all()
-    #     return [
-    #         OutOfWarrantyVendorFinalSettlementRecord(
-    #             srf_number=row.OutOfWarranty.srf_number,
-    #             division=row.OutOfWarranty.division,
-    #             model=row.OutOfWarranty.model,
-    #             challan_number=row.OutOfWarranty.challan_number,
-    #             vendor_cost1=row.OutOfWarranty.vendor_cost1 or 0,
-    #             vendor_cost2=row.OutOfWarranty.vendor_cost2 or 0,
-    #             vendor_bill_number=row.OutOfWarranty.vendor_bill_number,
-    #             received_by=row.OutOfWarranty.received_by,
-    #             amount=(row.OutOfWarranty.vendor_cost1 or 0)
-    #             + (row.OutOfWarranty.vendor_cost2 or 0),
-    #         )
-    #         for row in rows
-    #     ]
+    async def update_srf_unsettled(
+        self, list_srf: List[UpdateSRFUnsettled], session: AsyncSession
+    ):
+        for srf in list_srf:
+            statement = select(OutOfWarranty).where(
+                OutOfWarranty.srf_number == srf.srf_number
+            )
+            result = await session.execute(statement)
+            existing_srf = result.scalar_one_or_none()
+            if existing_srf:
+                existing_srf.settlement_date = srf.settlement_date
+        await session.commit()
 
-    # async def update_final_vendor_settlement(
-    #     self, list_vendor: List[UpdateVendorFinalSettlement], session: AsyncSession
-    # ):
-    #     for vendor in list_vendor:
-    #         statement = select(OutOfWarranty).where(
-    #             OutOfWarranty.srf_number == vendor.srf_number
-    #         )
-    #         result = await session.execute(statement)
-    #         existing_vendor = result.scalar_one_or_none()
-    #         if existing_vendor:
-    #             existing_vendor.vendor_cost1 = vendor.vendor_cost1
-    #             existing_vendor.vendor_cost2 = vendor.vendor_cost2
-    #             existing_vendor.vendor_settled = vendor.vendor_settled
-    #     await session.commit()
+    async def list_final_srf_settlement(self, session: AsyncSession):
+        statement = (
+            select(OutOfWarranty, Master)
+            .join(Master, OutOfWarranty.code == Master.code)
+            .where(
+                OutOfWarranty.settlement_date.isnot(None)
+                & (OutOfWarranty.final_settled == "N")
+            )
+            .order_by(OutOfWarranty.srf_number)
+        )
+        result = await session.execute(statement)
+        rows = result.all()
+        return [
+            OutOfWarrantySRFSettleRecord(
+                srf_number=row.OutOfWarranty.srf_number,
+                name=row.Master.name,
+                model=row.OutOfWarranty.model,
+                delivery_date=row.OutOfWarranty.delivery_date,
+                final_amount=row.OutOfWarranty.final_amount,
+                received_by=row.OutOfWarranty.received_by,
+                pc_number=row.OutOfWarranty.pc_number,
+                invoice_number=row.OutOfWarranty.invoice_number,
+                service_charge=row.OutOfWarranty.service_charge,
+                waive_details=row.OutOfWarranty.waive_details,
+            )
+            for row in rows
+        ]
 
-    # async def list_srf_not_settled(self, session: AsyncSession):
-    #     statement = (
-    #         select(OutOfWarranty, Master)
-    #         .join(Master, OutOfWarranty.code == Master.code)
-    #         .where(
-    #             OutOfWarranty.settlement_date.is_(None)
-    #             & (OutOfWarranty.final_status == "Y")
-    #         )
-    #         .order_by(OutOfWarranty.srf_number)
-    #     )
-    #     result = await session.execute(statement)
-    #     rows = result.all()
-    #     return [
-    #         OutOfWarrantySRFSettleRecord(
-    #             srf_number=row.OutOfWarranty.srf_number,
-    #             name=row.Master.name,
-    #             model=row.OutOfWarranty.model,
-    #             delivery_date=row.OutOfWarranty.delivery_date,
-    #             final_amount=row.OutOfWarranty.final_amount,
-    #             received_by=row.OutOfWarranty.received_by,
-    #             pc_number=row.OutOfWarranty.pc_number,
-    #             invoice_number=row.OutOfWarranty.invoice_number,
-    #             service_charge=row.OutOfWarranty.service_charge,
-    #             waive_details=row.OutOfWarranty.waive_details,
-    #         )
-    #         for row in rows
-    #     ]
-
-    # async def update_srf_unsettled(
-    #     self, list_srf: List[UpdateSRFUnsettled], session: AsyncSession
-    # ):
-    #     for srf in list_srf:
-    #         statement = select(OutOfWarranty).where(
-    #             OutOfWarranty.srf_number == srf.srf_number
-    #         )
-    #         result = await session.execute(statement)
-    #         existing_srf = result.scalar_one_or_none()
-    #         if existing_srf:
-    #             existing_srf.settlement_date = srf.settlement_date
-    #     await session.commit()
-
-    # async def list_final_srf_settlement(self, session: AsyncSession):
-    #     statement = (
-    #         select(OutOfWarranty, Master)
-    #         .join(Master, OutOfWarranty.code == Master.code)
-    #         .where(
-    #             OutOfWarranty.settlement_date.isnot(None)
-    #             & (OutOfWarranty.final_settled == "N")
-    #         )
-    #         .order_by(OutOfWarranty.srf_number)
-    #     )
-    #     result = await session.execute(statement)
-    #     rows = result.all()
-    #     return [
-    #         OutOfWarrantySRFSettleRecord(
-    #             srf_number=row.OutOfWarranty.srf_number,
-    #             name=row.Master.name,
-    #             model=row.OutOfWarranty.model,
-    #             delivery_date=row.OutOfWarranty.delivery_date,
-    #             final_amount=row.OutOfWarranty.final_amount,
-    #             received_by=row.OutOfWarranty.received_by,
-    #             pc_number=row.OutOfWarranty.pc_number,
-    #             invoice_number=row.OutOfWarranty.invoice_number,
-    #             service_charge=row.OutOfWarranty.service_charge,
-    #             waive_details=row.OutOfWarranty.waive_details,
-    #         )
-    #         for row in rows
-    #     ]
-
-    # async def update_final_srf_settlement(
-    #     self, list_srf: List[UpdateSRFFinalSettlement], session: AsyncSession
-    # ):
-    #     for srf in list_srf:
-    #         statement = select(OutOfWarranty).where(
-    #             OutOfWarranty.srf_number == srf.srf_number
-    #         )
-    #         result = await session.execute(statement)
-    #         existing_srf = result.scalar_one_or_none()
-    #         if existing_srf:
-    #             existing_srf.final_settled = srf.final_settled
-    #     await session.commit()
+    async def update_final_srf_settlement(
+        self, list_srf: List[UpdateSRFFinalSettlement], session: AsyncSession
+    ):
+        for srf in list_srf:
+            statement = select(OutOfWarranty).where(
+                OutOfWarranty.srf_number == srf.srf_number
+            )
+            result = await session.execute(statement)
+            existing_srf = result.scalar_one_or_none()
+            if existing_srf:
+                existing_srf.final_settled = srf.final_settled
+        await session.commit()

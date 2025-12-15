@@ -11,7 +11,7 @@ class Model(SQLModel, table=True):
     division: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
     frame: str = Field(sa_column=Column(pg.VARCHAR(10), nullable=True))
     winding_type: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=True))
-    rating: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
+    hp_rating: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     rewinding_charge: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
     created_by: str = Field(
         sa_column=Column(pg.VARCHAR(30), ForeignKey("users.username"), nullable=False)

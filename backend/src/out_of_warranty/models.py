@@ -104,7 +104,7 @@ class OutOfWarranty(SQLModel, table=True):
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )
     estimate_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    user_settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     final_settled: str = Field(
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )

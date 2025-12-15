@@ -8,7 +8,7 @@ import { authFetch } from "./authFetchService";
  */
 async function getRewindingCharge(modelData) {
   const response = await authFetch(
-    API_ENDPOINTS.MODEL_GET_REWINDING_FOR_CREATION,
+    API_ENDPOINTS.REWINDING_RATE_FOR_MODEL,
     {
       method: "POST",
       headers: {

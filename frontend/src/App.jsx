@@ -240,20 +240,12 @@ function AppRoutesWithNav() {
                 <WarrantyUpdatePage />
               </PrivateRoute>
             }
-          />
+          />*/}
           <Route
             path="/WarrantyEnquiry"
             element={
               <PrivateRoute>
                 <WarrantyEnquiryPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/CreateOutOfWarrantySRF"
-            element={
-              <PrivateRoute>
-                <OutOfWarrantyCreatePage />
               </PrivateRoute>
             }
           />
@@ -265,6 +257,14 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
+          {/*<Route
+            path="/CreateOutOfWarrantySRF"
+            element={
+              <PrivateRoute>
+                <OutOfWarrantyCreatePage />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/UpdateOutOfWarrantySRF"
             element={
@@ -273,6 +273,7 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
+          */}
           <Route
             path="/ProposeToSettleOutOfWarrantySRF"
             element={
@@ -280,7 +281,7 @@ function AppRoutesWithNav() {
                 <OutOfWarrantySettleSRFUserPage />
               </PrivateRoute>
             }
-          />*/}
+          />
           <Route
             path="/CreateVendorChallan"
             element={
@@ -305,7 +306,6 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          {/* 
           <Route
             path="/OutOfWarrantyEnquiry"
             element={
@@ -321,7 +321,7 @@ function AppRoutesWithNav() {
                 <OutOfWarrantySettleSRFAdminPage />
               </PrivateRoute>
             }
-          />*/}
+          />
           <Route
             path="/ProposeToSettleVendor"
             element={

@@ -41,7 +41,7 @@
 ### Warranty Module
 - [ ] **WarrantyCreatePage** - Create Warranty record
 - [ ] **WarrantyUpdatePage** - Update Warranty record
-- [ ] **WarrantySRFPrintPage** - Warranty SRF Print
+- [x] **WarrantySRFPrintPage** - Warranty SRF Print
 - [ ] **WarrantyEnquiryPage** - Warranty Enquiry Page
 
 ### OutOfWarranty Module
@@ -116,8 +116,8 @@
 - [x] **/service_center/create** - [ADMIN]
 
 ### Model Module
-- [x] **/model/get_rewinding_rate_for_update**
-- [ ] **/model/get_rewinding_rate_for_model**
+- [x] **/model/get_rewinding_rate**
+- [x] **/model/create**
 
 ### Warranty Module
 - [x] **warranty/next_srf_number**
@@ -127,7 +127,7 @@
 - [x] **warranty/update/{srf_number}**
 - [x] **warranty/list_delivered_by**
 - [x] **warranty/last_srf_number**
-- [ ] **warranty/srf_print**
+- [x] **warranty/srf_print**
 - [ ] **warranty/enquiry{params}**
 
 ### OutOfWarranty Module
@@ -159,6 +159,10 @@
 
 ### ServiceCharge Module
 - [x] **service_charge/service_charge**
+
+### RewindingRate Module
+- [x] **/rewinding_rate/rewinding_rate**
+
 
 
 ---

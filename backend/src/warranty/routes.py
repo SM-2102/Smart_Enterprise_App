@@ -169,43 +169,45 @@ async def print_srf(
     )
 
 
-# """
-# Warranty enquiry using query parameters.
+"""
+Warranty enquiry using query parameters.
 
-#  """
+ """
 
 
-# @warranty_router.get(
-#     "/enquiry", response_model=List[WarrantyEnquiry], status_code=status.HTTP_200_OK
-# )
-# async def enquiry_warranty(
-#     final_status: Optional[str] = None,
-#     name: Optional[str] = None,
-#     division: Optional[str] = None,
-#     from_srf_date: Optional[date] = None,
-#     to_srf_date: Optional[date] = None,
-#     delivered_by: Optional[str] = None,
-#     delivered: Optional[str] = None,
-#     received: Optional[str] = None,
-#     repaired: Optional[str] = None,
-#     head: Optional[str] = None,
-#     session: AsyncSession = Depends(get_session),
-#     _=Depends(access_token_bearer),
-# ):
-#     try:
-#         result = await warranty_service.enquiry_warranty(
-#             session,
-#             final_status,
-#             name,
-#             division,
-#             from_srf_date,
-#             to_srf_date,
-#             delivered_by,
-#             delivered,
-#             received,
-#             repaired,
-#             head,
-#         )
-#         return result
-#     except:
-#         return []
+@warranty_router.get(
+    "/enquiry", response_model=List[WarrantyEnquiry], status_code=status.HTTP_200_OK
+)
+async def enquiry_warranty(
+    final_status: Optional[str] = None,
+    vendor_settled: Optional[str] = None,
+    name: Optional[str] = None,
+    division: Optional[str] = None,
+    from_srf_date: Optional[date] = None,
+    to_srf_date: Optional[date] = None,
+    delivered_by: Optional[str] = None,
+    delivered: Optional[str] = None,
+    received: Optional[str] = None,
+    repaired: Optional[str] = None,
+    head: Optional[str] = None,
+    session: AsyncSession = Depends(get_session),
+    _=Depends(access_token_bearer),
+):
+    try:
+        result = await warranty_service.enquiry_warranty(
+            session,
+            final_status,
+            vendor_settled,
+            name,
+            division,
+            from_srf_date,
+            to_srf_date,
+            delivered_by,
+            delivered,
+            received,
+            repaired,
+            head,
+        )
+        return result
+    except:
+        return []

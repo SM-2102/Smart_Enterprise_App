@@ -150,12 +150,14 @@ const WarrantyStatusChart = ({ data }) => {
           >
             <span
               className="
-              text-blue-700 font-semibold 
-              whitespace-nowrap
-              text-[clamp(9px,1.6vw,14px)]
-            "
+                text-blue-700 font-semibold
+                whitespace-nowrap
+                text-[clamp(9px,1.6vw,14px)]
+              "
             >
-              {data.warranty.warranty_heads.replace} Items Replaced
+              {data.warranty.warranty_heads.replace < 2
+                ? "No Items Replaced"
+                : `${data.warranty.warranty_heads.replace} Items Replaced`}
             </span>
           </div>
 

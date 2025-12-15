@@ -31,7 +31,7 @@ const columns = [
   { key: "model", label: "Model" },
   { key: "estimate_date", label: "Estimate Date" },
   { key: "repair_date", label: "Repair Date" },
-  { key: "vendor_date1", label: "Challan Date" },
+  { key: "challan_date", label: "Challan Date" },
   { key: "delivery_date", label: "Delivery Date" },
   {
     key: "final_amount",

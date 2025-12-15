@@ -54,6 +54,8 @@ const Filter = ({
   onToggle,
   finalStatus,
   setFinalStatus,
+  vendorSettled,
+  setVendorSettled,
   name,
   setName,
   division,
@@ -554,6 +556,43 @@ const Filter = ({
           <div style={{ marginBottom: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <label
+                htmlFor="vendorSettled"
+                style={{
+                  fontWeight: 600,
+                  color: "#1976d2",
+                  letterSpacing: 0.5,
+                  fontSize: 13,
+                  width: 150,
+                }}
+              >
+                Vendor
+              </label>
+              <select
+                id="vendorSettled"
+                name="vendorSettled"
+                value={vendorSettled}
+                onChange={(e) => setVendorSettled(e.target.value)}
+                style={{
+                  padding: "4px 8px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: 6,
+                  fontSize: 13,
+                  background: "#f7f9fc",
+                  outline: "none",
+                  boxShadow: "0 1px 2px rgba(25, 118, 210, 0.04)",
+                  width: "100%",
+                }}
+              >
+                <option value=""></option>
+                <option value="Y">Settled</option>
+                <option value="N">Not Settled</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <label
                 htmlFor="finalStatus"
                 style={{
                   fontWeight: 600,
@@ -658,6 +697,7 @@ const Filter = ({
 const WarrantyEnquiryPage = () => {
   // Filter states for master_enquiry params
   const [finalStatus, setFinalStatus] = useState("");
+  const [vendorSettled, setVendorSettled] = useState("");
   const [name, setName] = useState("");
   const [division, setDivision] = useState("");
   const getDefaultFromSRFDate = () => {
@@ -685,6 +725,7 @@ const WarrantyEnquiryPage = () => {
 
   const handleClear = () => {
     setFinalStatus("");
+    setVendorSettled("");
     setName("");
     setDivision("");
     setFromSRFDate(getDefaultFromSRFDate());
@@ -736,6 +777,7 @@ const WarrantyEnquiryPage = () => {
     try {
       const params = {};
       if (finalStatus) params.final_status = finalStatus;
+      if (vendorSettled) params.vendor_settled = vendorSettled;
       if (name) params.name = name;
       if (division) params.division = division;
       if (fromSRFDate) params.from_srf_date = fromSRFDate;
@@ -762,6 +804,8 @@ const WarrantyEnquiryPage = () => {
         onToggle={() => setFilterOpen((prev) => !prev)}
         finalStatus={finalStatus}
         setFinalStatus={setFinalStatus}
+        vendorSettled={vendorSettled}
+        setVendorSettled={setVendorSettled}
         name={name}
         setName={setName}
         division={division}

@@ -85,6 +85,9 @@ class ServiceCenterAlreadyExists(BaseException):
 class VendorNotFound(BaseException):
     """Vendor Not Found"""
 
+class ModelAlreadyExists(BaseException):
+    """Model Already Exists"""
+
 
 def create_exception_handler(
     status_code: int, initial_detail: Any
@@ -323,6 +326,18 @@ def register_exceptions(app: FastAPI):
                 "error_code": "validation_error",
             },
         )
+    
+    app.add_exception_handler(
+        ModelAlreadyExists,
+        create_exception_handler(
+            status_code=status.HTTP_409_CONFLICT,
+            initial_detail={
+                "message": "Model Name Already Exists",
+                "resolution": "Please choose a different model",
+                "error_code": "model_already_exists",
+            },
+        ),
+    )
 
     # @app.exception_handler(500)
     # async def internal_server_error(request, exc):

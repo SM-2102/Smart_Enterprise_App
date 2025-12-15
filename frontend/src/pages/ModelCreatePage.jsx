@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Toast from "../components/Toast";
 
 import { validateModel } from "../utils/modelValidation";
 import { createModel } from "../services/modelCreateService";
-import { getRewindingCharge } from "../services/modelRewindingRateCreationService";
+import { FiRefreshCw } from "react-icons/fi";
+import { getRewindingCharge } from "../services/rewindingRateModelCreationService";
 
 const initialForm = {
   division: "",
   model: "",
   frame: "",
   hp_rating: "",
-  rewinding_type: "",
+  winding_type: "",
   rewinding_charge: "",
 };
 
@@ -42,20 +43,25 @@ const ModelCreatePage = () => {
     if (name === "division") {
       const newDivision = value;
       const isLt = newDivision === "LT MOTOR";
-      // Clear dependent fields on any division change. For LT, set rewinding_type to Copper.
+      // Clear dependent fields on any division change. For LT, set winding_type to Copper.
       setForm((prev) => ({
         ...prev,
         division: newDivision,
         frame: "",
         hp_rating: "",
-        rewinding_type: isLt ? "Copper" : "",
+        winding_type: isLt ? "Copper" : "",
         rewinding_charge: "",
       }));
       setError((prev) => ({ ...prev, division: undefined }));
       return;
     }
 
-    setForm((prev) => ({ ...prev, [name]: value }));
+    // Clear rewinding charge whenever any other field changes
+    if (name === "rewinding_charge") {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value, rewinding_charge: "" }));
+    }
   };
 
   const [errs, errs_label] = validateModel(form);
@@ -100,47 +106,36 @@ const ModelCreatePage = () => {
     }
   };
 
-  // Fetch rewinding charge when division is LT MOTOR or FHP MOTOR
-  useEffect(() => {
-    const shouldFetch =
-      form.division === "LT MOTOR" || form.division === "FHP MOTOR";
+  // Manual fetch handler for rewinding charge (triggered by icon/button)
+  const handleFetchCharge = async () => {
+    const shouldFetch = form.division === "LT MOTOR" || form.division === "FHP MOTOR";
     if (!shouldFetch) return;
 
-    let mounted = true;
-    const fetchCharge = async () => {
-      setRewindingLoading(true);
-      try {
-        const hp = form.hp_rating === "" ? null : parseFloat(form.hp_rating);
-        const payload = {
-          division: form.division,
-          frame: form.frame === "" ? null : form.frame,
-          hp_rating: hp === null || isNaN(hp) ? null : hp,
-          winding_type: form.rewinding_type === "" ? null : form.rewinding_type,
-        };
-        const data = await getRewindingCharge(payload);
-        if (!mounted) return;
-        setForm((prev) => ({
-          ...prev,
-          rewinding_charge: data?.rewinding_cost ?? "",
-        }));
-      } catch (err) {
-        setError({
-          message: err?.message || "Failed to fetch rewinding charge.",
-          resolution: err?.resolution || "",
-          type: "error",
-        });
-        setShowToast(true);
-      } finally {
-        if (mounted) setRewindingLoading(false);
-      }
-    };
-
-    fetchCharge();
-
-    return () => {
-      mounted = false;
-    };
-  }, [form.division, form.frame, form.hp_rating, form.rewinding_type]);
+    setRewindingLoading(true);
+    try {
+      const hp = form.hp_rating === "" ? null : parseFloat(form.hp_rating);
+      const payload = {
+        division: form.division,
+        frame: form.frame === "" ? null : form.frame,
+        hp_rating: hp === null || isNaN(hp) ? null : hp,
+        winding_type: form.winding_type === "" ? null : form.winding_type,
+      };
+      const data = await getRewindingCharge(payload);
+      setForm((prev) => ({
+        ...prev,
+        rewinding_charge: data?.rewinding_cost ?? "",
+      }));
+    } catch (err) {
+      setError({
+        message: err?.message || "Failed to fetch rewinding charge.",
+        resolution: err?.resolution || "",
+        type: "error",
+      });
+      setShowToast(true);
+    } finally {
+      setRewindingLoading(false);
+    }
+  };
 
   const isFhp = form.division === "FHP MOTOR";
   const isLt = form.division === "LT MOTOR";
@@ -153,7 +148,7 @@ const ModelCreatePage = () => {
         noValidate
       >
         <h2 className="text-xl font-semibold text-blue-800 mb-4 pb-2 border-b border-blue-500 flex justify-center">
-          Create Division Record
+          Create Model Record
         </h2>
 
         <div className="flex flex-col gap-4">
@@ -188,7 +183,7 @@ const ModelCreatePage = () => {
               type="text"
               name="model"
               value={form.model}
-              max={30}
+              maxLength={30}
               onChange={handleChange}
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.model ? "border-red-300" : "border-gray-300"} border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-400`}
               disabled={submitting}
@@ -204,18 +199,13 @@ const ModelCreatePage = () => {
               type="text"
               name="frame"
               value={form.frame}
-              max={10}
+              maxLength={10}
               onChange={handleChange}
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.frame ? "border-red-300" : "border-gray-300"} border-gray-300 focus:ring-2 focus:ring-blue-400 ${!(form.division === "LT MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "LT MOTOR"}
               placeholder={
                 form.division !== "LT MOTOR"
-                  ? "Disabled for selected division"
-                  : ""
-              }
-              title={
-                form.division !== "LT MOTOR"
-                  ? "Frame is disabled for this division"
+                  ? "Frame is Disabled"
                   : ""
               }
             />
@@ -231,17 +221,12 @@ const ModelCreatePage = () => {
               name="hp_rating"
               value={form.hp_rating}
               onChange={handleChange}
-              max={5}
+              maxLength={5}
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.hp_rating ? "border-red-300" : "border-gray-300"} border-gray-300 focus:ring-2 focus:ring-blue-400 ${!(form.division === "FHP MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "FHP MOTOR"}
               placeholder={
                 form.division !== "FHP MOTOR"
-                  ? "Disabled for selected division"
-                  : ""
-              }
-              title={
-                form.division !== "FHP MOTOR"
-                  ? "HP Rating is disabled for this division"
+                  ? "HP Rating is disabled"
                   : ""
               }
             />
@@ -253,10 +238,10 @@ const ModelCreatePage = () => {
               Rewinding Type
             </label>
             <select
-              name="rewinding_type"
-              value={form.rewinding_type}
+              name="winding_type"
+              value={form.winding_type}
               onChange={handleChange}
-              className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.rewinding_type ? "border-red-300" : "border-gray-300"} focus:ring-2 focus:ring-blue-400 ${!(form.division === "FHP MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
+              className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.winding_type ? "border-red-300" : "border-gray-300"} focus:ring-2 focus:ring-blue-400 ${!(form.division === "FHP MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "FHP MOTOR"}
               title={
                 form.division !== "FHP MOTOR"
@@ -271,20 +256,50 @@ const ModelCreatePage = () => {
           </div>
 
           {/* Rewinding Charge */}
-          <div className="flex items-center gap-3 w-full">
-            <label className="w-90 text-md font-medium text-gray-700">
-              Rewinding Charge<span className="text-red-500">*</span>
-            </label>
+         <div className="flex items-center gap-3 w-full">
+          <label className="w-35 text-md font-medium text-gray-700">
+            Rewinding Charge<span className="text-red-500">*</span>
+          </label>
+
+          <div className="flex-1 flex items-center gap-2">
             <input
               type="number"
               name="rewinding_charge"
               value={form.rewinding_charge}
               onChange={handleChange}
               readOnly={isRewindingLocked}
-              className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 ${errs_label.rewinding_charge ? "border-red-300" : "border-gray-300"} focus:ring-blue-400 ${isRewindingLocked ? "cursor-not-allowed" : ""}`}
+              className={`w-full px-3 py-1 rounded-lg border ${
+                errs_label.rewinding_charge ? "border-red-300" : "border-gray-300"
+              } bg-gray-50 focus:ring-2 focus:ring-blue-400 ${
+                isRewindingLocked ? "cursor-not-allowed" : ""
+              }`}
               disabled={submitting}
             />
+
+            <button
+              type="button"
+              onClick={handleFetchCharge}
+              disabled={!isRewindingLocked || rewindingLoading || submitting}
+              title={
+                !isRewindingLocked
+                  ? "Fetch disabled for this division"
+                  : "Fetch rewinding charge"
+              }
+              className={`p-2 rounded-lg border transition ${
+                isRewindingLocked
+                  ? "border-blue-400 bg-blue-100 hover:bg-blue-200"
+                  : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              <FiRefreshCw
+                className={`text-lg ${
+                  rewindingLoading ? "animate-spin" : ""
+                }`}
+              />
+            </button>
           </div>
+        </div>
+
         </div>
 
         <div className="flex justify-center mt-6">

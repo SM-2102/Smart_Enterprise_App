@@ -250,276 +250,267 @@ class WarrantyService:
         last_srf_number = last_srf_number.split("/")[0] if last_srf_number else None
         return last_srf_number
 
-    # async def print_srf(
-    #     self, srf_number: WarrantySrfNumber, token: dict, session: AsyncSession
-    # ) -> io.BytesIO:
-    #     """
-    #     Generates a PDF for the given SRF number.
-    #     """
-    #     # Query warranty and master data
-    #     if len(srf_number) != 6:
-    #         srf_number = "R" + srf_number.zfill(5)
-    #     statement = (
-    #         select(Warranty, Master)
-    #         .join(Master, Warranty.code == Master.code)
-    #         .where(Warranty.srf_number.like(f"{srf_number}/%"))
-    #     )
-    #     result = await session.execute(statement)
-    #     rows = result.fetchall()
+    async def print_srf(self, srf_number: str, token: dict, session: AsyncSession) -> io.BytesIO:
 
-    #     if not rows:
-    #         raise WarrantyNotFound()
+        # Normalize input SRF number
+        if len(srf_number) > 6:
+            raise ValueError()
+        if not srf_number.startswith('R'):
+            srf_number = "R" + srf_number.zfill(5)
 
-    #     # Extract fields for overlay
-    #     srf_row = rows[0]
-    #     warranty = srf_row.Warranty
-    #     master = srf_row.Master
+        # Fetch all rows for this SRF
+        statement = (
+            select(Warranty, Master)
+            .join(Master, Warranty.code == Master.code)
+            .where(Warranty.srf_number.like(f"{srf_number}/%"))
+        )
+        result = await session.execute(statement)
+        rows = result.fetchall()
 
-    #     srf_no = warranty.srf_number[:6]
-    #     srf_date = warranty.srf_date.strftime("%d-%m-%Y") if warranty.srf_date else ""
-    #     code = warranty.code
-    #     master_code = master.code
-    #     master_details = await master_service.get_master_details(master_code, session)
-    #     name = master_details["name"]
-    #     address = master_details["full_address"]
-    #     contact1 = master_details["contact1"]
-    #     gst = master_details["gst"] or ""
-    #     received_by = token["user"]["username"]
+        if not rows:
+            raise WarrantyNotFound()
 
-    #     # Prepare table rows for overlay
-    #     table_rows = []
-    #     for row in rows:
-    #         w = row.Warranty
-    #         table_rows.append(
-    #             [
-    #                 w.division or "",
-    #                 w.model or "",
-    #                 str(w.serial_number or ""),
-    #                 w.complaint_number or "",
-    #                 w.sticker_number or "",
-    #             ]
-    #         )
+        # Extract master and warranty details from the first row
+        first_row = rows[0]
+        warranty = first_row.Warranty
+        master = first_row.Master
 
-    #     def generate_overlay(
-    #         rows, srf_no, srf_date, code, name, address, contact1, gst, received_by
-    #     ):
-    #         packet = io.BytesIO()
-    #         can = canvas.Canvas(packet, pagesize=A4)
-    #         width, height = A4
+        srf_no = warranty.srf_number[:6]
+        srf_date = warranty.srf_date.strftime("%d-%m-%Y") if warranty.srf_date else ""
+        code = warranty.code
+        master_code = master.code
+        master_details = await master_service.get_master_details(master_code, session)
+        name = master_details["name"]
+        address = master_details["full_address"]
+        contact1 = master_details["contact1"]
+        gst = master_details.get("gst", "") or ""
+        received_by = token["user"]["username"]
 
-    #         can.setFont("Helvetica-Bold", 10)
-    #         can.drawString(140, 690, srf_no)
-    #         can.drawString(485, 690, srf_date)
-    #         can.drawString(375, 690, code)
-    #         can.drawString(220, 651, name)
-    #         can.drawString(220, 626, address)
-    #         can.drawString(220, 601, contact1)
-    #         can.drawString(475, 601, gst)
-    #         can.drawString(375, 187, received_by)
+        # Prepare table rows for pages
+        page1_rows = []
+        page2_rows = []
 
-    #         start_y = 541
-    #         y = start_y
-    #         line_spacing = 10
-    #         min_row_height = 20
-    #         row_padding = 6
-    #         columns = [
-    #             {"x": 40, "width": 20},
-    #             {"x": 70, "width": 50},
-    #             {"x": 135, "width": 124},
-    #             {"x": 263, "width": 97},
-    #             {"x": 365, "width": 105},
-    #             {"x": 472, "width": 98},
-    #         ]
+        for idx, row in enumerate(rows, 1):
+            w = row.Warranty
+            # Page 1 columns: index, division, model, serial_number, srf_number, remark
+            page1_rows.append([
+                str(idx),
+                w.division or "",
+                w.model or "",
+                str(w.serial_number or ""),
+                w.srf_number,
+                w.remark or "",
+            ])
+            # Page 2 columns: index, division, model, serial_number, complaint_number, sticker_number
+            page2_rows.append([
+                str(idx),
+                w.division or "",
+                w.model or "",
+                str(w.serial_number or ""),
+                w.complaint_number or "",
+                w.sticker_number or "",
+            ])
 
-    #         can.setFont("Helvetica", 9)
+        def generate_overlay(rows, columns):
+            packet = io.BytesIO()
+            can = canvas.Canvas(packet, pagesize=(595.27, 841.89))  # A4 in points
+            width, height = 595.27, 841.89
 
-    #         for idx, row in enumerate(rows, 1):
-    #             row_data = [str(idx)] + row
-    #             row_lines = []
-    #             for col, text in zip(columns, row_data):
-    #                 words = text.split()
-    #                 lines = []
-    #                 line = ""
-    #                 for word in words:
-    #                     test_line = line + (" " if line else "") + word
-    #                     if stringWidth(test_line, "Helvetica", 9) <= col["width"]:
-    #                         line = test_line
-    #                     else:
-    #                         lines.append(line)
-    #                         line = word
-    #                 if line:
-    #                     lines.append(line)
-    #                 row_lines.append(lines)
+            # Header details
+            can.setFont("Helvetica-Bold", 10)
+            can.drawString(140, 690, srf_no)
+            can.drawString(485, 690, srf_date)
+            can.drawString(375, 690, code)
+            can.drawString(220, 651, name)
+            can.drawString(220, 626, address)
+            can.drawString(220, 601, contact1)
+            can.drawString(475, 601, gst)
+            can.drawString(375, 187, received_by)
 
-    #             max_lines = max(len(lines) for lines in row_lines)
-    #             row_height = max(max_lines * line_spacing, min_row_height)
+            start_y = 541
+            y = start_y
+            line_spacing = 10
+            min_row_height = 20
+            row_padding = 6
 
-    #             if y - row_height < 100:
-    #                 can.showPage()
-    #                 can.setFont("Helvetica", 9)
-    #                 y = height - 50
+            # Prepare columns with x positions and widths
+            column_defs = [
+                {"x": 40, "width": 20},
+                {"x": 70, "width": 50},
+                {"x": 135, "width": 124},
+                {"x": 263, "width": 97},
+                {"x": 365, "width": 105},
+                {"x": 472, "width": 98},
+            ]
+            can.setFont("Helvetica", 9)
 
-    #             for col, lines in zip(columns, row_lines):
-    #                 total_text_height = len(lines) * line_spacing
-    #                 vertical_offset = (row_height - total_text_height) / 2
+            for row in rows:
+                row_lines = []
+                for col_def, text in zip(column_defs, row):
+                    words = str(text).split()
+                    lines = []
+                    line = ""
+                    for word in words:
+                        test_line = line + (" " if line else "") + word
+                        if stringWidth(test_line, "Helvetica", 9) <= col_def["width"]:
+                            line = test_line
+                        else:
+                            lines.append(line)
+                            line = word
+                    if line:
+                        lines.append(line)
+                    row_lines.append(lines)
 
-    #                 for i, ln in enumerate(lines):
-    #                     text_width = stringWidth(ln, "Helvetica", 9)
-    #                     center_x = col["x"] + col["width"] / 2 - text_width / 2
-    #                     y_position = y - vertical_offset - (i * line_spacing)
-    #                     can.drawString(center_x, y_position, ln)
+                max_lines = max(len(lines) for lines in row_lines)
+                row_height = max(max_lines * line_spacing, min_row_height)
 
-    #             y -= row_height + row_padding
+                if y - row_height < 100:  # simple page break
+                    can.showPage()
+                    can.setFont("Helvetica", 9)
+                    y = height - 50
 
-    #         can.save()
-    #         packet.seek(0)
-    #         return PdfReader(packet)
+                for col_def, lines in zip(column_defs, row_lines):
+                    total_text_height = len(lines) * line_spacing
+                    vertical_offset = (row_height - total_text_height) / 2
+                    for i, ln in enumerate(lines):
+                        text_width = stringWidth(ln, "Helvetica", 9)
+                        center_x = col_def["x"] + col_def["width"] / 2 - text_width / 2
+                        y_position = y - vertical_offset - (i * line_spacing)
+                        can.drawString(center_x, y_position, ln)
 
-    #     # Create overlays
-    #     overlay_customer = generate_overlay(
-    #         table_rows,
-    #         srf_no,
-    #         srf_date,
-    #         code,
-    #         name,
-    #         address,
-    #         contact1,
-    #         gst,
-    #         received_by,
-    #     )
-    #     overlay_asc = generate_overlay(
-    #         table_rows,
-    #         srf_no,
-    #         srf_date,
-    #         code,
-    #         name,
-    #         address,
-    #         contact1,
-    #         gst,
-    #         received_by,
-    #     )
+                y -= row_height + row_padding
 
-    #     # Path to the static PDF template (use absolute path for portability, with path injection protection)
-    #     base_dir = os.path.dirname(os.path.abspath(__file__))
-    #     static_dir = os.path.normpath(os.path.join(base_dir, "..", "static"))
-    #     template_path = safe_join(static_dir, "warranty_srf.pdf")
+            can.save()
+            packet.seek(0)
+            return PdfReader(packet)
 
-    #     # Read the template PDF
-    #     try:
-    #         with open(template_path, "rb") as f:
-    #             template_bytes = f.read()
-    #     except FileNotFoundError:
-    #         raise FileNotFoundError(f"Template PDF not found at {template_path}")
-    #     template_buffer = io.BytesIO(template_bytes)
-    #     template_pdf = PdfReader(template_buffer)
+        overlay_customer = generate_overlay(page1_rows, columns=6)
+        overlay_asc = generate_overlay(page2_rows, columns=6)
 
-    #     # Merge overlays
-    #     writer = PdfWriter()
-    #     page1 = template_pdf.pages[0]
-    #     page1.merge_page(overlay_customer.pages[0])
-    #     writer.add_page(page1)
+        # Read the template PDF
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        static_dir = os.path.normpath(os.path.join(base_dir, "..", "static"))
+        template_path = safe_join(static_dir, "warranty_srf.pdf")
+        try:
+            with open(template_path, "rb") as f:
+                template_bytes = f.read()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Template PDF not found at {template_path}")
 
-    #     if len(template_pdf.pages) > 1:
-    #         page2 = template_pdf.pages[1]
-    #         page2.merge_page(overlay_asc.pages[0])
-    #         writer.add_page(page2)
+        template_pdf = PdfReader(io.BytesIO(template_bytes))
+        writer = PdfWriter()
 
-    #     output_stream = io.BytesIO()
-    #     writer.write(output_stream)
-    #     output_stream.seek(0)
-    #     return output_stream
+        # Merge overlays
+        page1 = template_pdf.pages[0]
+        page1.merge_page(overlay_customer.pages[0])
+        writer.add_page(page1)
 
-    # async def enquiry_warranty(
-    #     self,
-    #     session: AsyncSession,
-    #     final_status: Optional[str] = None,
-    #     name: Optional[str] = None,
-    #     division: Optional[str] = None,
-    #     from_srf_date: Optional[date] = None,
-    #     to_srf_date: Optional[date] = None,
-    #     delivered_by: Optional[str] = None,
-    #     delivered: Optional[str] = None,
-    #     received: Optional[str] = None,
-    #     repaired: Optional[str] = None,
-    #     head: Optional[str] = None,
-    # ):
+        if len(template_pdf.pages) > 1:
+            page2 = template_pdf.pages[1]
+            page2.merge_page(overlay_asc.pages[0])
+            writer.add_page(page2)
 
-    #     statement = select(Warranty, Master).join(Master, Warranty.code == Master.code)
+        output_stream = io.BytesIO()
+        writer.write(output_stream)
+        output_stream.seek(0)
+        return output_stream
 
-    #     if final_status:
-    #         statement = statement.where(Warranty.final_status == final_status)
 
-    #     if name:
-    #         statement = statement.where(Master.name.ilike(f"%{name}%"))
+    async def enquiry_warranty(
+        self,
+        session: AsyncSession,
+        final_status: Optional[str] = None,
+        vendor_settled: Optional[str] = None,
+        name: Optional[str] = None,
+        division: Optional[str] = None,
+        from_srf_date: Optional[date] = None,
+        to_srf_date: Optional[date] = None,
+        delivered_by: Optional[str] = None,
+        delivered: Optional[str] = None,
+        received: Optional[str] = None,
+        repaired: Optional[str] = None,
+        head: Optional[str] = None,
+    ):
 
-    #     if division:
-    #         statement = statement.where(Warranty.division == division)
+        statement = select(Warranty, Master).join(Master, Warranty.code == Master.code)
 
-    #     if from_srf_date:
-    #         statement = statement.where(Warranty.srf_date >= from_srf_date)
+        if final_status:
+            statement = statement.where(Warranty.final_status == final_status)
 
-    #     if to_srf_date:
-    #         statement = statement.where(Warranty.srf_date <= to_srf_date)
-    #     if delivered_by:
-    #         statement = statement.where(
-    #             Warranty.delivered_by.ilike(f"%{delivered_by}%")
-    #         )
-    #     if delivered:
-    #         if delivered == "Y":
-    #             statement = statement.where(Warranty.delivery_date.isnot(None))
-    #         else:
-    #             statement = statement.where(Warranty.delivery_date.is_(None))
-    #     if received:
-    #         if received == "Y":
-    #             statement = statement.where(
-    #                 Warranty.receive_date.isnot(None) & (Warranty.head == "REPLACE")
-    #             )
-    #         else:
-    #             statement = statement.where(
-    #                 Warranty.receive_date.is_(None) & (Warranty.head == "REPLACE")
-    #             )
+        if vendor_settled:
+            statement = statement.where(Warranty.vendor_settled == vendor_settled)
 
-    #     if repaired:
-    #         if repaired == "Y":
-    #             statement = statement.where(
-    #                 Warranty.repair_date.isnot(None) & (Warranty.head == "REPAIR")
-    #             )
-    #         else:
-    #             statement = statement.where(
-    #                 Warranty.repair_date.is_(None) & (Warranty.head == "REPAIR")
-    #             )
-    #     if head:
-    #         statement = statement.where(Warranty.head == head)
-    #     statement = statement.order_by(Warranty.srf_number)
+        if name:
+            statement = statement.where(Master.name.ilike(f"%{name}%"))
 
-    #     result = await session.execute(statement)
-    #     rows = result.all()
+        if division:
+            statement = statement.where(Warranty.division == division)
 
-    #     return [
-    #         WarrantyEnquiry(
-    #             srf_number=row.Warranty.srf_number,
-    #             srf_date=format_date_ddmmyyyy(row.Warranty.srf_date),
-    #             name=row.Master.name,
-    #             model=row.Warranty.model,
-    #             receive_date=(
-    #                 format_date_ddmmyyyy(row.Warranty.receive_date)
-    #                 if row.Warranty.receive_date
-    #                 else ""
-    #             ),
-    #             repair_date=(
-    #                 format_date_ddmmyyyy(row.Warranty.repair_date)
-    #                 if row.Warranty.repair_date
-    #                 else ""
-    #             ),
-    #             delivery_date=(
-    #                 format_date_ddmmyyyy(row.Warranty.delivery_date)
-    #                 if row.Warranty.delivery_date
-    #                 else ""
-    #             ),
-    #             final_status=row.Warranty.final_status,
-    #             head=row.Warranty.head,
-    #             contact1=row.Master.contact1,
-    #             contact2=row.Master.contact2,
-    #         )
-    #         for row in rows
-    #     ]
+        if from_srf_date:
+            statement = statement.where(Warranty.srf_date >= from_srf_date)
+
+        if to_srf_date:
+            statement = statement.where(Warranty.srf_date <= to_srf_date)
+        if delivered_by:
+            statement = statement.where(
+                Warranty.delivered_by.ilike(f"%{delivered_by}%")
+            )
+        if delivered:
+            if delivered == "Y":
+                statement = statement.where(Warranty.delivery_date.isnot(None))
+            else:
+                statement = statement.where(Warranty.delivery_date.is_(None))
+        if received:
+            if received == "Y":
+                statement = statement.where(
+                    Warranty.receive_date.isnot(None) & (Warranty.head == "REPLACE")
+                )
+            else:
+                statement = statement.where(
+                    Warranty.receive_date.is_(None) & (Warranty.head == "REPLACE")
+                )
+
+        if repaired:
+            if repaired == "Y":
+                statement = statement.where(
+                    Warranty.repair_date.isnot(None) & (Warranty.head == "REPAIR")
+                )
+            else:
+                statement = statement.where(
+                    Warranty.repair_date.is_(None) & (Warranty.head == "REPAIR")
+                )
+        if head:
+            statement = statement.where(Warranty.head == head)
+        statement = statement.order_by(Warranty.srf_number)
+
+        result = await session.execute(statement)
+        rows = result.all()
+
+        return [
+            WarrantyEnquiry(
+                srf_number=row.Warranty.srf_number,
+                srf_date=format_date_ddmmyyyy(row.Warranty.srf_date),
+                name=row.Master.name,
+                model=row.Warranty.model,
+                receive_date=(
+                    format_date_ddmmyyyy(row.Warranty.receive_date)
+                    if row.Warranty.receive_date
+                    else ""
+                ),
+                repair_date=(
+                    format_date_ddmmyyyy(row.Warranty.repair_date)
+                    if row.Warranty.repair_date
+                    else ""
+                ),
+                delivery_date=(
+                    format_date_ddmmyyyy(row.Warranty.delivery_date)
+                    if row.Warranty.delivery_date
+                    else ""
+                ),
+                final_status=row.Warranty.final_status,
+                head=row.Warranty.head,
+                contact1=row.Master.contact1,
+                contact2=row.Master.contact2,
+            )
+            for row in rows
+        ]
