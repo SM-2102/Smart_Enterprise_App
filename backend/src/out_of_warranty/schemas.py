@@ -53,6 +53,7 @@ class OutOfWarrantyUpdateResponse(BaseModel):
     vendor_cost2: Optional[float]
     estimate_date: Optional[date]
     repair_date: Optional[date]
+    rewinding_done: str
     rewinding_cost: Optional[float]
     other_cost: Optional[float]
     work_done: Optional[str]

@@ -175,6 +175,7 @@ class OutOfWarrantyService:
                 vendor_cost2=row.OutOfWarranty.vendor_cost2,
                 estimate_date=row.OutOfWarranty.estimate_date,
                 repair_date=row.OutOfWarranty.repair_date,
+                rewinding_done=row.OutOfWarranty.rewinding_done,
                 rewinding_cost=row.OutOfWarranty.rewinding_cost,
                 other_cost=row.OutOfWarranty.other_cost,
                 work_done=row.OutOfWarranty.work_done,

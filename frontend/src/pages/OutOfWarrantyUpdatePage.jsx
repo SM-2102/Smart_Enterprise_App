@@ -27,8 +27,7 @@ const initialForm = {
   estimate_date: "",
   repair_date: "",
   rewinding_cost: "",
-  rewinding_done: "",
-  estimate_date: "",
+  rewinding_done: "N",
   vendor_paint: "",
   vendor_stator: "",
   vendor_leg: "",
@@ -198,8 +197,8 @@ const OutOfWarrantyUpdatePage = () => {
         vendor_cost1: data.vendor_cost1 ?? "",
         vendor_date2: data.vendor_date2 ?? "",
         vendor_cost2: data.vendor_cost2 ?? "",
-        estimate_date: data.estimate_date ?? "",
         repair_date: data.repair_date ?? "",
+        rewinding_done: data.rewinding_done ?? "",
         rewinding_cost: data.rewinding_cost ?? "",
         other_cost: data.other_cost ?? "",
         work_done: data.work_done ?? "",
@@ -798,29 +797,37 @@ const OutOfWarrantyUpdatePage = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center w-full gap-3.5">
-            <div className="flex items-center w-3/5 gap-2">
+            <div className="flex items-center w-full gap-3 mt-4">
+            <div className="flex items-center w-1/2 gap-2">
               <label
-                htmlFor="other_cost"
-                className="w-60 text-md font-medium text-gray-700"
+                htmlFor="rewinding_done"
+                className="w-45 text-md font-medium text-gray-700"
               >
-                Other Cost to Customer
+                Rewinding
               </label>
-              <input
-                id="other_cost"
-                name="other_cost"
-                type="number"
-                value={form.other_cost}
-                onChange={handleChange}
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.other_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                disabled={isLocked || submitting}
-              />
-            </div>
 
-            <div className="flex items-center w-2/5 gap-2">
+              <div className="flex justify-center w-full">
+                {/* Hidden input for accessibility and autofill */}
+                <input
+                  id="rewinding_done"
+                  name="rewinding_done"
+                  type="text"
+                  value={form.rewinding_done}
+                  style={{ display: "none" }}
+                  readOnly
+                  tabIndex={-1}
+                />
+                <YesNoToggle
+                  form={form}
+                  setForm={setForm}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div>
+            <div className="flex items-center w-1/2 gap-2">
               <label
                 htmlFor="repair_date"
-                className={`w-57 text-md font-medium text-gray-700 gap-1 ml-2`}
+                className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
               >
                 Repair Date
               </label>
@@ -837,40 +844,14 @@ const OutOfWarrantyUpdatePage = () => {
             </div>
           </div>
 
-            <div className="flex items-center w-1/2 gap-2">
-              <label
-                htmlFor="gst"
-                className="w-55 text-md font-medium text-gray-700"
-              >
-                GST
-              </label>
-
-              <div className="flex justify-center w-full">
-                {/* Hidden input for accessibility and autofill */}
-                <input
-                  id="gst"
-                  name="gst"
-                  type="text"
-                  value={form.gst}
-                  style={{ display: "none" }}
-                  readOnly
-                  tabIndex={-1}
-                />
-                <YesNoToggle
-                  form={form}
-                  setForm={setForm}
-                  disabled={isLocked || submitting}
-                />
-              </div>
-            </div>
             {/* Vendor Cost and Dates */}
-            <div className="flex items-center w-full gap-3.5 mt-4">
-              <div className="flex items-center w-3/5 gap-2">
+            <div className="flex items-center w-full gap-6 mt-4">
+              <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_cost1"
-                  className="w-60 text-md font-medium text-gray-700"
+                  className="w-33 text-md font-medium text-gray-700"
                 >
-                  Rewinding Cost to Vendor
+                  Rewinding Cost
                 </label>
                 <input
                   id="vendor_cost1"
@@ -883,31 +864,32 @@ const OutOfWarrantyUpdatePage = () => {
                 />
               </div>
 
-              <div className="flex items-center w-2/5 gap-2">
+              <div className="flex items-center w-1/2 gap-2">
                 <label
-                  htmlFor="challan_date"
-                  className={`w-57 text-md font-medium text-gray-700 gap-1 ml-2`}
+                  htmlFor="rewinding_cost"
+                  className="w-30.5 text-md font-medium text-gray-700"
                 >
-                  Handover Date
+                  Rewinding Cost
                 </label>
                 <input
-                  id="challan_date"
-                  name="challan_date"
-                  type="date"
-                  value={form.challan_date}
-                  readOnly
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                  id="rewinding_cost"
+                  name="rewinding_cost"
+                  type="number"
+                  value={form.rewinding_cost}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
             </div>
-            <div className="flex items-center w-full gap-3.5 mt-4">
-              <div className="flex items-center w-3/5 gap-2">
+             {/* Vendor Cost and Dates */}
+            <div className="flex items-center w-full gap-6 mt-4">
+              <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_cost2"
-                  className="w-60 text-md font-medium text-gray-700"
+                  className="w-33 text-md font-medium text-gray-700"
                 >
-                  Other Cost to Vendor
+                  Other Cost
                 </label>
                 <input
                   id="vendor_cost2"
@@ -920,102 +902,215 @@ const OutOfWarrantyUpdatePage = () => {
                 />
               </div>
 
-              <div className="flex items-center w-2/5 gap-2">
+              <div className="flex items-center w-1/2 gap-2">
                 <label
-                  htmlFor="vendor_date2"
-                  className={`w-57 text-md font-medium text-gray-700 gap-1 ml-2`}
+                  htmlFor="other_cost"
+                  className="w-30.5 text-md font-medium text-gray-700"
                 >
-                  Return Date
+                  Other Cost
                 </label>
                 <input
-                  id="vendor_date2"
-                  name="vendor_date2"
-                  type="date"
-                  value={form.vendor_date2}
+                  id="other_cost"
+                  name="other_cost"
+                  type="number"
+                  value={form.other_cost}
                   onChange={handleChange}
-                  max={new Date().toLocaleDateString("en-CA")}
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.vendor_date2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.other_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div> 
+             <div className="flex items-center w-full gap-20 mt-4">
+            <div className="flex items-center w-1/3 gap-2">
+              <label
+                htmlFor="vendor_paint"
+                className="w-20 text-md font-medium text-gray-700"
+              >
+                Paint
+              </label>
+
+              <div className="flex justify-center w-full">
+                {/* Hidden input for accessibility and autofill */}
+                <input
+                  id="vendor_paint"
+                  name="vendor_paint"
+                  type="text"
+                  value={form.vendor_paint}
+                  style={{ display: "none" }}
+                  readOnly
+                  tabIndex={-1}
+                />
+                <YesNoToggle
+                  form={form}
+                  setForm={setForm}
                   disabled={isLocked || submitting}
                 />
               </div>
             </div>
-          {/* Vendor Cost and Dates */}
-          <div className="flex items-center w-full gap-3.5">
-            <div className="flex items-center w-3/5 gap-2">
+            <div className="flex items-center w-1/3 gap-2">
               <label
-                htmlFor="rewinding_cost"
-                className="w-60 text-md font-medium text-gray-700"
+                htmlFor="vendor_stator"
+                className="w-20 text-md font-medium text-gray-700"
               >
-                Rewinding Cost to Customer
+                Stator
               </label>
-              <input
-                id="rewinding_cost"
-                name="rewinding_cost"
-                type="number"
-                value={form.rewinding_cost}
-                onChange={handleChange}
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                disabled={isLocked || submitting}
-              />
-            </div>
 
-            <div className="flex items-center w-2/5 gap-2">
-              <label
-                htmlFor="estimate_date"
-                className={`w-57 text-md font-medium text-gray-700 gap-1 ml-2`}
-              >
-                Estimate Date
-              </label>
-              <input
-                id="estimate_date"
-                name="estimate_date"
-                type="date"
-                value={form.estimate_date}
-                onChange={handleChange}
-                max={new Date().toLocaleDateString("en-CA")}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.estimate_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                disabled={isLocked || submitting}
-              />
+              <div className="flex justify-center w-full">
+                {/* Hidden input for accessibility and autofill */}
+                <input
+                  id="vendor_stator"
+                  name="vendor_stator"
+                  type="text"
+                  value={form.vendor_stator}
+                  style={{ display: "none" }}
+                  readOnly
+                  tabIndex={-1}
+                />
+                <YesNoToggle
+                  form={form}
+                  setForm={setForm}
+                  disabled={isLocked || submitting}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex items-center w-full gap-3.5">
-            <div className="flex items-center w-3/5 gap-2">
+            <div className="flex items-center w-1/3 gap-2">
               <label
-                htmlFor="other_cost"
-                className="w-60 text-md font-medium text-gray-700"
+                htmlFor="vendor_leg"
+                className="w-15 text-md font-medium text-gray-700"
               >
-                Other Cost to Customer
+                Leg
               </label>
-              <input
-                id="other_cost"
-                name="other_cost"
-                type="number"
-                value={form.other_cost}
-                onChange={handleChange}
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.other_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                disabled={isLocked || submitting}
-              />
-            </div>
 
-            <div className="flex items-center w-2/5 gap-2">
-              <label
-                htmlFor="repair_date"
-                className={`w-57 text-md font-medium text-gray-700 gap-1 ml-2`}
-              >
-                Repair Date
-              </label>
-              <input
-                id="repair_date"
-                name="repair_date"
-                type="date"
-                value={form.repair_date}
-                onChange={handleChange}
-                max={new Date().toLocaleDateString("en-CA")}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                disabled={isLocked || submitting}
-              />
+              <div className="flex justify-center w-full">
+                {/* Hidden input for accessibility and autofill */}
+                <input
+                  id="vendor_leg"
+                  name="vendor_leg"
+                  type="text"
+                  value={form.vendor_leg}
+                  style={{ display: "none" }}
+                  readOnly
+                  tabIndex={-1}
+                />
+                <YesNoToggle
+                  form={form}
+                  setForm={setForm}
+                  disabled={isLocked || submitting}
+                />
+              </div>
             </div>
-          </div>
+          </div>    
+              <div className="flex items-center w-full gap-6 mt-4">
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="vendor_paint_cost"
+                  className="w-33 text-md font-medium text-gray-700"
+                >
+                  Paint Charge
+                </label>
+                <input
+                  id="vendor_paint_cost"
+                  name="vendor_paint_cost"
+                  type="number"
+                  value={form.vendor_paint_cost}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_paint_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="paint_cost"
+                  className="w-30.5 text-md font-medium text-gray-700"
+                >
+                  Paint Charge
+                </label>
+                <input
+                  id="paint_cost"
+                  name="paint_cost"
+                  type="number"
+                  value={form.paint_cost}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.paint_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div>        
+             <div className="flex items-center w-full gap-6 mt-4">
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="vendor_stator_cost"
+                  className="w-33 text-md font-medium text-gray-700"
+                >
+                  Stator Charge
+                </label>
+                <input
+                  id="vendor_stator_cost"
+                  name="vendor_stator_cost"
+                  type="number"
+                  value={form.vendor_stator_cost}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_stator_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="stator_cost"
+                  className="w-30.5 text-md font-medium text-gray-700"
+                >
+                  Stator Charge
+                </label>
+                <input
+                  id="stator_cost"
+                  name="stator_cost"
+                  type="number"
+                  value={form.stator_cost}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.stator_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div> 
+            <div className="flex items-center w-full gap-6 mt-4">
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="vendor_leg_cost"
+                  className="w-33 text-md font-medium text-gray-700"
+                >
+                  Leg Charge
+                </label>
+                <input
+                  id="vendor_leg_cost"
+                  name="vendor_leg_cost"
+                  type="number"
+                  value={form.vendor_leg_cost}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_leg_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="leg_cost"
+                  className="w-30.5 text-md font-medium text-gray-700"
+                >
+                  Leg Charge
+                </label>
+                <input
+                  id="leg_cost"
+                  name="leg_cost"
+                  type="number"
+                  value={form.leg_cost}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.leg_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div>             
         </div>
 
           <div
