@@ -269,6 +269,7 @@ class WarrantyService:
             select(Warranty, Master)
             .join(Master, Warranty.code == Master.code)
             .where(Warranty.srf_number.like(f"{srf_number}/%"))
+            .order_by(Warranty.srf_number)
         )
         result = await session.execute(statement)
         rows = result.fetchall()

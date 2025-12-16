@@ -28,9 +28,9 @@ const initialForm = {
   repair_date: "",
   rewinding_cost: "",
   rewinding_done: "N",
-  vendor_paint: "",
-  vendor_stator: "",
-  vendor_leg: "",
+  vendor_paint: "N",
+  vendor_stator: "N",
+  vendor_leg: "N",
   vendor_paint_cost: "",
   paint_cost: "",
   vendor_stator_cost: "",
@@ -181,7 +181,7 @@ const OutOfWarrantyUpdatePage = () => {
     try {
       const data = await searchOutOfWarrantyBySRFNumber(codeToSearch);
 
-      setForm({
+      setForm({  
         srf_number: data.srf_number ?? "",
         name: data.name ?? "",
         model: data.model ?? "",
@@ -201,6 +201,15 @@ const OutOfWarrantyUpdatePage = () => {
         rewinding_done: data.rewinding_done ?? "",
         rewinding_cost: data.rewinding_cost ?? "",
         other_cost: data.other_cost ?? "",
+        vendor_paint: data.vendor_paint ?? "",
+        vendor_stator: data.vendor_stator ?? "",
+        vendor_leg: data.vendor_leg ?? "",
+        vendor_paint_cost: data.vendor_paint_cost ?? "",
+        paint_cost: data.paint_cost ?? "",
+        vendor_stator_cost: data.vendor_stator_cost ?? "",
+        stator_cost: data.stator_cost ?? "",
+        vendor_leg_cost: data.vendor_leg_cost ?? "",
+        leg_cost:data.leg_cost ?? "",
         work_done: data.work_done ?? "",
         spare1: data.spare1 ?? "",
         cost1: data.cost1 ?? "",
@@ -818,8 +827,10 @@ const OutOfWarrantyUpdatePage = () => {
                   tabIndex={-1}
                 />
                 <YesNoToggle
-                  form={form}
-                  setForm={setForm}
+                  value={form.rewinding_done}
+                  onChange={(val) =>
+                    setForm(prev => ({ ...prev, rewinding_done: val }))
+                  }
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -859,6 +870,7 @@ const OutOfWarrantyUpdatePage = () => {
                   type="number"
                   value={form.vendor_cost1}
                   onChange={handleChange}
+                  placeholder="Vendor"
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_cost1 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                   disabled={isLocked || submitting}
                 />
@@ -875,6 +887,7 @@ const OutOfWarrantyUpdatePage = () => {
                   id="rewinding_cost"
                   name="rewinding_cost"
                   type="number"
+                  placeholder="Customer"
                   value={form.rewinding_cost}
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
@@ -895,6 +908,7 @@ const OutOfWarrantyUpdatePage = () => {
                   id="vendor_cost2"
                   name="vendor_cost2"
                   type="number"
+                  placeholder="Vendor"
                   value={form.vendor_cost2}
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_cost2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
@@ -914,6 +928,7 @@ const OutOfWarrantyUpdatePage = () => {
                   name="other_cost"
                   type="number"
                   value={form.other_cost}
+                  placeholder="Customer"
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.other_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                   disabled={isLocked || submitting}
@@ -940,11 +955,13 @@ const OutOfWarrantyUpdatePage = () => {
                   readOnly
                   tabIndex={-1}
                 />
-                <YesNoToggle
-                  form={form}
-                  setForm={setForm}
-                  disabled={isLocked || submitting}
-                />
+               <YesNoToggle
+                value={form.vendor_paint}
+                onChange={(val) =>
+                  setForm(prev => ({ ...prev, vendor_paint: val }))
+                }
+                disabled={isLocked || submitting}
+              />
               </div>
             </div>
             <div className="flex items-center w-1/3 gap-2">
@@ -967,10 +984,12 @@ const OutOfWarrantyUpdatePage = () => {
                   tabIndex={-1}
                 />
                 <YesNoToggle
-                  form={form}
-                  setForm={setForm}
-                  disabled={isLocked || submitting}
-                />
+  value={form.vendor_stator}
+  onChange={(val) =>
+    setForm(prev => ({ ...prev, vendor_stator: val }))
+  }
+  disabled={isLocked || submitting}
+/>
               </div>
             </div>
             <div className="flex items-center w-1/3 gap-2">
@@ -993,10 +1012,12 @@ const OutOfWarrantyUpdatePage = () => {
                   tabIndex={-1}
                 />
                 <YesNoToggle
-                  form={form}
-                  setForm={setForm}
-                  disabled={isLocked || submitting}
-                />
+  value={form.vendor_leg}
+  onChange={(val) =>
+    setForm(prev => ({ ...prev, vendor_leg: val }))
+  }
+  disabled={isLocked || submitting}
+/>
               </div>
             </div>
           </div>    
@@ -1012,6 +1033,7 @@ const OutOfWarrantyUpdatePage = () => {
                   id="vendor_paint_cost"
                   name="vendor_paint_cost"
                   type="number"
+                  placeholder="Vendor"
                   value={form.vendor_paint_cost}
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_paint_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
@@ -1031,6 +1053,7 @@ const OutOfWarrantyUpdatePage = () => {
                   name="paint_cost"
                   type="number"
                   value={form.paint_cost}
+                  placeholder="Customer"
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.paint_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                   disabled={isLocked || submitting}
@@ -1049,6 +1072,7 @@ const OutOfWarrantyUpdatePage = () => {
                   id="vendor_stator_cost"
                   name="vendor_stator_cost"
                   type="number"
+                  placeholder="Vendor"
                   value={form.vendor_stator_cost}
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_stator_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
@@ -1067,6 +1091,7 @@ const OutOfWarrantyUpdatePage = () => {
                   id="stator_cost"
                   name="stator_cost"
                   type="number"
+                  placeholder="Customer"
                   value={form.stator_cost}
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.stator_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
@@ -1086,6 +1111,7 @@ const OutOfWarrantyUpdatePage = () => {
                   id="vendor_leg_cost"
                   name="vendor_leg_cost"
                   type="number"
+                  placeholder="Vendor"
                   value={form.vendor_leg_cost}
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_leg_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
@@ -1104,6 +1130,7 @@ const OutOfWarrantyUpdatePage = () => {
                   id="leg_cost"
                   name="leg_cost"
                   type="number"
+                  placeholder="Customer"
                   value={form.leg_cost}
                   onChange={handleChange}
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.leg_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
@@ -1333,8 +1360,10 @@ const OutOfWarrantyUpdatePage = () => {
                   tabIndex={-1}
                 />
                 <YesNoToggle
-                  form={form}
-                  setForm={setForm}
+                  value={form.gst}
+                  onChange={(val) =>
+                    setForm(prev => ({ ...prev, gst: val }))
+                  }
                   disabled={isLocked || submitting}
                 />
               </div>
