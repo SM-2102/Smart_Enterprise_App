@@ -22,7 +22,7 @@ class Warranty(SQLModel, table=True):
     serial_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=False))
     problem: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=False))
     remark: str = Field(sa_column=Column(pg.VARCHAR(40), nullable=True))
-    complaint_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
+    complaint_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True, unique=True))
     sticker_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=True))
     asc_name: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=True))
     challan_number: str = Field(sa_column=Column(pg.VARCHAR(6), nullable=True))

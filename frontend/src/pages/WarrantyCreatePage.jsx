@@ -4,6 +4,7 @@ import { fetchMasterNames } from "../services/masterNamesService";
 import { fetchNextWarrantyCode } from "../services/warrantyNextSrfNumberService";
 import { validateWarrantySRFCreate } from "../utils/warrantySRFCreateValidation";
 import { createWarranty } from "../services/warrantyCreateService";
+import { fetchModels } from "../services/modelListService";
 import { fetchASCNames } from "../services/serviceCenterASCNamesService";
 
 const initialForm = {
@@ -19,6 +20,12 @@ const initialForm = {
   sticker_number: "",
   asc_name: "",
   complaint_number: "",
+  dealer_name: "",
+  rpm: "",
+  purchase_number: "",
+  purchase_date: "",
+  customer_challan_number: "",
+  customer_challan_date: "",
 };
 
 const divisionOptions = [
@@ -29,6 +36,10 @@ const divisionOptions = [
   "IWH",
   "SWH",
   "COOLER",
+  "HT MOTOR",
+  "LT MOTOR",
+  "FHP MOTOR",
+  "ALTERNATOR",
   "OTHERS",
 ];
 
@@ -57,6 +68,11 @@ const WarrantyCreatePage = () => {
   const [showAscSuggestions, setShowAscSuggestions] = useState(false);
   const ascInputRef = useRef(null);
   const [ascInputWidth, setAscInputWidth] = useState("100%");
+  const [modelList, setModelList] = useState([]);
+  const [modelSuggestions, setModelSuggestions] = useState([]);
+  const [showModelSuggestions, setShowModelSuggestions] = useState(false);
+  const modelInputRef = useRef(null);
+  const [modelInputWidth, setModelInputWidth] = useState("100%");
   // Popup for add another item
   const [showAddAnother, setShowAddAnother] = useState(false);
 
@@ -109,6 +125,32 @@ const WarrantyCreatePage = () => {
     }
   }, [form.asc_name, showAscSuggestions]);
 
+  useEffect(() => {
+    if (modelInputRef.current) {
+      setModelInputWidth(modelInputRef.current.offsetWidth + "px");
+    }
+  }, [form.model, showModelSuggestions]);
+
+  // Fetch model list when division changes to specific divisions
+  useEffect(() => {
+    const triggerDivisions = ["LT MOTOR", "FHP MOTOR", "PUMP"];
+    if (triggerDivisions.includes(form.division)) {
+      fetchModels({ division: form.division, sub_division: form.sub_division })
+        .then((res) => {
+          if (res && Array.isArray(res.model_list)) {
+            setModelList(res.model_list);
+          } else {
+            setModelList([]);
+          }
+        })
+        .catch(() => setModelList([]));
+    } else {
+      setModelList([]);
+      setModelSuggestions([]);
+      setShowModelSuggestions(false);
+    }
+  }, [form.division]);
+
   // Validation
   const [errs, errs_label] = validateWarrantySRFCreate(form);
 
@@ -129,6 +171,19 @@ const WarrantyCreatePage = () => {
         setShowSuggestions(filtered.length > 0);
       } else {
         setShowSuggestions(false);
+      }
+    }
+    if (name === "model") {
+      if (value.length > 30) return;
+      newValue = value;
+      if (modelList && modelList.length > 0 && newValue.length > 0) {
+        const filtered = modelList.filter((m) =>
+          m.toLowerCase().startsWith(newValue.toLowerCase()),
+        );
+        setModelSuggestions(filtered);
+        setShowModelSuggestions(filtered.length > 0);
+      } else {
+        setShowModelSuggestions(false);
       }
     }
     if (name === "asc_name") {
@@ -174,8 +229,13 @@ const WarrantyCreatePage = () => {
     };
     // Map empty string values to null
     const payload = Object.fromEntries(
-      Object.entries(rawPayload).map(([k, v]) => [k, v === "" ? null : v]),
-    );
+  Object.entries(rawPayload).map(([k, v]) => {
+    if (k === "rpm") {
+      return [k, v === "" ? null : Number(v)];
+    }
+    return [k, v === "" ? null : v];
+  })
+);
     try {
       const response = await createWarranty(payload);
       let createdSrf = response.srf_number;
@@ -417,26 +477,145 @@ const WarrantyCreatePage = () => {
               </select>
             </div>
           </div>
+          {/* Order Number & Order Date - label beside input, w-1/2 each */}
+          <div className="flex items-center w-full gap-4">
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="customer_challan_number"
+                className="w-55 text-md font-medium text-gray-700"
+              >
+                Challan No.<span className="text-red-500">*</span>
+              </label>
+              <input
+                id="customer_challan_number"
+                name="customer_challan_number"
+                type="text"
+                value={form.customer_challan_number}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.customer_challan_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                maxLength={15}
+                disabled={submitting}
+              />
+            </div>
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="customer_challan_date"
+                className="w-58 text-md font-medium text-gray-700 ml-4"
+              >
+                Challan Date<span className="text-red-500">*</span>
+              </label>
+              <input
+                id="customer_challan_date"
+                name="customer_challan_date"
+                type="date"
+                value={form.customer_challan_date}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.customer_challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                disabled={submitting}
+                max={new Date().toLocaleDateString("en-CA")}
+              />
+            </div>
+          </div>
+          {/* Order Number & Order Date - label beside input, w-1/2 each */}
+          <div className="flex items-center w-full gap-4">
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="purchase_number"
+                className="w-55 text-md font-medium text-gray-700"
+              >
+                Invoice No.
+              </label>
+              <input
+                id="purchase_number"
+                name="purchase_number"
+                type="text"
+                value={form.purchase_number}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                maxLength={15}
+                disabled={submitting}
+              />
+            </div>
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="purchase_date"
+                className="w-58 text-md font-medium text-gray-700 ml-4"
+              >
+                Invoice Date
+              </label>
+              <input
+                id="purchase_date"
+                name="purchase_date"
+                type="date"
+                value={form.purchase_date}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                disabled={submitting}
+                max={new Date().toLocaleDateString("en-CA")}
+              />
+            </div>
+          </div>
           {/* Model & Serial Number - same line */}
           <div className="flex items-center w-full gap-8">
             <div className="flex items-center w-1/2 gap-2">
               <label
                 htmlFor="model"
-                className="w-55 text-md font-medium text-gray-700"
+                className="w-53 text-md font-medium text-gray-700"
               >
                 Model<span className="text-red-500">*</span>
               </label>
-              <input
+              <div style={{ position: "relative", width: "100%" }}>
+                <input
                 id="model"
                 name="model"
                 type="text"
                 required
                 value={form.model}
                 onChange={handleChange}
+                ref={modelInputRef}
+                onFocus={() => {
+                  if (form.model.length > 0 && modelSuggestions.length > 0)
+                    setShowModelSuggestions(true);
+                }}
+                onBlur={() => setTimeout(() => setShowModelSuggestions(false), 150)}
                 className={`w-full px-3 py-1 rounded-lg border ${errs_label.model ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
                 maxLength={30}
                 disabled={submitting}
               />
+              {showModelSuggestions && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    zIndex: 10,
+                    background: "#fff",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "0.5rem",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    width: modelInputWidth,
+                    maxHeight: 180,
+                    overflowY: "auto",
+                    margin: 0,
+                    padding: 0,
+                    listStyle: "none",
+                  }}
+                >
+                  {modelSuggestions.map((m) => (
+                    <li
+                      key={m}
+                      style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
+                      onMouseDown={() => {
+                        setForm((prev) => ({ ...prev, model: m }));
+                        setShowModelSuggestions(false);
+                      }}
+                    >
+                      {m}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              </div>
             </div>
             <div className="flex items-center w-1/2 gap-2">
               <label
@@ -494,7 +673,45 @@ const WarrantyCreatePage = () => {
                 value={form.complaint_number}
                 onChange={handleChange}
                 className={`w-full px-3 py-1 rounded-lg border ${errs_label.complaint_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                maxLength={20}
+                maxLength={15}
+                disabled={submitting}
+              />
+            </div>
+          </div>
+          {/* Head & Complaint Number - same line */}
+          <div className="flex items-center w-full gap-8">
+            <div className="flex items-center w-2/5 gap-2">
+              <label
+                htmlFor="rpm"
+                className="w-66 text-md font-medium text-gray-700"
+              >
+                Motor RPM
+              </label>
+              <input
+                id="rpm"
+                name="rpm"
+                type="number"
+                value={form.rpm}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 border-gray-300`}
+                disabled={submitting}
+              />
+            </div>
+            <div className="flex items-center w-3/5 gap-2">
+              <label
+                htmlFor="dealer_name"
+                className="w-55 text-md font-medium text-gray-700"
+              >
+                Dealer Name
+              </label>
+              <input
+                id="dealer_name"
+                name="dealer_name"
+                type="text"
+                value={form.dealer_name}
+                onChange={handleChange}
+                className={`w-full px-3 py-1 rounded-lg border bg-gray-50 text-gray-900 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                maxLength={30}
                 disabled={submitting}
               />
             </div>

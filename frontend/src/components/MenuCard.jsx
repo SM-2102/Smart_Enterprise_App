@@ -39,6 +39,7 @@ const MenuCard = ({
             a.path === "/FinalSettlementRetailRecord" ||
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
             a.path === "/FinalSettlementVendor" ||
+            a.path === "/UploadComplaintNumber" ||
             a.path === "/CreateASCName"
           ),
       );
@@ -53,6 +54,7 @@ const MenuCard = ({
             a.path === "/FinalSettlementRetailRecord" ||
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
             a.path === "/FinalSettlementVendor" ||
+            a.path === "/UploadComplaintNumber" ||
             a.path === "/CreateASCName"
           ),
       );

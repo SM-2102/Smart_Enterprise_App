@@ -139,91 +139,94 @@ class OutOfWarrantyService:
             for row in rows
         ]
 
-    # async def get_out_of_warranty_by_srf_number(
-    #     self, srf_number: str, session: AsyncSession
-    # ):
-    #     if len(srf_number) != 8:
-    #         if srf_number.__contains__("/"):
-    #             srf_number = "S" + srf_number.zfill(7)
-    #         else:
-    #             base = srf_number.split("/")[0]
-    #             srf_number = "S" + base.zfill(5) + "/1"
-    #     if not srf_number.startswith("S"):
-    #         raise IncorrectCodeFormat()
-    #     statement = (
-    #         select(OutOfWarranty, Master.name)
-    #         .join(Master, OutOfWarranty.code == Master.code)
-    #         .where(OutOfWarranty.srf_number == srf_number)
-    #     )
-    #     result = await session.execute(statement)
-    #     row = result.first()
-    #     if row:
-    #         return OutOfWarrantyUpdateResponse(
-    #             srf_number=row.OutOfWarranty.srf_number,
-    #             srf_date=format_date_ddmmyyyy(row.OutOfWarranty.srf_date),
-    #             name=row.name,
-    #             model=row.OutOfWarranty.model,
-    #             serial_number=row.OutOfWarranty.serial_number,
-    #             service_charge=row.OutOfWarranty.service_charge,
-    #             received_by=row.OutOfWarranty.received_by,
-    #             vendor_date1=row.OutOfWarranty.vendor_date1,
-    #             vendor_cost1=row.OutOfWarranty.vendor_cost1,
-    #             vendor_date2=row.OutOfWarranty.vendor_date2,
-    #             vendor_cost2=row.OutOfWarranty.vendor_cost2,
-    #             estimate_date=row.OutOfWarranty.estimate_date,
-    #             repair_date=row.OutOfWarranty.repair_date,
-    #             rewinding_cost=row.OutOfWarranty.rewinding_cost,
-    #             other_cost=row.OutOfWarranty.other_cost,
-    #             work_done=row.OutOfWarranty.work_done,
-    #             spare1=row.OutOfWarranty.spare1,
-    #             cost1=row.OutOfWarranty.cost1,
-    #             spare2=row.OutOfWarranty.spare2,
-    #             cost2=row.OutOfWarranty.cost2,
-    #             spare3=row.OutOfWarranty.spare3,
-    #             cost3=row.OutOfWarranty.cost3,
-    #             spare4=row.OutOfWarranty.spare4,
-    #             cost4=row.OutOfWarranty.cost4,
-    #             spare5=row.OutOfWarranty.spare5,
-    #             cost5=row.OutOfWarranty.cost5,
-    #             spare6=row.OutOfWarranty.spare6,
-    #             cost6=row.OutOfWarranty.cost6,
-    #             spare_cost=row.OutOfWarranty.spare_cost,
-    #             godown_cost=row.OutOfWarranty.godown_cost,
-    #             discount=row.OutOfWarranty.discount,
-    #             total=row.OutOfWarranty.total,
-    #             gst=row.OutOfWarranty.gst,
-    #             gst_amount=row.OutOfWarranty.gst_amount,
-    #             round_off=row.OutOfWarranty.round_off,
-    #             final_amount=row.OutOfWarranty.final_amount,
-    #             receive_amount=row.OutOfWarranty.receive_amount,
-    #             delivery_date=row.OutOfWarranty.delivery_date,
-    #             pc_number=row.OutOfWarranty.pc_number,
-    #             invoice_number=row.OutOfWarranty.invoice_number,
-    #             final_status=row.OutOfWarranty.final_status,
-    #         )
-    #     else:
-    #         raise OutOfWarrantyNotFound()
+    async def get_out_of_warranty_by_srf_number(
+        self, srf_number: str, session: AsyncSession
+    ):
+        if len(srf_number) != 8:
+            if srf_number.__contains__("/"):
+                srf_number = "S" + srf_number.zfill(7)
+            else:
+                base = srf_number.split("/")[0]
+                srf_number = "S" + base.zfill(5) + "/1"
+        if not srf_number.startswith("S"):
+            raise IncorrectCodeFormat()
+        statement = (
+            select(OutOfWarranty, Master.name)
+            .join(Master, OutOfWarranty.code == Master.code)
+            .where(OutOfWarranty.srf_number == srf_number)
+        )
+        result = await session.execute(statement)
+        row = result.first()
+        if row:
+            return OutOfWarrantyUpdateResponse(
+                srf_number=row.OutOfWarranty.srf_number,
+                srf_date=format_date_ddmmyyyy(row.OutOfWarranty.srf_date),
+                name=row.name,
+                model=row.OutOfWarranty.model,
+                serial_number=row.OutOfWarranty.serial_number,
+                service_charge=row.OutOfWarranty.service_charge,
+                customer_challan_number=row.OutOfWarranty.customer_challan_number,
+                challan_number=row.OutOfWarranty.challan_number,
+                customer_challan_date=format_date_ddmmyyyy(row.OutOfWarranty.customer_challan_date),
+                received_by=row.OutOfWarranty.received_by,
+                challan_date=row.OutOfWarranty.challan_date,
+                vendor_cost1=row.OutOfWarranty.vendor_cost1,
+                vendor_date2=row.OutOfWarranty.vendor_date2,
+                vendor_cost2=row.OutOfWarranty.vendor_cost2,
+                estimate_date=row.OutOfWarranty.estimate_date,
+                repair_date=row.OutOfWarranty.repair_date,
+                rewinding_cost=row.OutOfWarranty.rewinding_cost,
+                other_cost=row.OutOfWarranty.other_cost,
+                work_done=row.OutOfWarranty.work_done,
+                spare1=row.OutOfWarranty.spare1,
+                cost1=row.OutOfWarranty.cost1,
+                spare2=row.OutOfWarranty.spare2,
+                cost2=row.OutOfWarranty.cost2,
+                spare3=row.OutOfWarranty.spare3,
+                cost3=row.OutOfWarranty.cost3,
+                spare4=row.OutOfWarranty.spare4,
+                cost4=row.OutOfWarranty.cost4,
+                spare5=row.OutOfWarranty.spare5,
+                cost5=row.OutOfWarranty.cost5,
+                spare6=row.OutOfWarranty.spare6,
+                cost6=row.OutOfWarranty.cost6,
+                spare_cost=row.OutOfWarranty.spare_cost,
+                godown_cost=row.OutOfWarranty.godown_cost,
+                discount=row.OutOfWarranty.discount,
+                total=row.OutOfWarranty.total,
+                gst=row.OutOfWarranty.gst,
+                gst_amount=row.OutOfWarranty.gst_amount,
+                round_off=row.OutOfWarranty.round_off,
+                final_amount=row.OutOfWarranty.final_amount,
+                receive_amount=row.OutOfWarranty.receive_amount,
+                delivery_date=row.OutOfWarranty.delivery_date,
+                pc_number=row.OutOfWarranty.pc_number,
+                invoice_number=row.OutOfWarranty.invoice_number,
+                final_status=row.OutOfWarranty.final_status,
+            )
+        else:
+            raise OutOfWarrantyNotFound()
 
-    # async def update_out_of_warranty(
-    #     self,
-    #     srf_number: str,
-    #     out_of_warranty: OutOfWarrantyUpdate,
-    #     session: AsyncSession,
-    #     token: dict,
-    # ):
-    #     statement = select(OutOfWarranty).where(OutOfWarranty.srf_number == srf_number)
-    #     result = await session.execute(statement)
-    #     existing_out_of_warranty = result.scalars().first()
-    #     # if role != ADMIN, ignore discount
-    #     if token["user"]["role"] != "ADMIN":
-    #         out_of_warranty.__dict__.pop("discount", None)
-    #     for var, value in out_of_warranty.__dict__.items():
-    #         setattr(existing_out_of_warranty, var, value)
-    #     existing_out_of_warranty.updated_by = token["user"]["username"]
-    #     session.add(existing_out_of_warranty)
-    #     await session.commit()
-    #     await session.refresh(existing_out_of_warranty)
-    #     return existing_out_of_warranty
+    async def update_out_of_warranty(
+        self,
+        srf_number: str,
+        out_of_warranty: OutOfWarrantyUpdate,
+        session: AsyncSession,
+        token: dict,
+    ):
+        statement = select(OutOfWarranty).where(OutOfWarranty.srf_number == srf_number)
+        result = await session.execute(statement)
+        existing_out_of_warranty = result.scalars().first()
+        # if role != ADMIN, ignore discount
+        if token["user"]["role"] != "ADMIN":
+            out_of_warranty.__dict__.pop("discount", None)
+        for var, value in out_of_warranty.__dict__.items():
+            setattr(existing_out_of_warranty, var, value)
+        existing_out_of_warranty.updated_by = token["user"]["username"]
+        session.add(existing_out_of_warranty)
+        await session.commit()
+        await session.refresh(existing_out_of_warranty)
+        return existing_out_of_warranty
 
     async def last_srf_number(self, session: AsyncSession):
         statement = (
@@ -435,7 +438,7 @@ class OutOfWarrantyService:
             statement = statement.where(OutOfWarranty.final_status == final_status)
 
         if name:
-            statement = statement.where(Master.name.ilike(f"%{name}%"))
+            statement = statement.where(Master.name.ilike(f"{name}"))
 
         if division:
             statement = statement.where(OutOfWarranty.division == division)

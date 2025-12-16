@@ -19,6 +19,7 @@ export const menuConfig = [
       { label: "Update Master Record", path: "/UpdateCustomerRecord" },
       { label: "Add ASC Name", path: "/CreateASCName" },
       { label: "Add Model Record", path: "/CreateModel" },
+      { label: "Upload Complaints", path: "/UploadComplaintNumber" },
     ],
   },
   {

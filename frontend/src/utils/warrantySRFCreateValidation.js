@@ -18,13 +18,27 @@ function validateWarrantySRFCreate(form) {
     errs.push("Division is required");
     errs_label.division = true;
   }
-  if (!form.model) {
-    errs.push("Model is required");
-    errs_label.model = true;
+  if (!form.customer_challan_number) {
+    errs.push("Challan Number is required");
+    errs_label.customer_challan_number = true;
+  }
+  if (!form.customer_challan_date) {
+    errs.push("Challan Date is required");
+    errs_label.customer_challan_date = true;
   }
   if (!form.head) {
     errs.push("Head is required");
     errs_label.head = true;
+  }
+  if (!form.model) {
+    errs.push("Model is required");
+    errs_label.model = true;
+  }
+  if (form.complaint_number) {
+    if (form.complaint_number.length < 13) {
+      errs.push("Complaint Number is required");
+      errs_label.complaint_number = true;
+  }
   }
   if (!form.problem) {
     errs.push("Problem is required");

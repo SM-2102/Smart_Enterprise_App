@@ -57,8 +57,11 @@ const divisionOptions = [
   "SDA",
   "IWH",
   "SWH",
-  "UPS",
   "COOLER",
+  "HT MOTOR",
+  "LT MOTOR",
+  "FHP MOTOR",
+  "ALTERNATOR",
   "OTHERS",
 ];
 

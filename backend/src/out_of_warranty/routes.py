@@ -80,56 +80,56 @@ async def list_out_of_warranty_pending(
     return pending
 
 
-# """
-# Get Out Of Warranty details by srf_number.
-# """
+"""
+Get Out Of Warranty details by srf_number.
+"""
 
 
-# @out_of_warranty_router.post(
-#     "/by_srf_number",
-#     response_model=OutOfWarrantyUpdateResponse,
-#     status_code=status.HTTP_200_OK,
-# )
-# async def get_out_of_warranty_by_srf_number(
-#     data: OutOfWarrantySRFNumber,
-#     session: AsyncSession = Depends(get_session),
-#     _=Depends(access_token_bearer),
-# ):
-#     out_of_warranty = await out_of_warranty_service.get_out_of_warranty_by_srf_number(
-#         data.srf_number, session
-#     )
-#     return out_of_warranty
+@out_of_warranty_router.post(
+    "/by_srf_number",
+    response_model=OutOfWarrantyUpdateResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_out_of_warranty_by_srf_number(
+    data: OutOfWarrantySRFNumber,
+    session: AsyncSession = Depends(get_session),
+    _=Depends(access_token_bearer),
+):
+    out_of_warranty = await out_of_warranty_service.get_out_of_warranty_by_srf_number(
+        data.srf_number, session
+    )
+    return out_of_warranty
 
 
-# """
-# Update Out Of Warranty details by srf_number.
-# """
+"""
+Update Out Of Warranty details by srf_number.
+"""
 
 
-# @out_of_warranty_router.patch(
-#     "/update/{srf_number:path}", status_code=status.HTTP_202_ACCEPTED
-# )
-# async def update_out_of_warranty(
-#     srf_number: str,
-#     out_of_warranty: OutOfWarrantyUpdate,
-#     session: AsyncSession = Depends(get_session),
-#     token=Depends(access_token_bearer),
-# ):
-#     existing_out_of_warranty = (
-#         await out_of_warranty_service.get_out_of_warranty_by_srf_number(
-#             srf_number, session
-#         )
-#     )
-#     if not existing_out_of_warranty:
-#         raise OutOfWarrantyNotFound()
-#     new_out_of_warranty = await out_of_warranty_service.update_out_of_warranty(
-#         srf_number, out_of_warranty, session, token
-#     )
-#     return JSONResponse(
-#         content={
-#             "message": f"Out Of Warranty Updated : {new_out_of_warranty.srf_number}"
-#         }
-#     )
+@out_of_warranty_router.patch(
+    "/update/{srf_number:path}", status_code=status.HTTP_202_ACCEPTED
+)
+async def update_out_of_warranty(
+    srf_number: str,
+    out_of_warranty: OutOfWarrantyUpdate,
+    session: AsyncSession = Depends(get_session),
+    token=Depends(access_token_bearer),
+):
+    existing_out_of_warranty = (
+        await out_of_warranty_service.get_out_of_warranty_by_srf_number(
+            srf_number, session
+        )
+    )
+    if not existing_out_of_warranty:
+        raise OutOfWarrantyNotFound()
+    new_out_of_warranty = await out_of_warranty_service.update_out_of_warranty(
+        srf_number, out_of_warranty, session, token
+    )
+    return JSONResponse(
+        content={
+            "message": f"Out Of Warranty Updated : {new_out_of_warranty.srf_number}"
+        }
+    )
 
 
 """
@@ -211,21 +211,6 @@ async def enquiry_out_of_warranty(
         return result
     except:
         return []
-
-
-# """
-# List distinct received_by names
-# """
-
-
-# @out_of_warranty_router.get(
-#     "/list_received_by", response_model=List, status_code=status.HTTP_200_OK
-# )
-# async def list_received_by(
-#     session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
-# ):
-#     names = await out_of_warranty_service.list_received_by(session)
-#     return names
 
 
 

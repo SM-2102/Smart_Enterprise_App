@@ -43,8 +43,11 @@ class OutOfWarrantyUpdateResponse(BaseModel):
     srf_date: str
     serial_number: str
     service_charge: int
+    customer_challan_number: str
+    customer_challan_date: str
+    challan_number: Optional[str]
     received_by: Optional[str]
-    vendor_date1: Optional[date]
+    challan_date: Optional[date]
     vendor_cost1: Optional[float]
     vendor_date2: Optional[date]
     vendor_cost2: Optional[float]

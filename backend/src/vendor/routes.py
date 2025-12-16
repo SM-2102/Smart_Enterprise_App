@@ -8,6 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from auth.dependencies import AccessTokenBearer, RoleChecker
 from db.db import get_session
 from vendor.service import VendorService
+from warranty.service import WarrantyService
 from vendor.schemas import (
     UpdateVendorFinalSettlement,
     VendorChallanDetails,
@@ -16,6 +17,7 @@ from vendor.schemas import (
     VendorFinalSettlementRecord,
     VendorNotSettledRecord,
     UpdateVendorUnsettled,
+    VendorUpdateComplaintNumber,
 )
 
 vendor_router = APIRouter()
@@ -196,4 +198,23 @@ async def update_final_vendor_settlement(
 ):
     await vendor_service.update_final_vendor_settlement(list_vendor, session)
     return JSONResponse(content={"message": f"Vendor Records Settled"})
+
+
+"""
+Update complaint number provided it is unique
+"""
+
+
+@vendor_router.patch(
+    "/update_complaint_number",
+    status_code=status.HTTP_202_ACCEPTED,
+    dependencies=[role_checker],
+)
+async def update_complaint_number(
+    data: VendorUpdateComplaintNumber,
+    session: AsyncSession = Depends(get_session),
+    _=Depends(access_token_bearer),
+):
+    await vendor_service.update_complaint_number(data, session)
+    return JSONResponse(content={"message": f"Complaint Number Updated"})
 

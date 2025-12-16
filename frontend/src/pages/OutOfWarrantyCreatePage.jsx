@@ -12,6 +12,7 @@ const initialForm = {
   name: "",
   srf_date: new Date().toLocaleDateString("en-CA"),
   division: "",
+  sub_division: "",
   service_charge: "",
   service_charge_waive: "N",
   collection_date: "",
@@ -90,11 +91,11 @@ const OutOfWarrantyCreatePage = () => {
     let payload;
     if (form.division === "PUMP") {
       // For PUMP, require both division and sub_division
-      if (!sub_division) {
+      if (!form.sub_division) {
         setForm((prev) => ({ ...prev, service_charge: "" }));
         return;
       }
-      payload = { division: form.division };
+      payload = { division: form.division , sub_division : form.sub_division };
     } else {
       // For other divisions, send only division, sub_division=null
       payload = { division: form.division };
@@ -160,7 +161,7 @@ const OutOfWarrantyCreatePage = () => {
   useEffect(() => {
     const triggerDivisions = ["LT MOTOR", "FHP MOTOR", "PUMP"];
     if (triggerDivisions.includes(form.division)) {
-      fetchModels({ division: form.division })
+      fetchModels({ division: form.division, sub_division: form.sub_division })
         .then((res) => {
           if (res && Array.isArray(res.model_list)) {
             setModelList(res.model_list);

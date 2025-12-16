@@ -16,6 +16,7 @@ from utils.file_utils import safe_join, split_text_to_lines
 
 from out_of_warranty.models import OutOfWarranty
 from warranty.models import Warranty
+from warranty.service import WarrantyService
 from vendor.schemas import (
     UpdateVendorFinalSettlement,
     VendorChallanDetails,
@@ -23,9 +24,10 @@ from vendor.schemas import (
     VendorFinalSettlementRecord,
     VendorNotSettledRecord,
     UpdateVendorUnsettled,
+    VendorUpdateComplaintNumber,
 )
-from exceptions import VendorNotFound
-
+from exceptions import VendorNotFound, ComplaintNumberAlreadyExists
+warranty_service = WarrantyService()
 from master.models import Master
 
 class VendorService:
@@ -459,6 +461,20 @@ class VendorService:
                 existing_vendor = result.scalar_one_or_none()
                 if existing_vendor:
                     existing_vendor.vendor_settled = vendor.vendor_settled
+        await session.commit()
+
+    async def update_complaint_number(
+        self, data: VendorUpdateComplaintNumber, session: AsyncSession
+    ):
+        if await warranty_service.check_complaint_number_available(data.complaint_number, session):
+            raise ComplaintNumberAlreadyExists()
+        statement = select(Warranty).where(
+            Warranty.srf_number == data.srf_number
+        )
+        result = await session.execute(statement)
+        existing_record = result.scalar_one_or_none()
+        if existing_record:
+            existing_record.complaint_number = data.complaint_number
         await session.commit()
 
    

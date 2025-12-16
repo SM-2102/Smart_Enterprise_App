@@ -40,6 +40,7 @@ import VendorPrintPage from "./pages/VendorPrintPage.jsx";
 import SettleVendorUserPage from "./pages/VendorSettleUserPage.jsx";
 import VendorSettleAdminPage from "./pages/VendorSettleAdminPage.jsx";
 import ModelCreatePage from "./pages/ModelCreatePage.jsx";
+import ComplaintNumberUploadPage from "./pages/ComplaintNumberUploadPage.jsx";
 
 function AppRoutesWithNav() {
   return (
@@ -137,6 +138,14 @@ function AppRoutesWithNav() {
             }
           />
           <Route
+            path="/UploadComplaintNumber"
+            element={
+              <PrivateRoute requiredRole="ADMIN">
+                <ComplaintNumberUploadPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/CreateSmartEnterpriseRoadChallan"
             element={
               <PrivateRoute>
@@ -216,14 +225,14 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          {/* <Route
+          <Route
             path="/CreateWarrantySRF"
             element={
               <PrivateRoute>
                 <WarrantyCreatePage />
               </PrivateRoute>
             }
-          />*/}
+          />
           <Route
             path="/PrintWarrantySRF"
             element={
@@ -265,7 +274,6 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          {/*
           <Route
             path="/UpdateOutOfWarrantySRF"
             element={
@@ -274,7 +282,6 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          */}
           <Route
             path="/ProposeToSettleOutOfWarrantySRF"
             element={

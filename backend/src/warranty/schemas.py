@@ -15,7 +15,7 @@ class WarrantyCreate(BaseModel):
     remark: Optional[str] = Field(None, max_length=40)
     sticker_number: Optional[str] = Field(None, max_length=15)
     asc_name: Optional[str] = Field(None, max_length=30)
-    complaint_number: Optional[str] = Field(None, max_length=20)
+    complaint_number: Optional[str] = Field(None, max_length=15)
     dealer_name: Optional[str] = Field(None, max_length=30)
     rpm: Optional[int]
     purchase_number:  Optional[str] = Field(None, max_length=15)
@@ -28,7 +28,7 @@ class WarrantyEnquiry(BaseModel):
     srf_date: str
     name: str
     model: str
-    head: str
+    serial_number: Optional[str]
     receive_date: Optional[str]
     repair_date: Optional[str]
     delivery_date: Optional[str]

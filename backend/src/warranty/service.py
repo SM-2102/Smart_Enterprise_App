@@ -11,9 +11,10 @@ from sqlalchemy import case, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from exceptions import IncorrectCodeFormat, WarrantyNotFound
+from exceptions import IncorrectCodeFormat, WarrantyNotFound, ModelNotFound
 from master.models import Master
 from master.service import MasterService
+from model.service import ModelService
 from service_center.service import ServiceCenterService
 from utils.date_utils import format_date_ddmmyyyy, parse_date
 from utils.file_utils import safe_join, split_text_to_lines
@@ -29,6 +30,7 @@ from warranty.schemas import (
 
 master_service = MasterService()
 service_center_service = ServiceCenterService()
+model_service = ModelService()
 
 
 class WarrantyService:
@@ -64,6 +66,10 @@ class WarrantyService:
         if sub_number < 1 or sub_number > 8:
             raise IncorrectCodeFormat()
 
+        if warranty.division in ["PUMP", "LT MOTOR", "FHP MOTOR"]:
+            if not await model_service.check_model_name_available(warranty.model, session):
+                raise ModelNotFound()
+            
         # If frontend requests a new base, generate next base number
         base_part = parts[0]
         if base_part == "NEW":
@@ -79,7 +85,7 @@ class WarrantyService:
                     )
                 warranty_data_dict["created_by"] = token["user"]["username"]
                 warranty_data_dict["code"] = master.code
-                for date_field in ["srf_date"]:
+                for date_field in ["srf_date", "purchase_date", "customer_challan_date"]:
                     if date_field in warranty_data_dict:
                         warranty_data_dict[date_field] = parse_date(
                             warranty_data_dict[date_field]
@@ -102,7 +108,7 @@ class WarrantyService:
                 )
             warranty_data_dict["created_by"] = token["user"]["username"]
             warranty_data_dict["code"] = master.code
-            for date_field in ["srf_date"]:
+            for date_field in ["srf_date", "purchase_date", "customer_challan_date"]:
                 if date_field in warranty_data_dict:
                     warranty_data_dict[date_field] = parse_date(
                         warranty_data_dict[date_field]
@@ -425,7 +431,7 @@ class WarrantyService:
         division: Optional[str] = None,
         from_srf_date: Optional[date] = None,
         to_srf_date: Optional[date] = None,
-        delivered_by: Optional[str] = None,
+        serial_number: Optional[str] = None,
         delivered: Optional[str] = None,
         received: Optional[str] = None,
         repaired: Optional[str] = None,
@@ -441,7 +447,7 @@ class WarrantyService:
             statement = statement.where(Warranty.vendor_settled == vendor_settled)
 
         if name:
-            statement = statement.where(Master.name.ilike(f"%{name}%"))
+            statement = statement.where(Master.name.ilike(f"{name}"))
 
         if division:
             statement = statement.where(Warranty.division == division)
@@ -451,9 +457,10 @@ class WarrantyService:
 
         if to_srf_date:
             statement = statement.where(Warranty.srf_date <= to_srf_date)
-        if delivered_by:
+
+        if serial_number:
             statement = statement.where(
-                Warranty.delivered_by.ilike(f"%{delivered_by}%")
+                Warranty.serial_number.ilike(f"{serial_number}")
             )
         if delivered:
             if delivered == "Y":
@@ -508,9 +515,19 @@ class WarrantyService:
                     else ""
                 ),
                 final_status=row.Warranty.final_status,
-                head=row.Warranty.head,
+                serial_number=row.Warranty.serial_number,
                 contact1=row.Master.contact1,
                 contact2=row.Master.contact2,
             )
             for row in rows
         ]
+    
+    async def check_complaint_number_available(
+        self, complaint_number: str, session: AsyncSession
+    ) -> bool:
+        statement = select(Warranty).where(Warranty.complaint_number == complaint_number)
+        result = await session.execute(statement)
+        existing_record = result.scalar()
+        if existing_record:
+            return True
+        return False

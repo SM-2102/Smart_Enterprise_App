@@ -187,7 +187,7 @@ class RetailService:
             statement = statement.where(Retail.final_status == final_status)
 
         if name:
-            statement = statement.where(Master.name.ilike(f"%{name}%"))
+            statement = statement.where(Master.name.ilike(f"{name}"))
 
         if division:
             statement = statement.where(Retail.division == division)

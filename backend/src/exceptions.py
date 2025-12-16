@@ -91,6 +91,9 @@ class ModelAlreadyExists(BaseException):
 class ModelNotFound(BaseException):
     """Model Not Found"""
 
+class ComplaintNumberAlreadyExists(BaseException):
+    """Complaint Number Already Exists"""
+
 
 def create_exception_handler(
     status_code: int, initial_detail: Any
@@ -349,6 +352,18 @@ def register_exceptions(app: FastAPI):
             initial_detail={
                 "message": "Model Name Already Exists",
                 "resolution": "Please choose a different model",
+                "error_code": "model_already_exists",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        ComplaintNumberAlreadyExists,
+        create_exception_handler(
+            status_code=status.HTTP_409_CONFLICT,
+            initial_detail={
+                "message": "Complaint Number Already Exists",
+                "resolution": "Use a different complaint number",
                 "error_code": "model_already_exists",
             },
         ),

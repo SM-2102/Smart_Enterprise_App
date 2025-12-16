@@ -6,7 +6,6 @@ import EnquiryTable from "../components/EnquiryTable";
 import ShowToast from "../components/Toast";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { warrantyEnquiry } from "../services/warrantyEnquiryService";
-import { fetchWarrantyDeliveredBy } from "../services/warrantyDeliveredByService";
 
 const columns = [
   { key: "srf_number", label: "SRF Number" },
@@ -30,7 +29,7 @@ const columns = [
     ),
   },
   { key: "model", label: "Model" },
-  { key: "head", label: "Head" },
+  { key: "serial_number", label: "Serial No." },
   { key: "receive_date", label: "Receive Date" },
   { key: "repair_date", label: "Repair Date" },
   { key: "delivery_date", label: "Delivery Date" },
@@ -44,6 +43,10 @@ const divisionOptions = [
   "IWH",
   "SWH",
   "COOLER",
+  "HT MOTOR",
+  "LT MOTOR",
+  "FHP MOTOR",
+  "ALTERNATOR",
   "OTHERS",
 ];
 
@@ -73,20 +76,14 @@ const Filter = ({
   onSearch,
   onClear,
   masterNames,
-  deliveredByOptions,
   head,
   setHead,
-  deliveredBy,
-  setDeliveredBy,
+  serialNumber,
+  setSerialNumber,
 }) => {
   const [nameSuggestions, setNameSuggestions] = useState([]);
   const [showNameSuggestions, setShowNameSuggestions] = useState(false);
   const nameSuggestionClickedRef = React.useRef(false);
-
-  const [deliveredBySuggestions, setDeliveredBySuggestions] = useState([]);
-  const [showDeliveredBySuggestions, setShowDeliveredBySuggestions] =
-    useState(false);
-  const deliveredBySuggestionClickedRef = React.useRef(false);
 
   // Name suggestions
   useEffect(() => {
@@ -106,24 +103,6 @@ const Filter = ({
       setShowNameSuggestions(false);
     }
   }, [name, masterNames]);
-
-  useEffect(() => {
-    if (deliveredBySuggestionClickedRef.current) {
-      setShowDeliveredBySuggestions(false);
-      setDeliveredBySuggestions([]);
-      deliveredBySuggestionClickedRef.current = false;
-      return;
-    }
-    if (deliveredBy && deliveredByOptions && deliveredByOptions.length > 0) {
-      const filtered = deliveredByOptions.filter((d) =>
-        d.toLowerCase().startsWith(deliveredBy.toLowerCase()),
-      );
-      setDeliveredBySuggestions(filtered);
-      setShowDeliveredBySuggestions(filtered.length > 0);
-    } else {
-      setShowDeliveredBySuggestions(false);
-    }
-  }, [deliveredBy, deliveredByOptions]);
 
   return (
     <>
@@ -471,29 +450,27 @@ const Filter = ({
           </div>
 
           <div style={{ marginBottom: 10 }}>
-            <label
-              htmlFor="deliveredBy"
-              style={{
-                fontWeight: 600,
-                color: "#1976d2",
-                letterSpacing: 0.5,
-                fontSize: 13,
-                marginBottom: 4,
-                display: "block",
-              }}
-            >
-              Delivered By
-            </label>
-            <div style={{ position: "relative" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <label
+                htmlFor="serialNumber"
+                style={{
+                  fontWeight: 600,
+                  color: "#1976d2",
+                  letterSpacing: 0.5,
+                  fontSize: 13,
+                  width: 150,
+                }}
+              >
+                Serial No.
+              </label>
               <input
                 type="text"
-                id="deliveredBy"
-                name="deliveredBy"
-                value={deliveredBy}
-                onChange={(e) => setDeliveredBy(e.target.value)}
-                placeholder="Name"
+                id="serialNumber"
+                name="serialNumber"
+                value={serialNumber}
+                onChange={(e) => setSerialNumber(e.target.value)}
+                placeholder="Serial Number"
                 style={{
-                  width: "100%",
                   padding: "4px 8px",
                   border: "1px solid #d1d5db",
                   borderRadius: 6,
@@ -501,55 +478,10 @@ const Filter = ({
                   background: "#f7f9fc",
                   outline: "none",
                   boxShadow: "0 1px 2px rgba(25, 118, 210, 0.04)",
+                  width: "100%",
                 }}
-                onFocus={(e) => (e.target.style.border = "1.5px solid #1976d2")}
-                onBlur={(e) => {
-                  if (!deliveredBySuggestionClickedRef.current) {
-                    setShowDeliveredBySuggestions(false);
-                  }
-                }}
-              />
-              {showDeliveredBySuggestions && (
-                <ul
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    zIndex: 10,
-                    background: "#fff",
-                    border: "0.5px solid #d1d5db",
-                    borderRadius: "0.25rem",
-                    boxShadow: "0 2px 8px rgba(25,118,210,0.08)",
-                    width: "100%",
-                    maxHeight: 160,
-                    overflowY: "auto",
-                    margin: 0,
-                    padding: 0,
-                    listStyle: "none",
-                  }}
-                >
-                  {deliveredBySuggestions.map((d) => (
-                    <li
-                      key={d}
-                      style={{
-                        padding: "6px 10px",
-                        cursor: "pointer",
-                        fontSize: 13,
-                        color: "#0a1825ff",
-                        borderBottom: "1px solid #f0f0f0",
-                      }}
-                      onMouseDown={() => {
-                        deliveredBySuggestionClickedRef.current = true;
-                        setDeliveredBy(d);
-                        setShowDeliveredBySuggestions(false);
-                        setDeliveredBySuggestions([]);
-                      }}
-                    >
-                      {d}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              >
+              </input>
             </div>
           </div>
 
@@ -710,7 +642,6 @@ const WarrantyEnquiryPage = () => {
   };
   const [fromSRFDate, setFromSRFDate] = useState(getDefaultFromSRFDate());
   const [toSRFDate, setToSRFDate] = useState(getDefaultToSRFDate());
-  const [deliveredBy, setDeliveredBy] = useState("");
   const [delivered, setDelivered] = useState("");
   const [received, setReceived] = useState("");
   const [repaired, setRepaired] = useState("");
@@ -721,7 +652,7 @@ const WarrantyEnquiryPage = () => {
   const [filterOpen, setFilterOpen] = useState(true);
   const [searched, setSearched] = useState(false);
   const [masterNames, setMasterNames] = useState([]);
-  const [deliveredByOptions, setDeliveredByOptions] = useState([]);
+  const [serialNumber, setSerialNumber] = useState([]);
 
   const handleClear = () => {
     setFinalStatus("");
@@ -730,11 +661,11 @@ const WarrantyEnquiryPage = () => {
     setDivision("");
     setFromSRFDate(getDefaultFromSRFDate());
     setToSRFDate(getDefaultToSRFDate());
-    setDeliveredBy("");
     setDelivered("");
     setReceived("");
     setRepaired("");
     setHead("");
+    setSerialNumber("");
     setSearched(false);
     setData([]);
     setError(null);
@@ -749,19 +680,6 @@ const WarrantyEnquiryPage = () => {
       })
       .catch(() => {
         setMasterNames([]);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-  useEffect(() => {
-    let mounted = true;
-    fetchWarrantyDeliveredBy()
-      .then((data) => {
-        if (mounted && Array.isArray(data)) setDeliveredByOptions(data);
-      })
-      .catch(() => {
-        setDeliveredByOptions([]);
       });
     return () => {
       mounted = false;
@@ -785,7 +703,7 @@ const WarrantyEnquiryPage = () => {
       if (received) params.received = received;
       if (repaired) params.repaired = repaired;
       if (head) params.head = head;
-      if (deliveredBy) params.delivered_by = deliveredBy;
+      if (serialNumber) params.serial_number = serialNumber;
       if (delivered) params.delivered = delivered;
       const res = await warrantyEnquiry(params);
       setData(res);
@@ -824,10 +742,10 @@ const WarrantyEnquiryPage = () => {
         delivered={delivered}
         setDelivered={setDelivered}
         onSearch={handleSearch}
-        deliveredByOptions={deliveredByOptions}
         onClear={handleClear}
-        deliveredBy={deliveredBy}
-        setDeliveredBy={setDeliveredBy}
+        serialNumber={serialNumber}
+        setSerialNumber={setSerialNumber}
+
       />
       {/* Results or placeholder */}
       {error ? (

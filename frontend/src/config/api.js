@@ -65,6 +65,9 @@ const API_ENDPOINTS = {
 
   REWINDING_RATE_FOR_MODEL:`${BASE_API_URL}rewinding_rate/rewinding_rate`,
 
+  COMPLAINT_NUMBER_UPLOAD:`${BASE_API_URL}complaint_number/upload`,
+  COMPLAINT_NUMBER_LIST:`${BASE_API_URL}complaint_number/list_complaints`,
+
   OUT_OF_WARRANTY_NEXT_CODE: `${BASE_API_URL}out_of_warranty/next_srf_number`,
   OUT_OF_WARRANTY_CREATE: `${BASE_API_URL}out_of_warranty/create`,
   OUT_OF_WARRANTY_LIST_PENDING: `${BASE_API_URL}out_of_warranty/list_pending`,
@@ -88,6 +91,7 @@ const API_ENDPOINTS = {
   VENDOR_UPDATE_UNSETTLED: `${BASE_API_URL}vendor/update_vendor_unsettled`,
   VENDOR_FINAL_SETTLED: `${BASE_API_URL}vendor/list_of_final_vendor_settlement`,
   VENDOR_UPDATE_FINAL_SETTLED: `${BASE_API_URL}vendor/update_final_vendor_settlement`,
+  VENDOR_UPDATE_COMPLAINT_NUMBER: `${BASE_API_URL}vendor/update_complaint_number`,
 };
 
 export default API_ENDPOINTS;

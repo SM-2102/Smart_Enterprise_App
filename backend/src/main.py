@@ -17,6 +17,7 @@ from challan.routes_unique import challan_unique_router
 from model.routes import model_router
 from vendor.routes import vendor_router
 from rewinding_rate.routes import rewinding_rate_router
+from complaint_number.routes import complaint_number_router
 
 version = "v1"
 
@@ -89,4 +90,7 @@ app.include_router(
 )
 app.include_router(
     vendor_router, prefix="/vendor", tags=["Vendor"]
+)
+app.include_router(
+    complaint_number_router, prefix="/complaint_number", tags=["Complaint Number"]
 )

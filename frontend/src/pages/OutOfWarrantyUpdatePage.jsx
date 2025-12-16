@@ -17,14 +17,27 @@ const initialForm = {
   srf_date: "",
   serial_number: "",
   service_charge: "",
+  customer_challan_number: "",
+  customer_challan_date: "",
   received_by: "",
-  vendor_date1: "",
+  challan_date: "",
   vendor_cost1: "",
   vendor_date2: "",
   vendor_cost2: "",
   estimate_date: "",
   repair_date: "",
   rewinding_cost: "",
+  rewinding_done: "",
+  estimate_date: "",
+  vendor_paint: "",
+  vendor_stator: "",
+  vendor_leg: "",
+  vendor_paint_cost: "",
+  paint_cost: "",
+  vendor_stator_cost: "",
+  stator_cost: "",
+  vendor_leg_cost: "",
+  leg_cost: "",
   other_cost: "",
   work_done: "",
   spare1: "",
@@ -175,9 +188,13 @@ const OutOfWarrantyUpdatePage = () => {
         model: data.model ?? "",
         srf_date: data.srf_date ?? "",
         serial_number: data.serial_number ?? "",
+        estimate_date: data.estimate_date ?? "",
         service_charge: data.service_charge ?? "",
+        customer_challan_date: data.customer_challan_date ?? "",
+        customer_challan_number: data.customer_challan_number ?? "",
+        challan_number: data.challan_number ?? "",
         received_by: data.received_by ?? "",
-        vendor_date1: data.vendor_date1 ?? "",
+        challan_date: data.challan_date ?? "",
         vendor_cost1: data.vendor_cost1 ?? "",
         vendor_date2: data.vendor_date2 ?? "",
         vendor_cost2: data.vendor_cost2 ?? "",
@@ -609,6 +626,45 @@ const OutOfWarrantyUpdatePage = () => {
               />
             </div>
           </div>
+          {/* Division and Receive Date - label beside input, w-1/2 each */}
+          <div className="flex items-center w-full gap-6">
+            <div className="flex items-center w-3/5 gap-2">
+              <label
+                htmlFor="customer_challan_number"
+                className="w-52 text-md font-medium text-gray-700"
+              >
+                Challan Number
+              </label>
+              <input
+                id="customer_challan_number"
+                name="customer_challan_number"
+                type="text"
+                value={form.customer_challan_number}
+                readOnly
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                disabled={isLocked || submitting}
+              />
+            </div>
+
+            <div className="flex items-center w-2/5 gap-2">
+              <label
+                htmlFor="customer_challan_date"
+                className={`w-55 text-md font-medium text-gray-700 gap-1`}
+              >
+                Challan Date
+              </label>
+              <input
+                id="customer_challan_date"
+                name="customer_challan_date"
+                type="text"
+                required
+                value={form.customer_challan_date}
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                readOnly
+                disabled={isLocked || submitting}
+              />
+            </div>
+          </div>
           {/* Elegant divider above Vendor Activity button for clarity */}
           <div className="w-full flex items-center">
             <div className="flex-grow h-0.5 rounded-full bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 opacity-80 shadow-sm"></div>
@@ -664,6 +720,149 @@ const OutOfWarrantyUpdatePage = () => {
                 ></input>
               </div>
             </div>
+
+            {/* Vendor Cost and Dates */}
+            <div className="flex items-center w-full gap-3 mt-4">
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="estimate_date"
+                  className="w-33 text-md font-medium text-gray-700"
+                >
+                  Estimate Date
+                </label>
+                <input
+                  id="estimate_date"
+                  name="estimate_date"
+                  type="date"
+                  value={form.estimate_date}
+                  max={new Date().toLocaleDateString("en-CA")}
+                  onChange={handleChange}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.estimate_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="challan_date"
+                  className={`w-60 text-md font-medium text-gray-700 ml-3`}
+                >
+                  Handover Date
+                </label>
+                <input
+                  id="challan_date"
+                  name="challan_date"
+                  type="date"
+                  value={form.challan_date}
+                  readOnly
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div>
+            <div className="flex items-center w-full gap-3 mt-4">
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="challan_number"
+                  className="w-33 text-md font-medium text-gray-700"
+                >
+                  Challan Number
+                </label>
+                <input
+                  id="challan_number"
+                  name="challan_number"
+                  type="text"
+                  value={form.challan_number}
+                  readOnly
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.challan_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+
+             <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="vendor_date2"
+                  className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
+                >
+                  Return Date
+                </label>
+                <input
+                  id="vendor_date2"
+                  name="vendor_date2"
+                  type="date"
+                  value={form.vendor_date2}
+                  onChange={handleChange}
+                  max={new Date().toLocaleDateString("en-CA")}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.vendor_date2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div>
+            <div className="flex items-center w-full gap-3.5">
+            <div className="flex items-center w-3/5 gap-2">
+              <label
+                htmlFor="other_cost"
+                className="w-60 text-md font-medium text-gray-700"
+              >
+                Other Cost to Customer
+              </label>
+              <input
+                id="other_cost"
+                name="other_cost"
+                type="number"
+                value={form.other_cost}
+                onChange={handleChange}
+                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.other_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                disabled={isLocked || submitting}
+              />
+            </div>
+
+            <div className="flex items-center w-2/5 gap-2">
+              <label
+                htmlFor="repair_date"
+                className={`w-57 text-md font-medium text-gray-700 gap-1 ml-2`}
+              >
+                Repair Date
+              </label>
+              <input
+                id="repair_date"
+                name="repair_date"
+                type="date"
+                value={form.repair_date}
+                onChange={handleChange}
+                max={new Date().toLocaleDateString("en-CA")}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                disabled={isLocked || submitting}
+              />
+            </div>
+          </div>
+
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="gst"
+                className="w-55 text-md font-medium text-gray-700"
+              >
+                GST
+              </label>
+
+              <div className="flex justify-center w-full">
+                {/* Hidden input for accessibility and autofill */}
+                <input
+                  id="gst"
+                  name="gst"
+                  type="text"
+                  value={form.gst}
+                  style={{ display: "none" }}
+                  readOnly
+                  tabIndex={-1}
+                />
+                <YesNoToggle
+                  form={form}
+                  setForm={setForm}
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div>
             {/* Vendor Cost and Dates */}
             <div className="flex items-center w-full gap-3.5 mt-4">
               <div className="flex items-center w-3/5 gap-2">
@@ -686,18 +885,18 @@ const OutOfWarrantyUpdatePage = () => {
 
               <div className="flex items-center w-2/5 gap-2">
                 <label
-                  htmlFor="vendor_date1"
+                  htmlFor="challan_date"
                   className={`w-57 text-md font-medium text-gray-700 gap-1 ml-2`}
                 >
                   Handover Date
                 </label>
                 <input
-                  id="vendor_date1"
-                  name="vendor_date1"
+                  id="challan_date"
+                  name="challan_date"
                   type="date"
-                  value={form.vendor_date1}
+                  value={form.challan_date}
                   readOnly
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.vendor_date1 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -740,18 +939,6 @@ const OutOfWarrantyUpdatePage = () => {
                 />
               </div>
             </div>
-          </div>
-          {/* Elegant divider above Vendor Activity button for clarity */}
-          <div className="w-full flex items-center">
-            <div className="flex-grow h-0.5 rounded-full bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 opacity-80 shadow-sm"></div>
-            <span
-              className="mx-3 text-blue-400 font-semibold text-xs tracking-widest select-none"
-              style={{ letterSpacing: 2 }}
-            >
-              CUSTOMER SECTION
-            </span>
-            <div className="flex-grow h-0.5 rounded-full bg-gradient-to-l from-blue-200 via-blue-400 to-blue-200 opacity-80 shadow-sm"></div>
-          </div>
           {/* Vendor Cost and Dates */}
           <div className="flex items-center w-full gap-3.5">
             <div className="flex items-center w-3/5 gap-2">
@@ -829,6 +1016,7 @@ const OutOfWarrantyUpdatePage = () => {
               />
             </div>
           </div>
+        </div>
 
           <div
             className="flex items-center gap-2 w-full"
