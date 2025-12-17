@@ -2,6 +2,7 @@ import sqlalchemy.dialects.postgresql as pg
 from sqlalchemy import ForeignKey, Identity
 from sqlmodel import Column, Field, SQLModel
 
+
 class RewindingRate(SQLModel, table=True):
     __tablename__ = "rewinding_rate"
     id: int = Field(

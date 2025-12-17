@@ -63,10 +63,10 @@ const API_ENDPOINTS = {
   MODEL_LIST: `${BASE_API_URL}model/model_list`,
   MODEL_COST_DETAILS: `${BASE_API_URL}model/cost_details`,
 
-  REWINDING_RATE_FOR_MODEL:`${BASE_API_URL}rewinding_rate/rewinding_rate`,
+  REWINDING_RATE_FOR_MODEL: `${BASE_API_URL}rewinding_rate/rewinding_rate`,
 
-  COMPLAINT_NUMBER_UPLOAD:`${BASE_API_URL}complaint_number/upload`,
-  COMPLAINT_NUMBER_LIST:`${BASE_API_URL}complaint_number/list_complaints`,
+  COMPLAINT_NUMBER_UPLOAD: `${BASE_API_URL}complaint_number/upload`,
+  COMPLAINT_NUMBER_LIST: `${BASE_API_URL}complaint_number/list_complaints`,
 
   OUT_OF_WARRANTY_NEXT_CODE: `${BASE_API_URL}out_of_warranty/next_srf_number`,
   OUT_OF_WARRANTY_CREATE: `${BASE_API_URL}out_of_warranty/create`,

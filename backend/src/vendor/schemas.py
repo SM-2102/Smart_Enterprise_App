@@ -60,9 +60,11 @@ class VendorFinalSettlementRecord(BaseModel):
     vendor_leg_cost: Optional[float]
     vendor_cost: Optional[float]
 
+
 class UpdateVendorFinalSettlement(BaseModel):
     srf_number: str
     vendor_settled: str = Field(..., max_length=1)
+
 
 class VendorUpdateComplaintNumber(BaseModel):
     srf_number: str

@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from sqlalchemy import case, func, select, union_all, literal
+from sqlalchemy import case, func, literal, select, union_all
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from challan.models_smart import ChallanSmart
@@ -88,7 +88,11 @@ class MenuService:
             ).label("received_not_settled"),
             func.count(
                 case(
-                    ((Retail.settlement_date.is_not(None)) & (Retail.final_status == "N"), 1)
+                    (
+                        (Retail.settlement_date.is_not(None))
+                        & (Retail.final_status == "N"),
+                        1,
+                    )
                 )
             ).label("propose_for_settlement"),
             func.count(case((Retail.final_status == "Y", 1))).label("settled"),
@@ -99,8 +103,7 @@ class MenuService:
 
         return {
             "division_counts": [
-                {"division": division, "count": count}
-                for division, count in div_rows
+                {"division": division, "count": count} for division, count in div_rows
             ],
             "pie": {
                 "not_received": pie_row.get("not_received", 0),
@@ -170,7 +173,9 @@ class MenuService:
 
         # Rolling monthly totals
         cutoff_date = date.today().replace(day=1) - timedelta(days=150)
-        month_expr = func.to_char(func.date_trunc("month", union_subq.c.challan_date), "YYYY-MM")
+        month_expr = func.to_char(
+            func.date_trunc("month", union_subq.c.challan_date), "YYYY-MM"
+        )
 
         rolling_stmt = (
             select(
@@ -214,19 +219,25 @@ class MenuService:
             "srf_delivery": [{"srf_number":..., "srf_date":..., "delivery_date":...}, ...]
         }
         """
-        appl_divisions = ["SDA", "IWH", "SWH", "COOLER", "OTHERS", "LIGHT", "FANS", "PUMP", "ALTERNATOR", "HT MOTOR"]
+        appl_divisions = [
+            "SDA",
+            "IWH",
+            "SWH",
+            "COOLER",
+            "OTHERS",
+            "LIGHT",
+            "FANS",
+            "PUMP",
+            "ALTERNATOR",
+            "HT MOTOR",
+        ]
 
         division_label = case(
-            (Warranty.division.in_(appl_divisions), "OTHERS"),
-            else_=Warranty.division
+            (Warranty.division.in_(appl_divisions), "OTHERS"), else_=Warranty.division
         ).label("division")
 
         pending_stmt = (
-            select(
-                division_label,
-                Warranty.final_status,
-                func.count().label("count")
-            )
+            select(division_label, Warranty.final_status, func.count().label("count"))
             .group_by(division_label, Warranty.final_status)
             .order_by(division_label)
         )
@@ -260,11 +271,7 @@ class MenuService:
 
         return {
             "pending_completed": [
-                {
-                    "division": division,
-                    "final_status": final_status,
-                    "count": count
-                }
+                {"division": division, "final_status": final_status, "count": count}
                 for division, final_status, count in pending_rows
             ],
             "heads": {
@@ -278,7 +285,7 @@ class MenuService:
                     "delivery_date": r.delivery_date.isoformat(),
                 }
                 for r in srf_rows
-            ]
+            ],
         }
 
     # ---------------------------
@@ -293,11 +300,21 @@ class MenuService:
             "srf_repair_delivery": [{"srf_number":..., "srf_date":..., "repair_date":..., "delivery_date":...}, ...]
         }
         """
-        appl_divisions = ["SDA", "IWH", "SWH", "COOLER", "OTHERS", "LIGHT", "FANS", "ALTERNATOR", "HT MOTOR"]
+        appl_divisions = [
+            "SDA",
+            "IWH",
+            "SWH",
+            "COOLER",
+            "OTHERS",
+            "LIGHT",
+            "FANS",
+            "ALTERNATOR",
+            "HT MOTOR",
+        ]
 
         division_label = case(
             (OutOfWarranty.division.in_(appl_divisions), "OTHERS"),
-            else_=OutOfWarranty.division
+            else_=OutOfWarranty.division,
         ).label("division")
 
         status_case = case(
@@ -306,11 +323,7 @@ class MenuService:
         ).label("status")
 
         pending_stmt = (
-            select(
-                division_label,
-                status_case,
-                func.count().label("count")
-            )
+            select(division_label, status_case, func.count().label("count"))
             .group_by(division_label, status_case)
             .order_by(division_label)
         )
@@ -355,9 +368,9 @@ class MenuService:
                     "delivery_date": r.delivery_date.isoformat(),
                 }
                 for r in srf_rows
-            ]
+            ],
         }
-    
+
     # ---------------------------
     # VENDOR (grouped — status + total)
     # ---------------------------
@@ -381,9 +394,7 @@ class MenuService:
 
         # Total vendors (unchanged)
         warranty_count = (
-            await session.execute(
-                select(func.count()).where(Warranty.challan == "Y")
-            )
+            await session.execute(select(func.count()).where(Warranty.challan == "Y"))
         ).scalar() or 0
 
         outwarranty_count = (

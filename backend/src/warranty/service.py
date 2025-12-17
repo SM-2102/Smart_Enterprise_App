@@ -11,7 +11,7 @@ from sqlalchemy import case, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from exceptions import IncorrectCodeFormat, WarrantyNotFound, ModelNotFound
+from exceptions import IncorrectCodeFormat, ModelNotFound, WarrantyNotFound
 from master.models import Master
 from master.service import MasterService
 from model.service import ModelService
@@ -67,9 +67,11 @@ class WarrantyService:
             raise IncorrectCodeFormat()
 
         if warranty.division in ["PUMP", "LT MOTOR", "FHP MOTOR"]:
-            if not await model_service.check_model_name_available(warranty.model, session):
+            if not await model_service.check_model_name_available(
+                warranty.model, session
+            ):
                 raise ModelNotFound()
-            
+
         # If frontend requests a new base, generate next base number
         base_part = parts[0]
         if base_part == "NEW":
@@ -85,7 +87,11 @@ class WarrantyService:
                     )
                 warranty_data_dict["created_by"] = token["user"]["username"]
                 warranty_data_dict["code"] = master.code
-                for date_field in ["srf_date", "purchase_date", "customer_challan_date"]:
+                for date_field in [
+                    "srf_date",
+                    "purchase_date",
+                    "customer_challan_date",
+                ]:
                     if date_field in warranty_data_dict:
                         warranty_data_dict[date_field] = parse_date(
                             warranty_data_dict[date_field]
@@ -256,12 +262,14 @@ class WarrantyService:
         last_srf_number = last_srf_number.split("/")[0] if last_srf_number else None
         return last_srf_number
 
-    async def print_srf(self, srf_number: str, token: dict, session: AsyncSession) -> io.BytesIO:
+    async def print_srf(
+        self, srf_number: str, token: dict, session: AsyncSession
+    ) -> io.BytesIO:
 
         # Normalize input SRF number
         if len(srf_number) > 6:
             raise ValueError()
-        if not srf_number.startswith('R'):
+        if not srf_number.startswith("R"):
             srf_number = "R" + srf_number.zfill(5)
 
         # Fetch all rows for this SRF
@@ -300,23 +308,27 @@ class WarrantyService:
         for idx, row in enumerate(rows, 1):
             w = row.Warranty
             # Page 1 columns: index, division, model, serial_number, srf_number, remark
-            page1_rows.append([
-                str(idx),
-                w.division or "",
-                w.model or "",
-                str(w.serial_number or ""),
-                w.srf_number,
-                w.remark or "",
-            ])
+            page1_rows.append(
+                [
+                    str(idx),
+                    w.division or "",
+                    w.model or "",
+                    str(w.serial_number or ""),
+                    w.srf_number,
+                    w.remark or "",
+                ]
+            )
             # Page 2 columns: index, division, model, serial_number, complaint_number, sticker_number
-            page2_rows.append([
-                str(idx),
-                w.division or "",
-                w.model or "",
-                str(w.serial_number or ""),
-                w.complaint_number or "",
-                w.sticker_number or "",
-            ])
+            page2_rows.append(
+                [
+                    str(idx),
+                    w.division or "",
+                    w.model or "",
+                    str(w.serial_number or ""),
+                    w.complaint_number or "",
+                    w.sticker_number or "",
+                ]
+            )
 
         def generate_overlay(rows, columns):
             packet = io.BytesIO()
@@ -422,7 +434,6 @@ class WarrantyService:
         output_stream.seek(0)
         return output_stream
 
-
     async def enquiry_warranty(
         self,
         session: AsyncSession,
@@ -522,11 +533,13 @@ class WarrantyService:
             )
             for row in rows
         ]
-    
+
     async def check_complaint_number_available(
         self, complaint_number: str, session: AsyncSession
     ) -> bool:
-        statement = select(Warranty).where(Warranty.complaint_number == complaint_number)
+        statement = select(Warranty).where(
+            Warranty.complaint_number == complaint_number
+        )
         result = await session.execute(statement)
         existing_record = result.scalar()
         if existing_record:

@@ -2,28 +2,19 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 
-from model.models import Model
-from rewinding_rate.models import RewindingRate
-from model.schemas import RewindingCharge, CreateModel, CostDetails
 from exceptions import ModelAlreadyExists
+from model.models import Model
+from model.schemas import CostDetails, CreateModel, RewindingCharge
+from rewinding_rate.models import RewindingRate
+
 
 class ModelService:
 
-    async def get_cost_details(
-        self,
-        session: AsyncSession,
-        division: str,
-        model: str
-    ):
+    async def get_cost_details(self, session: AsyncSession, division: str, model: str):
         # STEP 1: Fetch frame, hp_rating, rewinding_charge from model table
         model_statement = select(
-            Model.frame,
-            Model.hp_rating,
-            Model.rewinding_charge
-        ).where(
-            Model.division == division,
-            Model.model == model
-        )
+            Model.frame, Model.hp_rating, Model.rewinding_charge
+        ).where(Model.division == division, Model.model == model)
 
         model_result = await session.execute(model_statement)
         model_row = model_result.first()
@@ -37,20 +28,16 @@ class ModelService:
             rate_statement = select(
                 RewindingRate.paint_charge,
                 RewindingRate.stator_charge,
-                RewindingRate.leg_charge
-            ).where(
-                RewindingRate.division == division,
-                RewindingRate.frame == frame
-            )
+                RewindingRate.leg_charge,
+            ).where(RewindingRate.division == division, RewindingRate.frame == frame)
 
         elif division == "FHP MOTOR":
             rate_statement = select(
                 RewindingRate.paint_charge,
                 RewindingRate.stator_charge,
-                RewindingRate.leg_charge
+                RewindingRate.leg_charge,
             ).where(
-                RewindingRate.division == division,
-                RewindingRate.hp_rating == hp_rating
+                RewindingRate.division == division, RewindingRate.hp_rating == hp_rating
             )
 
         else:
@@ -73,9 +60,9 @@ class ModelService:
             rewinding_charge=rewinding_charge,
             paint_charge=paint_charge,
             stator_charge=stator_charge,
-            leg_charge=leg_charge
+            leg_charge=leg_charge,
         )
-    
+
     async def check_model_name_available(
         self, model: str, session: AsyncSession
     ) -> bool:
@@ -85,7 +72,7 @@ class ModelService:
         if existing_model:
             return True
         return False
-    
+
     async def create_model(
         self, session: AsyncSession, model: CreateModel, token: dict
     ):
@@ -97,7 +84,7 @@ class ModelService:
         session.add(new_model)
         await session.commit()
         return new_model
-    
+
     async def get_models(self, session: AsyncSession, division: str):
         statement = select(Model.model).where(
             Model.division == division,

@@ -16,13 +16,9 @@ function YesNoToggle({ value, onChange, disabled }) {
       type="button"
       onClick={() => onChange(isYes ? "N" : "Y")}
       disabled={disabled}
-      className={`${baseClasses} ${
-        disabled ? disabledClasses : activeClasses
-      }`}
+      className={`${baseClasses} ${disabled ? disabledClasses : activeClasses}`}
       title={
-        disabled
-          ? "Available only for LT MOTOR / FHP MOTOR divisions"
-          : ""
+        disabled ? "Available only for LT MOTOR / FHP MOTOR divisions" : ""
       }
     >
       {isYes ? "Yes" : "No"}

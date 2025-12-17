@@ -108,7 +108,8 @@ const ModelCreatePage = () => {
 
   // Manual fetch handler for rewinding charge (triggered by icon/button)
   const handleFetchCharge = async () => {
-    const shouldFetch = form.division === "LT MOTOR" || form.division === "FHP MOTOR";
+    const shouldFetch =
+      form.division === "LT MOTOR" || form.division === "FHP MOTOR";
     if (!shouldFetch) return;
 
     setRewindingLoading(true);
@@ -204,9 +205,7 @@ const ModelCreatePage = () => {
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.frame ? "border-red-300" : "border-gray-300"} border-gray-300 focus:ring-2 focus:ring-blue-400 ${!(form.division === "LT MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "LT MOTOR"}
               placeholder={
-                form.division !== "LT MOTOR"
-                  ? "Frame is Disabled"
-                  : ""
+                form.division !== "LT MOTOR" ? "Frame is Disabled" : ""
               }
             />
           </div>
@@ -225,9 +224,7 @@ const ModelCreatePage = () => {
               className={`flex-1 px-3 py-1 rounded-lg border ${errs_label.hp_rating ? "border-red-300" : "border-gray-300"} border-gray-300 focus:ring-2 focus:ring-blue-400 ${!(form.division === "FHP MOTOR") ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-50"}`}
               disabled={submitting || form.division !== "FHP MOTOR"}
               placeholder={
-                form.division !== "FHP MOTOR"
-                  ? "HP Rating is disabled"
-                  : ""
+                form.division !== "FHP MOTOR" ? "HP Rating is disabled" : ""
               }
             />
           </div>
@@ -256,50 +253,51 @@ const ModelCreatePage = () => {
           </div>
 
           {/* Rewinding Charge */}
-         <div className="flex items-center gap-3 w-full">
-          <label className="w-35 text-md font-medium text-gray-700">
-            Rewinding Charge<span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center gap-3 w-full">
+            <label className="w-35 text-md font-medium text-gray-700">
+              Rewinding Charge<span className="text-red-500">*</span>
+            </label>
 
-          <div className="flex-1 flex items-center gap-2">
-            <input
-              type="number"
-              name="rewinding_charge"
-              value={form.rewinding_charge}
-              onChange={handleChange}
-              readOnly={isRewindingLocked}
-              className={`w-full px-3 py-1 rounded-lg border ${
-                errs_label.rewinding_charge ? "border-red-300" : "border-gray-300"
-              } bg-gray-50 focus:ring-2 focus:ring-blue-400 ${
-                isRewindingLocked ? "cursor-not-allowed" : ""
-              }`}
-              disabled={submitting}
-            />
-
-            <button
-              type="button"
-              onClick={handleFetchCharge}
-              disabled={!isRewindingLocked || rewindingLoading || submitting}
-              title={
-                !isRewindingLocked
-                  ? "Fetch disabled for this division"
-                  : "Fetch rewinding charge"
-              }
-              className={`p-2 rounded-lg border transition ${
-                isRewindingLocked
-                  ? "border-blue-400 bg-blue-100 hover:bg-blue-200"
-                  : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
-              }`}
-            >
-              <FiRefreshCw
-                className={`text-lg ${
-                  rewindingLoading ? "animate-spin" : ""
+            <div className="flex-1 flex items-center gap-2">
+              <input
+                type="number"
+                name="rewinding_charge"
+                value={form.rewinding_charge}
+                onChange={handleChange}
+                readOnly={isRewindingLocked}
+                className={`w-full px-3 py-1 rounded-lg border ${
+                  errs_label.rewinding_charge
+                    ? "border-red-300"
+                    : "border-gray-300"
+                } bg-gray-50 focus:ring-2 focus:ring-blue-400 ${
+                  isRewindingLocked ? "cursor-not-allowed" : ""
                 }`}
+                disabled={submitting}
               />
-            </button>
-          </div>
-        </div>
 
+              <button
+                type="button"
+                onClick={handleFetchCharge}
+                disabled={!isRewindingLocked || rewindingLoading || submitting}
+                title={
+                  !isRewindingLocked
+                    ? "Fetch disabled for this division"
+                    : "Fetch rewinding charge"
+                }
+                className={`p-2 rounded-lg border transition ${
+                  isRewindingLocked
+                    ? "border-blue-400 bg-blue-100 hover:bg-blue-200"
+                    : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                <FiRefreshCw
+                  className={`text-lg ${
+                    rewindingLoading ? "animate-spin" : ""
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-center mt-6">

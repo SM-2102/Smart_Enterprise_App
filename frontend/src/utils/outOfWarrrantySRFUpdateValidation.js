@@ -108,15 +108,14 @@ function validateOutOfWarrantyUpdate(form) {
     }
   }
 
- if (form.rewinding_done === "Y" && form.rewinding_cost) {
-  const minCustomerCost = Number(form.rewinding_base_cost || 0);
+  if (form.rewinding_done === "Y" && form.rewinding_cost) {
+    const minCustomerCost = Number(form.rewinding_base_cost || 0);
 
-  if (form.rewinding_cost < minCustomerCost) {
-    errs.push("Rewinding Cost too Low");
-    errs_label["rewinding_cost"] = true;
+    if (form.rewinding_cost < minCustomerCost) {
+      errs.push("Rewinding Cost too Low");
+      errs_label["rewinding_cost"] = true;
+    }
   }
-}
-
 
   if (form.delivery_date && !form.work_done) {
     errs.push("Work Done is required");
@@ -133,15 +132,15 @@ function validateOutOfWarrantyUpdate(form) {
   }
 
   if (form.final_status === "Y") {
-    if(form.leg_cost < form.vendor_leg_cost) {
+    if (form.leg_cost < form.vendor_leg_cost) {
       errs.push("Insufficient Leg Charge");
       errs_label["leg_cost"] = true;
     }
-    if(form.stator_cost < form.vendor_stator_cost) {
+    if (form.stator_cost < form.vendor_stator_cost) {
       errs.push("Insufficient Stator Charge");
       errs_label["stator_cost"] = true;
     }
-    if(form.paint_cost < form.vendor_paint_cost) {
+    if (form.paint_cost < form.vendor_paint_cost) {
       errs.push("Insufficient Paint Charge");
       errs_label["paint_cost"] = true;
     }

@@ -160,8 +160,6 @@ const WarrantyStatusChart = ({ data }) => {
                 : `${data.warranty.warranty_heads.replace} Items Replaced`}
             </span>
           </div>
-
-          
         </div>
       )}
 

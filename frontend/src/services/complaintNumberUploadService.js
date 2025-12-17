@@ -8,7 +8,10 @@ import { authFetch } from "./authFetchService";
  */
 async function UploadComplaintNumber(file) {
   if (!file) {
-    throw { message: "No file provided", resolution: "Select a .csv file to upload" };
+    throw {
+      message: "No file provided",
+      resolution: "Select a .csv file to upload",
+    };
   }
 
   const formData = new FormData();

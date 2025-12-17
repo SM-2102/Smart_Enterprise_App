@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+
 class WarrantyCreate(BaseModel):
     srf_number: str = Field(..., max_length=8)
     name: str = Field(..., max_length=40)
@@ -18,10 +19,11 @@ class WarrantyCreate(BaseModel):
     complaint_number: Optional[str] = Field(None, max_length=15)
     dealer_name: Optional[str] = Field(None, max_length=30)
     rpm: Optional[int]
-    purchase_number:  Optional[str] = Field(None, max_length=15)
+    purchase_number: Optional[str] = Field(None, max_length=15)
     purchase_date: Optional[date]
     customer_challan_number: str = Field(..., max_length=15)
     customer_challan_date: date
+
 
 class WarrantyEnquiry(BaseModel):
     srf_number: str
@@ -56,7 +58,7 @@ class WarrantyUpdateResponse(BaseModel):
     challan_number: Optional[str]
     challan_date: Optional[date]
     received_by: Optional[str]
-    vendor_date2:  Optional[date]
+    vendor_date2: Optional[date]
     vendor_cost2: Optional[float]
     rewinding_done: str
     repair_date: Optional[date]
@@ -100,6 +102,7 @@ class WarrantyUpdateResponse(BaseModel):
     purchase_date: Optional[date]
     customer_challan_number: Optional[str]
     customer_challan_date: Optional[date]
+
 
 class WarrantyUpdate(BaseModel):
     vendor_date2: Optional[date]
@@ -150,4 +153,3 @@ class WarrantyUpdate(BaseModel):
     purchase_date: Optional[date]
     customer_challan_number: Optional[str] = Field(None, max_length=15)
     customer_challan_date: Optional[date]
-

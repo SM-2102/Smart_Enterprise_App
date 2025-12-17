@@ -480,8 +480,7 @@ const Filter = ({
                   boxShadow: "0 1px 2px rgba(25, 118, 210, 0.04)",
                   width: "100%",
                 }}
-              >
-              </input>
+              ></input>
             </div>
           </div>
 
@@ -745,7 +744,6 @@ const WarrantyEnquiryPage = () => {
         onClear={handleClear}
         serialNumber={serialNumber}
         setSerialNumber={setSerialNumber}
-
       />
       {/* Results or placeholder */}
       {error ? (

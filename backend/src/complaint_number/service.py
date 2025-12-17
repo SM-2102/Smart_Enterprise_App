@@ -1,23 +1,20 @@
+import csv
+import io
+
+from fastapi import UploadFile
+from pydantic import ValidationError
+from sqlalchemy import case, insert, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import insert, update, case
-from fastapi import UploadFile
-import csv
-import io
-from pydantic import ValidationError
 
-from complaint_number.schemas import ComplaintNumberSchema
 from complaint_number.models import ComplaintNumber
+from complaint_number.schemas import ComplaintNumberSchema
 
 
 class ComplaintNumberService:
 
-    async def upload_complaint_number(
-        self,
-        session: AsyncSession,
-        file: UploadFile
-    ):
+    async def upload_complaint_number(self, session: AsyncSession, file: UploadFile):
         """
         Read uploaded CSV, validate rows and insert/update DB.
 
@@ -106,9 +103,7 @@ class ComplaintNumberService:
         keys = [r.complaint_number for r in records]
 
         result = await session.execute(
-            select(ComplaintNumber).where(
-                ComplaintNumber.complaint_number.in_(keys)
-            )
+            select(ComplaintNumber).where(ComplaintNumber.complaint_number.in_(keys))
         )
 
         existing = {r.complaint_number: r for r in result.scalars().all()}
@@ -136,9 +131,7 @@ class ComplaintNumberService:
         try:
             # ---------- BULK INSERT ----------
             if to_insert:
-                await session.execute(
-                    insert(table).values(to_insert)
-                )
+                await session.execute(insert(table).values(to_insert))
                 inserted = len(to_insert)
 
             # ---------- BULK UPDATE (SQLAlchemy 2.x) ----------
@@ -182,6 +175,7 @@ class ComplaintNumberService:
         except Exception as e:
             await session.rollback()
             import traceback
+
             traceback.print_exc()
             return {
                 "message": "Unexpected server error",
@@ -194,7 +188,7 @@ class ComplaintNumberService:
             "resolution": f"Inserted : {inserted}, Updated : {updated}",
             "type": "success",
         }
-    
+
     async def list_complaints(self, session: AsyncSession):
         statement = select(ComplaintNumber)
         result = await session.execute(statement)

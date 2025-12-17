@@ -17,7 +17,8 @@ async function updateComplaintNumber(complaintNumberData) {
   const data = await response.json();
   if (!response.ok) {
     throw {
-      message: data.message || data.detail || "Failed to update complaint number",
+      message:
+        data.message || data.detail || "Failed to update complaint number",
       resolution: data.resolution || "",
     };
   }

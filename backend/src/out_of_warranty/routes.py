@@ -166,7 +166,6 @@ async def print_srf(
     )
 
 
-
 """
 OutOfWarranty enquiry using query parameters.
 
@@ -211,7 +210,6 @@ async def enquiry_out_of_warranty(
         return result
     except:
         return []
-
 
 
 """

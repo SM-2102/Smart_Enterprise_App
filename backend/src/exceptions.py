@@ -66,7 +66,6 @@ class RoadChallanNotFound(BaseException):
     """Road Challan Not Found"""
 
 
-
 class ServiceCenterNotFound(BaseException):
     """Service Center Not Found"""
 
@@ -82,14 +81,18 @@ class OutOfWarrantyNotFound(BaseException):
 class ServiceCenterAlreadyExists(BaseException):
     """Service Center Already Exists"""
 
+
 class VendorNotFound(BaseException):
     """Vendor Not Found"""
+
 
 class ModelAlreadyExists(BaseException):
     """Model Already Exists"""
 
+
 class ModelNotFound(BaseException):
     """Model Not Found"""
+
 
 class ComplaintNumberAlreadyExists(BaseException):
     """Complaint Number Already Exists"""
@@ -344,7 +347,7 @@ def register_exceptions(app: FastAPI):
                 "error_code": "validation_error",
             },
         )
-    
+
     app.add_exception_handler(
         ModelAlreadyExists,
         create_exception_handler(

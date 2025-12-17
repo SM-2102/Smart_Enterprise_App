@@ -23,7 +23,9 @@ const ComplaintNumberUploadPage = () => {
   const [uploading, setUploading] = useState(false);
 
   const isCsvFile = (file) =>
-    file && ((file.name || "").toLowerCase().endsWith(".csv") || file.type === "text/csv");
+    file &&
+    ((file.name || "").toLowerCase().endsWith(".csv") ||
+      file.type === "text/csv");
 
   const handleFileChange = (e) => {
     const f = e.target.files?.[0];
@@ -83,71 +85,75 @@ const ComplaintNumberUploadPage = () => {
       )}
 
       <Paper elevation={6} sx={{ p: 4, borderRadius: 3 }}>
-          {/* Header */}
-          <h2 className="text-xl font-semibold text-blue-800 mb-4 pb-2 border-b border-blue-500 justify-center flex items-center gap-2">
+        {/* Header */}
+        <h2 className="text-xl font-semibold text-blue-800 mb-4 pb-2 border-b border-blue-500 justify-center flex items-center gap-2">
           Upload Complaint Numbers
         </h2>
 
-          {/* Upload Box */}
-          <Box
-            sx={{
-              border: "2px dashed",
-              borderColor: file ? "primary.main" : "grey.300",
-              borderRadius: 2,
-              p: 3,
-              textAlign: "center",
-              bgcolor: file ? "primary.50" : "grey.50",
-              transition: "all 0.2s ease",
-            }}
-          >
-            <Stack spacing={2} alignItems="center">
-              <UploadFileIcon color="primary" sx={{ fontSize: 40 }} />
+        {/* Upload Box */}
+        <Box
+          sx={{
+            border: "2px dashed",
+            borderColor: file ? "primary.main" : "grey.300",
+            borderRadius: 2,
+            p: 3,
+            textAlign: "center",
+            bgcolor: file ? "primary.50" : "grey.50",
+            transition: "all 0.2s ease",
+          }}
+        >
+          <Stack spacing={2} alignItems="center">
+            <UploadFileIcon color="primary" sx={{ fontSize: 40 }} />
 
-              {!file ? (
-                <>
-                  <Typography variant="body1" fontWeight={500}>
-                    Select a CSV file
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Only .csv files are supported
-                  </Typography>
+            {!file ? (
+              <>
+                <Typography variant="body1" fontWeight={500}>
+                  Select a CSV file
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Only .csv files are supported
+                </Typography>
 
-                  <Button variant="outlined" component="label">
-                    Browse File
-                    <input
-                      id="complaint-file-input"
-                      hidden
-                      type="file"
-                      accept=".csv,text/csv"
-                      onChange={handleFileChange}
-                    />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Chip
-                    icon={<InsertDriveFileIcon />}
-                    label={file.name}
-                    onDelete={handleClearFile}
-                    deleteIcon={<ClearIcon />}
-                    sx={{ maxWidth: "100%" }}
+                <Button variant="outlined" component="label">
+                  Browse File
+                  <input
+                    id="complaint-file-input"
+                    hidden
+                    type="file"
+                    accept=".csv,text/csv"
+                    onChange={handleFileChange}
                   />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Chip
+                  icon={<InsertDriveFileIcon />}
+                  label={file.name}
+                  onDelete={handleClearFile}
+                  deleteIcon={<ClearIcon />}
+                  sx={{ maxWidth: "100%" }}
+                />
 
-                  <Button
-                    variant="contained"
-                    size="large"
-                    onClick={handleUpload}
-                    disabled={uploading}
-                    startIcon={
-                      uploading ? <CircularProgress size={18} /> : <UploadFileIcon />
-                    }
-                  >
-                    {uploading ? "Uploading..." : "Upload File"}
-                  </Button>
-                </>
-              )}
-            </Stack>
-          </Box>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  startIcon={
+                    uploading ? (
+                      <CircularProgress size={18} />
+                    ) : (
+                      <UploadFileIcon />
+                    )
+                  }
+                >
+                  {uploading ? "Uploading..." : "Upload File"}
+                </Button>
+              </>
+            )}
+          </Stack>
+        </Box>
       </Paper>
     </Container>
   );

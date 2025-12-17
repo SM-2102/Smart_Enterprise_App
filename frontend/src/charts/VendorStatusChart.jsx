@@ -7,8 +7,7 @@ const VendorStatusChart = ({ data }) => {
      Data shaping
   -------------------------------- */
   useEffect(() => {
-    const raw =
-      data?.vendor?.status_per_division_stacked_bar_chart || [];
+    const raw = data?.vendor?.status_per_division_stacked_bar_chart || [];
 
     const grouped = {};
 
@@ -54,8 +53,7 @@ const VendorStatusChart = ({ data }) => {
     });
   };
 
-  const hideTooltip = () =>
-    setTooltip((t) => ({ ...t, show: false }));
+  const hideTooltip = () => setTooltip((t) => ({ ...t, show: false }));
 
   /* -------------------------------
      Counter
@@ -91,7 +89,7 @@ const VendorStatusChart = ({ data }) => {
         wN: false,
         owY: false,
         owN: false,
-      }))
+      })),
     );
 
     chartData.forEach((_, idx) => {
@@ -152,9 +150,7 @@ const VendorStatusChart = ({ data }) => {
           <div className="text-gray-700">{tooltip.label}</div>
           <div className="font-bold text-gray-900">
             {tooltip.percent}
-            <span className="ml-1 text-gray-500">
-              ({tooltip.count})
-            </span>
+            <span className="ml-1 text-gray-500">({tooltip.count})</span>
           </div>
         </div>
       )}
@@ -162,33 +158,24 @@ const VendorStatusChart = ({ data }) => {
       <div className="flex justify-center mt-4">
         <div className="flex gap-4">
           {chartData.map((item, idx) => {
-            const wTotal =
-              item.warranty.Y + item.warranty.N;
-            const owTotal =
-              item.outwarranty.Y + item.outwarranty.N;
+            const wTotal = item.warranty.Y + item.warranty.N;
+            const owTotal = item.outwarranty.Y + item.outwarranty.N;
 
             const showWarranty = wTotal > 0;
             const showOW = owTotal > 0;
 
-            const barCount =
-              (showWarranty ? 1 : 0) + (showOW ? 1 : 0);
+            const barCount = (showWarranty ? 1 : 0) + (showOW ? 1 : 0);
 
-            const barWidth =
-              barCount === 1 ? "w-16" : "w-8";
+            const barWidth = barCount === 1 ? "w-16" : "w-8";
 
             const state = barStates[idx] || {};
 
-            const pct = (v, t) =>
-              t ? ((v / t) * 100).toFixed(1) : 0;
+            const pct = (v, t) => (t ? ((v / t) * 100).toFixed(1) : 0);
 
             return (
-              <div
-                key={item.division}
-                className="flex flex-col items-center"
-              >
+              <div key={item.division} className="flex flex-col items-center">
                 {/* Bars */}
                 <div className="flex gap-1 h-32">
-
                   {/* Warranty bar */}
                   {showWarranty && (
                     <div
@@ -206,7 +193,7 @@ const VendorStatusChart = ({ data }) => {
                             e,
                             "Warranty – Settled",
                             item.warranty.Y,
-                            `${pct(item.warranty.Y, wTotal)}%`
+                            `${pct(item.warranty.Y, wTotal)}%`,
                           )
                         }
                         onMouseOut={hideTooltip}
@@ -223,7 +210,7 @@ const VendorStatusChart = ({ data }) => {
                             e,
                             "Warranty – Pending",
                             item.warranty.N,
-                            `${pct(item.warranty.N, wTotal)}%`
+                            `${pct(item.warranty.N, wTotal)}%`,
                           )
                         }
                         onMouseOut={hideTooltip}
@@ -248,7 +235,7 @@ const VendorStatusChart = ({ data }) => {
                             e,
                             "Out of Warranty – Settled",
                             item.outwarranty.Y,
-                            `${pct(item.outwarranty.Y, owTotal)}%`
+                            `${pct(item.outwarranty.Y, owTotal)}%`,
                           )
                         }
                         onMouseOut={hideTooltip}
@@ -265,7 +252,7 @@ const VendorStatusChart = ({ data }) => {
                             e,
                             "Out of Warranty – Pending",
                             item.outwarranty.N,
-                            `${pct(item.outwarranty.N, owTotal)}%`
+                            `${pct(item.outwarranty.N, owTotal)}%`,
                           )
                         }
                         onMouseOut={hideTooltip}

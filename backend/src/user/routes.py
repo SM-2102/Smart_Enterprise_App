@@ -20,9 +20,7 @@ Check if user exists, create new user if not.
 
 
 @user_router.post(
-    "/create_user",
-    status_code=status.HTTP_201_CREATED,
-    dependencies=[role_checker]
+    "/create_user", status_code=status.HTTP_201_CREATED, dependencies=[role_checker]
 )
 async def create_user(
     user: UserCreate,

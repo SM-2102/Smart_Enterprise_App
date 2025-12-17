@@ -11,37 +11,44 @@ from sqlalchemy import case, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
+from exceptions import ComplaintNumberAlreadyExists, VendorNotFound
+from out_of_warranty.models import OutOfWarranty
 from utils.date_utils import format_date_ddmmyyyy, parse_date
 from utils.file_utils import safe_join, split_text_to_lines
-
-from out_of_warranty.models import OutOfWarranty
-from warranty.models import Warranty
-from warranty.service import WarrantyService
 from vendor.schemas import (
     UpdateVendorFinalSettlement,
-    VendorChallanDetails,
+    UpdateVendorUnsettled,
     VendorChallanCreate,
+    VendorChallanDetails,
     VendorFinalSettlementRecord,
     VendorNotSettledRecord,
-    UpdateVendorUnsettled,
     VendorUpdateComplaintNumber,
 )
-from exceptions import VendorNotFound, ComplaintNumberAlreadyExists
+from warranty.models import Warranty
+from warranty.service import WarrantyService
+
 warranty_service = WarrantyService()
 from master.models import Master
+
 
 class VendorService:
 
     async def next_vendor_challan_code(self, session: AsyncSession):
-        warranty_max_result = await session.execute(select(func.max(Warranty.challan_number)))
-        out_of_warranty_max_result = await session.execute(select(func.max(OutOfWarranty.challan_number)))
+        warranty_max_result = await session.execute(
+            select(func.max(Warranty.challan_number))
+        )
+        out_of_warranty_max_result = await session.execute(
+            select(func.max(OutOfWarranty.challan_number))
+        )
         warranty_max = warranty_max_result.scalar()
         out_of_warranty_max = out_of_warranty_max_result.scalar()
+
         # Remove prefix if present and convert to int
         def extract_number(val):
             if val and len(val) > 1 and val[1:].isdigit():
                 return int(val[1:])
             return 0
+
         warranty_num = extract_number(warranty_max)
         out_num = extract_number(out_of_warranty_max)
         last_number = max(warranty_num, out_num)
@@ -50,15 +57,21 @@ class VendorService:
         return next_challan_number
 
     async def last_vendor_challan_code(self, session: AsyncSession):
-        warranty_max_result = await session.execute(select(func.max(Warranty.challan_number)))
-        out_of_warranty_max_result = await session.execute(select(func.max(OutOfWarranty.challan_number)))
+        warranty_max_result = await session.execute(
+            select(func.max(Warranty.challan_number))
+        )
+        out_of_warranty_max_result = await session.execute(
+            select(func.max(OutOfWarranty.challan_number))
+        )
         warranty_max = warranty_max_result.scalar()
         out_of_warranty_max = out_of_warranty_max_result.scalar()
+
         # Compare and return the one with the higher number
         def extract_number(val):
             if val and len(val) > 1 and val[1:].isdigit():
                 return int(val[1:])
             return 0
+
         warranty_num = extract_number(warranty_max)
         out_num = extract_number(out_of_warranty_max)
         if warranty_num >= out_num:
@@ -68,33 +81,25 @@ class VendorService:
 
     async def list_vendor_challan_details(self, session: AsyncSession):
         # Select matching Warranty records
-        warranty_statement = (
-            select(
-                Warranty.srf_number,
-                Warranty.division,
-                Warranty.model,
-                Warranty.serial_number,
-                Warranty.challan
-            )
-            .where(
-                (Warranty.repair_date.is_(None)) & (Warranty.challan == 'N')
-            )
-        )
+        warranty_statement = select(
+            Warranty.srf_number,
+            Warranty.division,
+            Warranty.model,
+            Warranty.serial_number,
+            Warranty.challan,
+        ).where((Warranty.repair_date.is_(None)) & (Warranty.challan == "N"))
         # Select matching OutOfWarranty records
-        out_of_warranty_statement = (
-            select(
-                OutOfWarranty.srf_number,
-                OutOfWarranty.division,
-                OutOfWarranty.model,
-                OutOfWarranty.serial_number,
-                OutOfWarranty.challan
-            )
-            .where(
-                (OutOfWarranty.repair_date.is_(None)) & (OutOfWarranty.challan == 'N')
-            )
-        )
+        out_of_warranty_statement = select(
+            OutOfWarranty.srf_number,
+            OutOfWarranty.division,
+            OutOfWarranty.model,
+            OutOfWarranty.serial_number,
+            OutOfWarranty.challan,
+        ).where((OutOfWarranty.repair_date.is_(None)) & (OutOfWarranty.challan == "N"))
         # Union both queries
-        union_statement = warranty_statement.union_all(out_of_warranty_statement).order_by("srf_number")
+        union_statement = warranty_statement.union_all(
+            out_of_warranty_statement
+        ).order_by("srf_number")
         result = await session.execute(union_statement)
         rows = result.all()
         return [
@@ -281,15 +286,12 @@ class VendorService:
         output_stream.seek(0)
         return output_stream
 
-   
     async def list_received_by(self, session: AsyncSession):
-        out_statement = (
-            select(OutOfWarranty.received_by)
-            .where(OutOfWarranty.received_by.isnot(None))
+        out_statement = select(OutOfWarranty.received_by).where(
+            OutOfWarranty.received_by.isnot(None)
         )
-        warranty_statement = (
-            select(Warranty.received_by)
-            .where(Warranty.received_by.isnot(None))
+        warranty_statement = select(Warranty.received_by).where(
+            Warranty.received_by.isnot(None)
         )
         union_statement = out_statement.union(warranty_statement)
         result = await session.execute(union_statement)
@@ -297,49 +299,45 @@ class VendorService:
         return names
 
     async def list_vendor_not_settled(self, session: AsyncSession):
-        out_statement = (
-            select(
-                OutOfWarranty.srf_number,
-                Master.name,
-                OutOfWarranty.model,
-                OutOfWarranty.complaint_number,
-                OutOfWarranty.vendor_cost1,
-                OutOfWarranty.vendor_cost2,
-                OutOfWarranty.vendor_paint_cost,
-                OutOfWarranty.vendor_stator_cost,
-                OutOfWarranty.vendor_leg_cost,
-                OutOfWarranty.vendor_cost,
-                OutOfWarranty.vendor_bill_number
-            )
-            .where(
-                (OutOfWarranty.final_status == 'Y')
-                & (OutOfWarranty.vendor_date2.isnot(None))
-                & (OutOfWarranty.vendor_settlement_date.is_(None))
-                & (Master.code == OutOfWarranty.code)
-            )
+        out_statement = select(
+            OutOfWarranty.srf_number,
+            Master.name,
+            OutOfWarranty.model,
+            OutOfWarranty.complaint_number,
+            OutOfWarranty.vendor_cost1,
+            OutOfWarranty.vendor_cost2,
+            OutOfWarranty.vendor_paint_cost,
+            OutOfWarranty.vendor_stator_cost,
+            OutOfWarranty.vendor_leg_cost,
+            OutOfWarranty.vendor_cost,
+            OutOfWarranty.vendor_bill_number,
+        ).where(
+            (OutOfWarranty.final_status == "Y")
+            & (OutOfWarranty.vendor_date2.isnot(None))
+            & (OutOfWarranty.vendor_settlement_date.is_(None))
+            & (Master.code == OutOfWarranty.code)
         )
-        warranty_statement = (
-            select(
-                Warranty.srf_number,
-                Master.name,
-                Warranty.model,
-                Warranty.complaint_number,
-                Warranty.vendor_cost1,
-                Warranty.vendor_cost2,
-                Warranty.vendor_paint_cost,
-                Warranty.vendor_stator_cost,
-                Warranty.vendor_leg_cost,
-                Warranty.vendor_cost,
-                Warranty.vendor_bill_number
-            )
-            .where(
-                (Warranty.final_status == 'Y')
-                & (Warranty.vendor_date2.isnot(None))
-                & (Warranty.vendor_settlement_date.is_(None))
-                & (Master.code == Warranty.code)
-            )
+        warranty_statement = select(
+            Warranty.srf_number,
+            Master.name,
+            Warranty.model,
+            Warranty.complaint_number,
+            Warranty.vendor_cost1,
+            Warranty.vendor_cost2,
+            Warranty.vendor_paint_cost,
+            Warranty.vendor_stator_cost,
+            Warranty.vendor_leg_cost,
+            Warranty.vendor_cost,
+            Warranty.vendor_bill_number,
+        ).where(
+            (Warranty.final_status == "Y")
+            & (Warranty.vendor_date2.isnot(None))
+            & (Warranty.vendor_settlement_date.is_(None))
+            & (Master.code == Warranty.code)
         )
-        union_statement = out_statement.union_all(warranty_statement).order_by("srf_number")
+        union_statement = out_statement.union_all(warranty_statement).order_by(
+            "srf_number"
+        )
         result = await session.execute(union_statement)
         rows = result.all()
         return [
@@ -370,7 +368,9 @@ class VendorService:
                 result = await session.execute(statement)
                 existing_vendor = result.scalar_one_or_none()
                 if existing_vendor:
-                    existing_vendor.vendor_settlement_date = vendor.vendor_settlement_date
+                    existing_vendor.vendor_settlement_date = (
+                        vendor.vendor_settlement_date
+                    )
                     existing_vendor.vendor_bill_number = vendor.vendor_bill_number
             if vendor.srf_number.startswith("S"):
                 statement = select(OutOfWarranty).where(
@@ -379,50 +379,48 @@ class VendorService:
                 result = await session.execute(statement)
                 existing_vendor = result.scalar_one_or_none()
                 if existing_vendor:
-                    existing_vendor.vendor_settlement_date = vendor.vendor_settlement_date
+                    existing_vendor.vendor_settlement_date = (
+                        vendor.vendor_settlement_date
+                    )
                     existing_vendor.vendor_bill_number = vendor.vendor_bill_number
         await session.commit()
 
     async def list_final_vendor_settlement(self, session: AsyncSession):
-        out_statement = (
-            select(
-                OutOfWarranty.srf_number,
-                Master.name,
-                OutOfWarranty.model,
-                OutOfWarranty.complaint_number,
-                OutOfWarranty.vendor_cost1,
-                OutOfWarranty.vendor_cost2,
-                OutOfWarranty.vendor_paint_cost,
-                OutOfWarranty.vendor_stator_cost,
-                OutOfWarranty.vendor_leg_cost,
-                OutOfWarranty.vendor_cost,
-            )
-            .where(
-                (OutOfWarranty.vendor_settled == "N")
-                & (OutOfWarranty.vendor_settlement_date.isnot(None))
-                & (Master.code == OutOfWarranty.code)
-            )
+        out_statement = select(
+            OutOfWarranty.srf_number,
+            Master.name,
+            OutOfWarranty.model,
+            OutOfWarranty.complaint_number,
+            OutOfWarranty.vendor_cost1,
+            OutOfWarranty.vendor_cost2,
+            OutOfWarranty.vendor_paint_cost,
+            OutOfWarranty.vendor_stator_cost,
+            OutOfWarranty.vendor_leg_cost,
+            OutOfWarranty.vendor_cost,
+        ).where(
+            (OutOfWarranty.vendor_settled == "N")
+            & (OutOfWarranty.vendor_settlement_date.isnot(None))
+            & (Master.code == OutOfWarranty.code)
         )
-        warranty_statement = (
-            select(
-                Warranty.srf_number,
-                Master.name,
-                Warranty.model,
-                Warranty.complaint_number,
-                Warranty.vendor_cost1,
-                Warranty.vendor_cost2,
-                Warranty.vendor_paint_cost,
-                Warranty.vendor_stator_cost,
-                Warranty.vendor_leg_cost,
-                Warranty.vendor_cost,
-            )
-            .where(
-                (Warranty.vendor_settled == "N")
-                & (Warranty.vendor_settlement_date.isnot(None))
-                & (Master.code == Warranty.code)
-            )
+        warranty_statement = select(
+            Warranty.srf_number,
+            Master.name,
+            Warranty.model,
+            Warranty.complaint_number,
+            Warranty.vendor_cost1,
+            Warranty.vendor_cost2,
+            Warranty.vendor_paint_cost,
+            Warranty.vendor_stator_cost,
+            Warranty.vendor_leg_cost,
+            Warranty.vendor_cost,
+        ).where(
+            (Warranty.vendor_settled == "N")
+            & (Warranty.vendor_settlement_date.isnot(None))
+            & (Master.code == Warranty.code)
         )
-        union_statement = out_statement.union_all(warranty_statement).order_by("srf_number")
+        union_statement = out_statement.union_all(warranty_statement).order_by(
+            "srf_number"
+        )
         result = await session.execute(union_statement)
         rows = result.all()
         return [
@@ -466,15 +464,13 @@ class VendorService:
     async def update_complaint_number(
         self, data: VendorUpdateComplaintNumber, session: AsyncSession
     ):
-        if await warranty_service.check_complaint_number_available(data.complaint_number, session):
+        if await warranty_service.check_complaint_number_available(
+            data.complaint_number, session
+        ):
             raise ComplaintNumberAlreadyExists()
-        statement = select(Warranty).where(
-            Warranty.srf_number == data.srf_number
-        )
+        statement = select(Warranty).where(Warranty.srf_number == data.srf_number)
         result = await session.execute(statement)
         existing_record = result.scalar_one_or_none()
         if existing_record:
             existing_record.complaint_number = data.complaint_number
         await session.commit()
-
-   

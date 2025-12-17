@@ -84,7 +84,9 @@ class ChallanUniqueService:
             challan_number = "U" + challan_number.zfill(5)
         if not challan_number.startswith("U") or not challan_number[1:].isdigit():
             raise IncorrectCodeFormat()
-        statement = select(ChallanUnique).where(ChallanUnique.challan_number == challan_number)
+        statement = select(ChallanUnique).where(
+            ChallanUnique.challan_number == challan_number
+        )
         result = await session.execute(statement)
         challan = result.scalar()
         if challan:

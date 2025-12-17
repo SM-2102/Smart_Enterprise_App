@@ -49,12 +49,11 @@ const VendorSettleAdminPage = () => {
   const isComplaintLengthValid =
     newComplaintNumber.length >= 13 && newComplaintNumber.length <= 15;
   const isInvalidComplaintRow = (row) => {
-  if (row.srf_number?.startsWith("S")) return false;
-  if (!row.complaint_number) return false;
-  const statusInfo = complaintStatusMap[row.complaint_number];
-  return statusInfo?.status !== "OK";
-};
-
+    if (row.srf_number?.startsWith("S")) return false;
+    if (!row.complaint_number) return false;
+    const statusInfo = complaintStatusMap[row.complaint_number];
+    return statusInfo?.status !== "OK";
+  };
 
   // Set indeterminate property for header checkbox
   useEffect(() => {
@@ -77,10 +76,8 @@ const VendorSettleAdminPage = () => {
         });
         setComplaintStatusMap(map);
       })
-      .catch(() => {
-      });
+      .catch(() => {});
   }, []);
-
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -240,7 +237,9 @@ const VendorSettleAdminPage = () => {
                     onChange={(e) => {
                       if (e.target.checked) {
                         const selectableIndexes = data
-                          .map((row, idx) => (isInvalidComplaintRow(row) ? null : idx))
+                          .map((row, idx) =>
+                            isInvalidComplaintRow(row) ? null : idx,
+                          )
                           .filter((idx) => idx !== null);
 
                         setSelectedRows(selectableIndexes);
@@ -322,84 +321,97 @@ const VendorSettleAdminPage = () => {
                           }),
                         }}
                       >
-                        {col.key === "complaint_number" ? (() => {
-                          const complaint = row.complaint_number;
-                          const statusInfo = complaintStatusMap[complaint];
-                          const isValid = statusInfo?.status === "OK";
+                        {col.key === "complaint_number"
+                          ? (() => {
+                              const complaint = row.complaint_number;
+                              const statusInfo = complaintStatusMap[complaint];
+                              const isValid = statusInfo?.status === "OK";
 
-                         if (!complaint || row.srf_number?.startsWith("S")) return "-";
+                              if (!complaint || row.srf_number?.startsWith("S"))
+                                return "-";
 
-                        const tooltipText =
-                          statusInfo?.remark ||
-                          (isValid ? "Complaint number is valid" : "COMPLAINT NUMBER NOT PRESENT");
+                              const tooltipText =
+                                statusInfo?.remark ||
+                                (isValid
+                                  ? "Complaint number is valid"
+                                  : "COMPLAINT NUMBER NOT PRESENT");
 
-                        return (
-                          <Tooltip
-                            title={
-                              <span style={{ fontSize: "12px", lineHeight: 1.4 }}>
-                                {tooltipText}
-                              </span>
-                            }
-                            arrow
-                            placement="top"
-                            slotProps={{
-                              tooltip: {
-                                sx: {
-                                  bgcolor: "#093275ff",
-                                  color: "#fff",
-                                  px: 1.5,
-                                  py: 1,
-                                  borderRadius: "8px",
-                                  boxShadow: "0 3px 12px rgba(0,0,0,0.25)",
-                                  maxWidth: 420,
-                                  whiteSpace: "normal",
-                                  wordBreak: "break-word",
-                                  lineHeight: 1.4,
-                                },
-                              },
-                              arrow: {
-                                sx: {
-                                  color: "#1e293b",
-                                },
-                              },
-                            }}
-                          >
-                            <span
-                              onClick={() => {
-                                if (!isValid) {
-                                  setEditComplaintRow(row);
-                                  setNewComplaintNumber("");
-                                }
-                              }}
-                              style={{
-                                color: isValid ? "#1f2937" : "#d32f2f",
-                                fontWeight: isValid ? 500 : 700,
-                                cursor: isValid ? "default" : "pointer",
-                                borderBottom: isValid ? "none" : "2px dotted #d32f2f",
-                                paddingBottom: "1px",
-                              }}
-                            >
-                              {complaint}
-                            </span>
-                          </Tooltip>
-                        );
-
-                        })()
-                        : col.key === "final_amount"
-                          ? row[col.key] !== null &&
-                            row[col.key] !== undefined &&
-                            row[col.key] !== ""
-                            ? `₹ ${(Number(row[col.key]) || 0).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })}`
-                            : "-"
-                          : row[col.key] !== null &&
+                              return (
+                                <Tooltip
+                                  title={
+                                    <span
+                                      style={{
+                                        fontSize: "12px",
+                                        lineHeight: 1.4,
+                                      }}
+                                    >
+                                      {tooltipText}
+                                    </span>
+                                  }
+                                  arrow
+                                  placement="top"
+                                  slotProps={{
+                                    tooltip: {
+                                      sx: {
+                                        bgcolor: "#093275ff",
+                                        color: "#fff",
+                                        px: 1.5,
+                                        py: 1,
+                                        borderRadius: "8px",
+                                        boxShadow:
+                                          "0 3px 12px rgba(0,0,0,0.25)",
+                                        maxWidth: 420,
+                                        whiteSpace: "normal",
+                                        wordBreak: "break-word",
+                                        lineHeight: 1.4,
+                                      },
+                                    },
+                                    arrow: {
+                                      sx: {
+                                        color: "#1e293b",
+                                      },
+                                    },
+                                  }}
+                                >
+                                  <span
+                                    onClick={() => {
+                                      if (!isValid) {
+                                        setEditComplaintRow(row);
+                                        setNewComplaintNumber("");
+                                      }
+                                    }}
+                                    style={{
+                                      color: isValid ? "#1f2937" : "#d32f2f",
+                                      fontWeight: isValid ? 500 : 700,
+                                      cursor: isValid ? "default" : "pointer",
+                                      borderBottom: isValid
+                                        ? "none"
+                                        : "2px dotted #d32f2f",
+                                      paddingBottom: "1px",
+                                    }}
+                                  >
+                                    {complaint}
+                                  </span>
+                                </Tooltip>
+                              );
+                            })()
+                          : col.key === "final_amount"
+                            ? row[col.key] !== null &&
                               row[col.key] !== undefined &&
                               row[col.key] !== ""
-                            ? row[col.key]
-                            : "-"}
-
+                              ? `₹ ${(Number(row[col.key]) || 0).toLocaleString(
+                                  undefined,
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  },
+                                )}`
+                              : "-"
+                            : row[col.key] !== null &&
+                                row[col.key] !== undefined &&
+                                row[col.key] !== ""
+                              ? row[col.key]
+                              : "-"}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -490,72 +502,73 @@ const VendorSettleAdminPage = () => {
             size="small"
             fullWidth
             value={newComplaintNumber}
-            onChange={(e) =>
-              setNewComplaintNumber(e.target.value.slice(0, 15)) // hard limit
+            onChange={
+              (e) => setNewComplaintNumber(e.target.value.slice(0, 15)) // hard limit
             }
             autoFocus
-            error={!isComplaintLengthValid}                      // ✅ immediate validation
+            error={!isComplaintLengthValid} // ✅ immediate validation
             sx={{
               "& .MuiOutlinedInput-root.Mui-error fieldset": {
-                borderColor: "#fca5a5",                          // red-300
+                borderColor: "#fca5a5", // red-300
               },
             }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <button
-  disabled={!isComplaintLengthValid || updatingComplaint}
-  onClick={async () => {
-    if (!isComplaintLengthValid) return;
+                    disabled={!isComplaintLengthValid || updatingComplaint}
+                    onClick={async () => {
+                      if (!isComplaintLengthValid) return;
 
-    try {
-      setUpdatingComplaint(true);
+                      try {
+                        setUpdatingComplaint(true);
 
-      await updateComplaintNumber({
-        srf_number: editComplaintRow.srf_number,
-        complaint_number: newComplaintNumber,
-      });
+                        await updateComplaintNumber({
+                          srf_number: editComplaintRow.srf_number,
+                          complaint_number: newComplaintNumber,
+                        });
 
-      setShowToast(true);
-      setError({
-        message: "Complaint number updated",
-        resolution: "SRF Number: " + editComplaintRow.srf_number,
-        type: "success",
-      });
+                        setShowToast(true);
+                        setError({
+                          message: "Complaint number updated",
+                          resolution:
+                            "SRF Number: " + editComplaintRow.srf_number,
+                          type: "success",
+                        });
 
-      setEditComplaintRow(null);
-      setTimeout(() => window.location.reload(), 800);
-    } catch (err) {
-      setShowToast(true);
-      setError({
-        message: err.message || "Update failed",
-        resolution: err.resolution || "",
-        type: "error",
-      });
-    } finally {
-      setUpdatingComplaint(false);
-    }
-  }}
-  style={{
-    background: "transparent",
-    border: "none",
-    cursor:
-      !isComplaintLengthValid || updatingComplaint
-        ? "not-allowed"
-        : "pointer",
-    padding: 0,
-  }}
->
-  <CloudUploadIcon
-    sx={{
-      fontSize: 22,
-      color: !isComplaintLengthValid || updatingComplaint
-        ? "#9ca3af"   // disabled gray
-        : "#1976d2",  // active blue
-    }}
-  />
-</button>
-
+                        setEditComplaintRow(null);
+                        setTimeout(() => window.location.reload(), 800);
+                      } catch (err) {
+                        setShowToast(true);
+                        setError({
+                          message: err.message || "Update failed",
+                          resolution: err.resolution || "",
+                          type: "error",
+                        });
+                      } finally {
+                        setUpdatingComplaint(false);
+                      }
+                    }}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      cursor:
+                        !isComplaintLengthValid || updatingComplaint
+                          ? "not-allowed"
+                          : "pointer",
+                      padding: 0,
+                    }}
+                  >
+                    <CloudUploadIcon
+                      sx={{
+                        fontSize: 22,
+                        color:
+                          !isComplaintLengthValid || updatingComplaint
+                            ? "#9ca3af" // disabled gray
+                            : "#1976d2", // active blue
+                      }}
+                    />
+                  </button>
                 </InputAdornment>
               ),
             }}

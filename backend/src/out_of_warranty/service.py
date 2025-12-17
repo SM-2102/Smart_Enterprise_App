@@ -67,9 +67,11 @@ class OutOfWarrantyService:
         sub_number = int(parts[1])
         if sub_number < 1 or sub_number > 8:
             raise IncorrectCodeFormat()
-        
+
         if out_of_warranty.division in ["PUMP", "LT MOTOR", "FHP MOTOR"]:
-            if not await model_service.check_model_name_available(out_of_warranty.model, session):
+            if not await model_service.check_model_name_available(
+                out_of_warranty.model, session
+            ):
                 raise ModelNotFound()
 
         # If frontend requests a new base, generate next base number
@@ -85,7 +87,11 @@ class OutOfWarrantyService:
                 )
                 out_of_warranty_dict["created_by"] = token["user"]["username"]
                 out_of_warranty_dict["code"] = master.code
-                for date_field in ["srf_date", "collection_date", "customer_challan_date"]:
+                for date_field in [
+                    "srf_date",
+                    "collection_date",
+                    "customer_challan_date",
+                ]:
                     if date_field in out_of_warranty_dict:
                         out_of_warranty_dict[date_field] = parse_date(
                             out_of_warranty_dict[date_field]
@@ -168,7 +174,9 @@ class OutOfWarrantyService:
                 service_charge=row.OutOfWarranty.service_charge,
                 customer_challan_number=row.OutOfWarranty.customer_challan_number,
                 challan_number=row.OutOfWarranty.challan_number,
-                customer_challan_date=format_date_ddmmyyyy(row.OutOfWarranty.customer_challan_date),
+                customer_challan_date=format_date_ddmmyyyy(
+                    row.OutOfWarranty.customer_challan_date
+                ),
                 received_by=row.OutOfWarranty.received_by,
                 challan_date=row.OutOfWarranty.challan_date,
                 vendor_cost1=row.OutOfWarranty.vendor_cost1,
@@ -178,15 +186,15 @@ class OutOfWarrantyService:
                 repair_date=row.OutOfWarranty.repair_date,
                 rewinding_done=row.OutOfWarranty.rewinding_done,
                 rewinding_cost=row.OutOfWarranty.rewinding_cost,
-                vendor_paint = row.OutOfWarranty.vendor_paint,
-                vendor_stator = row.OutOfWarranty.vendor_stator,
-                vendor_leg = row.OutOfWarranty.vendor_leg,
-                vendor_paint_cost = row.OutOfWarranty.vendor_paint_cost,
-                vendor_stator_cost = row.OutOfWarranty.vendor_stator_cost,
-                vendor_leg_cost = row.OutOfWarranty.vendor_leg_cost,
-                paint_cost = row.OutOfWarranty.paint_cost,
-                stator_cost = row.OutOfWarranty.stator_cost,
-                leg_cost = row.OutOfWarranty.leg_cost,
+                vendor_paint=row.OutOfWarranty.vendor_paint,
+                vendor_stator=row.OutOfWarranty.vendor_stator,
+                vendor_leg=row.OutOfWarranty.vendor_leg,
+                vendor_paint_cost=row.OutOfWarranty.vendor_paint_cost,
+                vendor_stator_cost=row.OutOfWarranty.vendor_stator_cost,
+                vendor_leg_cost=row.OutOfWarranty.vendor_leg_cost,
+                paint_cost=row.OutOfWarranty.paint_cost,
+                stator_cost=row.OutOfWarranty.stator_cost,
+                leg_cost=row.OutOfWarranty.leg_cost,
                 other_cost=row.OutOfWarranty.other_cost,
                 work_done=row.OutOfWarranty.work_done,
                 spare1=row.OutOfWarranty.spare1,
@@ -424,7 +432,6 @@ class OutOfWarrantyService:
         writer.write(output_stream)
         output_stream.seek(0)
         return output_stream
-
 
     async def enquiry_out_of_warranty(
         self,

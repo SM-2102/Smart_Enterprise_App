@@ -5,15 +5,16 @@ from sqlalchemy.future import select
 from rewinding_rate.models import RewindingRate
 from rewinding_rate.schemas import RewindingCharge
 
+
 class RewindingRateService:
-    
-    async def get_rewinding_rate(self, session: AsyncSession, data : RewindingCharge):
-        if data.division == 'LT MOTOR':
+
+    async def get_rewinding_rate(self, session: AsyncSession, data: RewindingCharge):
+        if data.division == "LT MOTOR":
             statement = select(RewindingRate.rewinding_charge).where(
                 RewindingRate.division == data.division,
-                RewindingRate.frame == data.frame
+                RewindingRate.frame == data.frame,
             )
-        elif data.division == 'FHP MOTOR':
+        elif data.division == "FHP MOTOR":
             statement = select(RewindingRate.rewinding_charge).where(
                 RewindingRate.division == data.division,
                 RewindingRate.hp_rating == data.hp_rating,

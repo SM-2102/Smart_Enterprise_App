@@ -136,32 +136,32 @@ const WarrantySRFPrintPage = () => {
                     setShowToast(true);
                   }
                   // Revoke URL when the preview window is closed to avoid breaking downloads
-      if (newTab) {
-        const revokeInterval = setInterval(() => {
-          try {
-            if (newTab.closed) {
-              window.URL.revokeObjectURL(url);
-              setPdfUrl(null);
-              clearInterval(revokeInterval);
-            }
-          } catch (e) {
-            // ignore cross-origin access errors and continue polling
-          }
-        }, 1000);
-      } else {
-        // Popup blocked — revoke now to avoid leaking object URL
-        window.URL.revokeObjectURL(url);
-      }
-      setError(null);
-      setShowToast(false);
-    } catch (err) {
-      setError({
-        message: err?.message || "Print failed.",
-        resolution: err?.resolution || "",
-        type: "error",
-      });
-      setShowToast(true);
-    }
+                  if (newTab) {
+                    const revokeInterval = setInterval(() => {
+                      try {
+                        if (newTab.closed) {
+                          window.URL.revokeObjectURL(url);
+                          setPdfUrl(null);
+                          clearInterval(revokeInterval);
+                        }
+                      } catch (e) {
+                        // ignore cross-origin access errors and continue polling
+                      }
+                    }, 1000);
+                  } else {
+                    // Popup blocked — revoke now to avoid leaking object URL
+                    window.URL.revokeObjectURL(url);
+                  }
+                  setError(null);
+                  setShowToast(false);
+                } catch (err) {
+                  setError({
+                    message: err?.message || "Print failed.",
+                    resolution: err?.resolution || "",
+                    type: "error",
+                  });
+                  setShowToast(true);
+                }
               }}
               disabled={!!pdfUrl}
             >

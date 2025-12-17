@@ -14,7 +14,7 @@ class Warranty(SQLModel, table=True):
             pg.VARCHAR(5), ForeignKey("master.code"), nullable=False, index=True
         )
     )
-    cg_srf_number:str = Field(sa_column=Column(pg.VARCHAR(10), nullable=True))
+    cg_srf_number: str = Field(sa_column=Column(pg.VARCHAR(10), nullable=True))
     srf_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
     head: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
     division: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
@@ -22,15 +22,21 @@ class Warranty(SQLModel, table=True):
     serial_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=False))
     problem: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=False))
     remark: str = Field(sa_column=Column(pg.VARCHAR(40), nullable=True))
-    complaint_number: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True, unique=True))
+    complaint_number: str = Field(
+        sa_column=Column(pg.VARCHAR(20), nullable=True, unique=True)
+    )
     sticker_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=True))
     asc_name: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=True))
     challan_number: str = Field(sa_column=Column(pg.VARCHAR(6), nullable=True))
     challan_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
     challan: str = Field(sa_column=Column(pg.VARCHAR(1), nullable=False, default="N"))
     receive_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    customer_invoice_number: str = Field(sa_column=Column(pg.VARCHAR(16), nullable=True))
-    rewinding_done: str = Field(sa_column=Column(pg.CHAR(1), nullable=False, default="N"))
+    customer_invoice_number: str = Field(
+        sa_column=Column(pg.VARCHAR(16), nullable=True)
+    )
+    rewinding_done: str = Field(
+        sa_column=Column(pg.CHAR(1), nullable=False, default="N")
+    )
     rewinding_cost: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     vendor_date2: date = Field(sa_column=Column(pg.DATE, nullable=True))
     received_by: str = Field(sa_column=Column(pg.VARCHAR(30), nullable=True))
@@ -49,10 +55,10 @@ class Warranty(SQLModel, table=True):
     vendor_leg: str = Field(
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )
-    vendor_paint_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True)) 
-    vendor_stator_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True)) 
-    vendor_leg_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True)) 
-    vendor_cost: float = Field(sa_column=Column(pg.FLOAT, nullable=True))    
+    vendor_paint_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
+    vendor_stator_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
+    vendor_leg_cost: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
+    vendor_cost: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     spare1: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
     cost1: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     spare2: str = Field(sa_column=Column(pg.VARCHAR(20), nullable=True))
@@ -78,7 +84,9 @@ class Warranty(SQLModel, table=True):
     rpm: int = Field(sa_column=Column(pg.INTEGER, nullable=True))
     purchase_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=True))
     purchase_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
-    customer_challan_number: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
+    customer_challan_number: str = Field(
+        sa_column=Column(pg.VARCHAR(15), nullable=False)
+    )
     customer_challan_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
     receive_amount: float = Field(sa_column=Column(pg.FLOAT, nullable=True))
     delivery_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
@@ -97,7 +105,6 @@ class Warranty(SQLModel, table=True):
     vendor_settled: str = Field(
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )
-   
 
     def _repr_(self):
         return f"<Warranty {self.srf_number} - {self.srf_date}>"

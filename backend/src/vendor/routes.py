@@ -7,18 +7,18 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from auth.dependencies import AccessTokenBearer, RoleChecker
 from db.db import get_session
-from vendor.service import VendorService
-from warranty.service import WarrantyService
 from vendor.schemas import (
     UpdateVendorFinalSettlement,
-    VendorChallanDetails,
-    VendorChallanCreate,
+    UpdateVendorUnsettled,
     VendorChallanCode,
+    VendorChallanCreate,
+    VendorChallanDetails,
     VendorFinalSettlementRecord,
     VendorNotSettledRecord,
-    UpdateVendorUnsettled,
     VendorUpdateComplaintNumber,
 )
+from vendor.service import VendorService
+from warranty.service import WarrantyService
 
 vendor_router = APIRouter()
 vendor_service = VendorService()
@@ -48,9 +48,7 @@ Get the last created challan code.
 async def last_vendor_challan_code(
     session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
 ):
-    last_challan_number = await vendor_service.last_vendor_challan_code(
-        session
-    )
+    last_challan_number = await vendor_service.last_vendor_challan_code(session)
     return JSONResponse(content={"last_vendor_challan_code": last_challan_number})
 
 
@@ -77,9 +75,7 @@ Update retail records - List of Records
 """
 
 
-@vendor_router.patch(
-    "/create_vendor_challan", status_code=status.HTTP_202_ACCEPTED
-)
+@vendor_router.patch("/create_vendor_challan", status_code=status.HTTP_202_ACCEPTED)
 async def create_vendor_challan(
     list_vendor: List[VendorChallanCreate],
     session: AsyncSession = Depends(get_session),
@@ -149,9 +145,7 @@ Update out of warranty vendor records - List of Records
 """
 
 
-@vendor_router.patch(
-    "/update_vendor_unsettled", status_code=status.HTTP_202_ACCEPTED
-)
+@vendor_router.patch("/update_vendor_unsettled", status_code=status.HTTP_202_ACCEPTED)
 async def update_vendor_unsettled(
     list_vendor: List[UpdateVendorUnsettled],
     session: AsyncSession = Depends(get_session),
@@ -175,9 +169,7 @@ List all final vendor settlement records
 async def list_final_vendor_settlement(
     session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
 ):
-    final_settlement = await vendor_service.list_final_vendor_settlement(
-        session
-    )
+    final_settlement = await vendor_service.list_final_vendor_settlement(session)
     return final_settlement
 
 
@@ -217,4 +209,3 @@ async def update_complaint_number(
 ):
     await vendor_service.update_complaint_number(data, session)
     return JSONResponse(content={"message": f"Complaint Number Updated"})
-

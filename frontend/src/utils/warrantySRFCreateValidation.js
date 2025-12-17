@@ -38,7 +38,7 @@ function validateWarrantySRFCreate(form) {
     if (form.complaint_number.length < 13) {
       errs.push("Complaint Number is required");
       errs_label.complaint_number = true;
-  }
+    }
   }
   if (!form.problem) {
     errs.push("Problem is required");

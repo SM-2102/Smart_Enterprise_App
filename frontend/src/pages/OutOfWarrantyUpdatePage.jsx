@@ -74,7 +74,6 @@ const toNumber = (value) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-
 const OutOfWarrantyUpdatePage = () => {
   // ...existing code...
   // Place this after all useState declarations
@@ -168,7 +167,6 @@ const OutOfWarrantyUpdatePage = () => {
   const [pendingItems, setPendingItems] = useState([]);
   const [modelCost, setModelCost] = useState(null);
 
-
   const handleSearch = async (searchCode) => {
     // If this was called as an event handler (e.g. onClick={handleSearch}),
     // React will pass a SyntheticEvent as the first arg. Detect and ignore it.
@@ -192,7 +190,7 @@ const OutOfWarrantyUpdatePage = () => {
     try {
       const data = await searchOutOfWarrantyBySRFNumber(codeToSearch);
 
-      setForm({  
+      setForm({
         srf_number: data.srf_number ?? "",
         name: data.name ?? "",
         model: data.model ?? "",
@@ -221,7 +219,7 @@ const OutOfWarrantyUpdatePage = () => {
         vendor_stator_cost: data.vendor_stator_cost ?? "",
         stator_cost: data.stator_cost ?? "",
         vendor_leg_cost: data.vendor_leg_cost ?? "",
-        leg_cost:data.leg_cost ?? "",
+        leg_cost: data.leg_cost ?? "",
         work_done: data.work_done ?? "",
         spare1: data.spare1 ?? "",
         cost1: data.cost1 ?? "",
@@ -262,7 +260,6 @@ const OutOfWarrantyUpdatePage = () => {
         }
       }
 
-
       // Handle locked state
       if (data.final_status === "Y") {
         setError({
@@ -286,102 +283,99 @@ const OutOfWarrantyUpdatePage = () => {
   };
   const isVendorCostEnabled = ALLOWED_VENDOR_DIVISIONS.includes(form.division);
 
-useEffect(() => {
-  if (!modelCost) return;
+  useEffect(() => {
+    if (!modelCost) return;
 
-  setForm(prev => {
-    if (prev.rewinding_done === "Y") {
-      const base = Number(modelCost.rewinding_charge || 0);
-      const minCustomerCost = Math.round(base * 1.3);
+    setForm((prev) => {
+      if (prev.rewinding_done === "Y") {
+        const base = Number(modelCost.rewinding_charge || 0);
+        const minCustomerCost = Math.round(base * 1.3);
+
+        return {
+          ...prev,
+          rewinding_base_cost: minCustomerCost,
+          rewinding_cost: minCustomerCost,
+          vendor_cost1: prev.vendor_date2
+            ? Math.round(minCustomerCost * 0.8)
+            : 0,
+        };
+      }
 
       return {
         ...prev,
-        rewinding_base_cost: minCustomerCost,
-        rewinding_cost: minCustomerCost,
-vendor_cost1: prev.vendor_date2
-  ? Math.round(minCustomerCost * 0.8)
-  : 0,
+        rewinding_base_cost: "",
+        rewinding_cost: "",
+        vendor_cost1: "",
       };
+    });
+  }, [form.rewinding_done, modelCost]);
+
+  useEffect(() => {
+    if (form.rewinding_done !== "Y") return;
+    if (!form.vendor_date2) return;
+
+    const customerCost = Number(form.rewinding_cost || 0);
+    const vendorCost = Math.round(customerCost * 0.8);
+
+    if (vendorCost !== Number(form.vendor_cost1)) {
+      setForm((prev) => ({
+        ...prev,
+        vendor_cost1: vendorCost,
+      }));
     }
+  }, [form.rewinding_cost, form.rewinding_done, form.vendor_date2]);
 
-    return {
-      ...prev,
-      rewinding_base_cost: "",
-      rewinding_cost: "",
-      vendor_cost1: "",
-    };
-  });
-}, [form.rewinding_done, modelCost]);
+  useEffect(() => {
+    if (!modelCost) return;
 
-useEffect(() => {
-  if (form.rewinding_done !== "Y") return;
-  if (!form.vendor_date2) return;
+    setForm((prev) => {
+      if (prev.vendor_paint === "Y") {
+        return {
+          ...prev,
+          vendor_paint_cost: modelCost.paint_charge ?? "",
+        };
+      }
 
-  const customerCost = Number(form.rewinding_cost || 0);
-  const vendorCost = Math.round(customerCost * 0.8);
-
-  if (vendorCost !== Number(form.vendor_cost1)) {
-    setForm(prev => ({
-      ...prev,
-      vendor_cost1: vendorCost,
-    }));
-  }
-}, [form.rewinding_cost, form.rewinding_done, form.vendor_date2]);
-
-
-
-useEffect(() => {
-  if (!modelCost) return;
-
-  setForm(prev => {
-    if (prev.vendor_paint === "Y") {
       return {
         ...prev,
-        vendor_paint_cost: modelCost.paint_charge ?? "",
+        vendor_paint_cost: "",
       };
-    }
+    });
+  }, [form.vendor_paint, modelCost]);
+  useEffect(() => {
+    if (!modelCost) return;
 
-    return {
-      ...prev,
-      vendor_paint_cost: "",
-    };
-  });
-}, [form.vendor_paint, modelCost]);
-useEffect(() => {
-  if (!modelCost) return;
+    setForm((prev) => {
+      if (prev.vendor_stator === "Y") {
+        return {
+          ...prev,
+          vendor_stator_cost: modelCost.stator_charge ?? "",
+        };
+      }
 
-  setForm(prev => {
-    if (prev.vendor_stator === "Y") {
       return {
         ...prev,
-        vendor_stator_cost: modelCost.stator_charge ?? "",
+        vendor_stator_cost: "",
       };
-    }
+    });
+  }, [form.vendor_stator, modelCost]);
+  useEffect(() => {
+    if (!modelCost) return;
 
-    return {
-      ...prev,
-      vendor_stator_cost: "",
-    };
-  });
-}, [form.vendor_stator, modelCost]);
-useEffect(() => {
-  if (!modelCost) return;
+    setForm((prev) => {
+      if (prev.vendor_leg === "Y") {
+        return {
+          ...prev,
+          vendor_leg_cost: modelCost.leg_charge ?? "",
+        };
+      }
 
-  setForm(prev => {
-    if (prev.vendor_leg === "Y") {
       return {
         ...prev,
-        vendor_leg_cost: modelCost.leg_charge ?? "",
+        vendor_leg_cost: "",
       };
-    }
-
-    return {
-      ...prev,
-      vendor_leg_cost: "",
-    };
-  });
-}, [form.vendor_leg, modelCost]);
-
+    });
+  }, [form.vendor_leg, modelCost]);
 
   useEffect(() => {
     const fetchPending = async () => {
@@ -415,18 +409,18 @@ useEffect(() => {
     }
     setSubmitting(true);
     const vendorCost =
-  toNumber(form.vendor_cost1) +
-  toNumber(form.vendor_cost2) +
-  toNumber(form.vendor_paint_cost) +
-  toNumber(form.vendor_stator_cost) +
-  toNumber(form.vendor_leg_cost); 
+      toNumber(form.vendor_cost1) +
+      toNumber(form.vendor_cost2) +
+      toNumber(form.vendor_paint_cost) +
+      toNumber(form.vendor_stator_cost) +
+      toNumber(form.vendor_leg_cost);
 
     const rawPayload = {
       vendor_date2: form.vendor_date2,
-vendor_cost1:
-  form.rewinding_done === "Y" && !form.vendor_date2
-    ? 0
-    : form.vendor_cost1,
+      vendor_cost1:
+        form.rewinding_done === "Y" && !form.vendor_date2
+          ? 0
+          : form.vendor_cost1,
       vendor_cost2: form.vendor_cost2,
       estimate_date: form.estimate_date,
       repair_date: form.repair_date,
@@ -506,6 +500,7 @@ vendor_cost1:
       // Recalculate total immediately if relevant field changes
       if (
         [
+          "rewinding_cost",
           "rewinding_done",
           "other_cost",
           "spare_cost",
@@ -553,14 +548,14 @@ vendor_cost1:
           name === "leg_cost"
             ? parseFloat(newValue) || 0
             : parseFloat(updated.leg_cost) || 0;
-        if (form.rewinding_done == 'Y') { 
+        if (updated.rewinding_done === "Y") {
           updated.total =
             rewinding_cost +
             other_cost +
             spare_cost +
             godown_cost +
             paint_cost +
-            leg_cost + 
+            leg_cost +
             stator_cost -
             discount;
         } else {
@@ -570,7 +565,7 @@ vendor_cost1:
             spare_cost +
             godown_cost +
             paint_cost +
-            leg_cost + 
+            leg_cost +
             stator_cost +
             service_charge -
             discount;
@@ -628,13 +623,19 @@ vendor_cost1:
     const godown_cost = parseFloat(form.godown_cost) || 0;
     const service_charge = parseFloat(form.service_charge) || 0;
     const discount = parseFloat(form.discount) || 0;
+    const paint_cost = parseFloat(form.paint_cost) || 0;
+    const stator_cost = parseFloat(form.stator_cost) || 0;
+    const leg_cost = parseFloat(form.leg_cost) || 0;
 
     const calculatedTotal =
       rewinding_cost +
       other_cost +
       spare_cost +
       godown_cost +
-      service_charge -
+      paint_cost +
+      stator_cost +
+      leg_cost +
+      (form.rewinding_done === "Y" ? 0 : service_charge) -
       discount;
 
     // Only update if total is null/empty or if there's an actual difference
@@ -655,16 +656,20 @@ vendor_cost1:
     form.godown_cost,
     form.service_charge,
     form.discount,
+    form.paint_cost,
+    form.stator_cost,
+    form.leg_cost,
+    form.rewinding_done,
   ]); // Trigger when any cost component changes
 
   useEffect(() => {
-  if (form.rewinding_done === "Y" && !form.vendor_date2) {
-    setForm(prev => ({
-      ...prev,
-      vendor_cost1: 0,
-    }));
-  }
-}, [form.rewinding_done, form.vendor_date2]);
+    if (form.rewinding_done === "Y" && !form.vendor_date2) {
+      setForm((prev) => ({
+        ...prev,
+        vendor_cost1: 0,
+      }));
+    }
+  }, [form.rewinding_done, form.vendor_date2]);
 
   return (
     <div className="flex min-h-[80vh] mt-6 justify-center items-center">
@@ -969,7 +974,7 @@ vendor_cost1:
                 />
               </div>
 
-             <div className="flex items-center w-1/2 gap-2">
+              <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_date2"
                   className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
@@ -989,53 +994,53 @@ vendor_cost1:
               </div>
             </div>
             <div className="flex items-center w-full gap-3 mt-4">
-            <div className="flex items-center w-1/2 gap-2">
-              <label
-                htmlFor="rewinding_done"
-                className="w-45 text-md font-medium text-gray-700"
-              >
-                Rewinding
-              </label>
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="rewinding_done"
+                  className="w-45 text-md font-medium text-gray-700"
+                >
+                  Rewinding
+                </label>
 
-              <div className="flex justify-center w-full">
-                {/* Hidden input for accessibility and autofill */}
+                <div className="flex justify-center w-full">
+                  {/* Hidden input for accessibility and autofill */}
+                  <input
+                    id="rewinding_done"
+                    name="rewinding_done"
+                    type="text"
+                    value={form.rewinding_done}
+                    style={{ display: "none" }}
+                    readOnly
+                    tabIndex={-1}
+                  />
+                  <YesNoToggle
+                    value={form.rewinding_done}
+                    onChange={(val) =>
+                      setForm((prev) => ({ ...prev, rewinding_done: val }))
+                    }
+                    disabled={isLocked || submitting}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center w-1/2 gap-2">
+                <label
+                  htmlFor="repair_date"
+                  className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
+                >
+                  Repair Date
+                </label>
                 <input
-                  id="rewinding_done"
-                  name="rewinding_done"
-                  type="text"
-                  value={form.rewinding_done}
-                  style={{ display: "none" }}
-                  readOnly
-                  tabIndex={-1}
-                />
-                <YesNoToggle
-                  value={form.rewinding_done}
-                  onChange={(val) =>
-                    setForm(prev => ({ ...prev, rewinding_done: val }))
-                  }
+                  id="repair_date"
+                  name="repair_date"
+                  type="date"
+                  value={form.repair_date}
+                  onChange={handleChange}
+                  max={new Date().toLocaleDateString("en-CA")}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
             </div>
-            <div className="flex items-center w-1/2 gap-2">
-              <label
-                htmlFor="repair_date"
-                className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
-              >
-                Repair Date
-              </label>
-              <input
-                id="repair_date"
-                name="repair_date"
-                type="date"
-                value={form.repair_date}
-                onChange={handleChange}
-                max={new Date().toLocaleDateString("en-CA")}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
-                disabled={isLocked || submitting}
-              />
-            </div>
-          </div>
 
             {/* Vendor Cost and Dates */}
             <div className="flex items-center w-full gap-6 mt-4">
@@ -1082,7 +1087,7 @@ vendor_cost1:
                 />
               </div>
             </div>
-             {/* Vendor Cost and Dates */}
+            {/* Vendor Cost and Dates */}
             <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
                 <label
@@ -1121,94 +1126,94 @@ vendor_cost1:
                   disabled={isLocked || submitting}
                 />
               </div>
-            </div> 
-             <div className="flex items-center w-full gap-20 mt-4">
-            <div className="flex items-center w-1/3 gap-2">
-              <label
-                htmlFor="vendor_paint"
-                className="w-20 text-md font-medium text-gray-700"
-              >
-                Paint
-              </label>
+            </div>
+            <div className="flex items-center w-full gap-20 mt-4">
+              <div className="flex items-center w-1/3 gap-2">
+                <label
+                  htmlFor="vendor_paint"
+                  className="w-20 text-md font-medium text-gray-700"
+                >
+                  Paint
+                </label>
 
-              <div className="flex justify-center w-full">
-                {/* Hidden input for accessibility and autofill */}
-                <input
-                  id="vendor_paint"
-                  name="vendor_paint"
-                  type="text"
-                  value={form.vendor_paint}
-                  style={{ display: "none" }}
-                  readOnly
-                  tabIndex={-1}
-                />
-               <YesNoToggle
-                value={form.vendor_paint}
-                onChange={(val) =>
-                  setForm(prev => ({ ...prev, vendor_paint: val }))
-                }
-                disabled={isLocked || submitting || !isVendorCostEnabled}
-              />
+                <div className="flex justify-center w-full">
+                  {/* Hidden input for accessibility and autofill */}
+                  <input
+                    id="vendor_paint"
+                    name="vendor_paint"
+                    type="text"
+                    value={form.vendor_paint}
+                    style={{ display: "none" }}
+                    readOnly
+                    tabIndex={-1}
+                  />
+                  <YesNoToggle
+                    value={form.vendor_paint}
+                    onChange={(val) =>
+                      setForm((prev) => ({ ...prev, vendor_paint: val }))
+                    }
+                    disabled={isLocked || submitting || !isVendorCostEnabled}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center w-1/3 gap-2">
+                <label
+                  htmlFor="vendor_stator"
+                  className="w-20 text-md font-medium text-gray-700"
+                >
+                  Stator
+                </label>
+
+                <div className="flex justify-center w-full">
+                  {/* Hidden input for accessibility and autofill */}
+                  <input
+                    id="vendor_stator"
+                    name="vendor_stator"
+                    type="text"
+                    value={form.vendor_stator}
+                    style={{ display: "none" }}
+                    readOnly
+                    tabIndex={-1}
+                  />
+                  <YesNoToggle
+                    value={form.vendor_stator}
+                    onChange={(val) =>
+                      setForm((prev) => ({ ...prev, vendor_stator: val }))
+                    }
+                    disabled={isLocked || submitting || !isVendorCostEnabled}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center w-1/3 gap-2">
+                <label
+                  htmlFor="vendor_leg"
+                  className="w-15 text-md font-medium text-gray-700"
+                >
+                  Leg
+                </label>
+
+                <div className="flex justify-center w-full">
+                  {/* Hidden input for accessibility and autofill */}
+                  <input
+                    id="vendor_leg"
+                    name="vendor_leg"
+                    type="text"
+                    value={form.vendor_leg}
+                    style={{ display: "none" }}
+                    readOnly
+                    tabIndex={-1}
+                  />
+                  <YesNoToggle
+                    value={form.vendor_leg}
+                    onChange={(val) =>
+                      setForm((prev) => ({ ...prev, vendor_leg: val }))
+                    }
+                    disabled={isLocked || submitting || !isVendorCostEnabled}
+                  />
+                </div>
               </div>
             </div>
-            <div className="flex items-center w-1/3 gap-2">
-              <label
-                htmlFor="vendor_stator"
-                className="w-20 text-md font-medium text-gray-700"
-              >
-                Stator
-              </label>
-
-              <div className="flex justify-center w-full">
-                {/* Hidden input for accessibility and autofill */}
-                <input
-                  id="vendor_stator"
-                  name="vendor_stator"
-                  type="text"
-                  value={form.vendor_stator}
-                  style={{ display: "none" }}
-                  readOnly
-                  tabIndex={-1}
-                />
-                <YesNoToggle
-  value={form.vendor_stator}
-  onChange={(val) =>
-    setForm(prev => ({ ...prev, vendor_stator: val }))
-  }
-                disabled={isLocked || submitting || !isVendorCostEnabled}
-/>
-              </div>
-            </div>
-            <div className="flex items-center w-1/3 gap-2">
-              <label
-                htmlFor="vendor_leg"
-                className="w-15 text-md font-medium text-gray-700"
-              >
-                Leg
-              </label>
-
-              <div className="flex justify-center w-full">
-                {/* Hidden input for accessibility and autofill */}
-                <input
-                  id="vendor_leg"
-                  name="vendor_leg"
-                  type="text"
-                  value={form.vendor_leg}
-                  style={{ display: "none" }}
-                  readOnly
-                  tabIndex={-1}
-                />
-                <YesNoToggle
-  value={form.vendor_leg}
-  onChange={(val) =>
-    setForm(prev => ({ ...prev, vendor_leg: val }))
-  }
-                disabled={isLocked || submitting || !isVendorCostEnabled}
-/>
-              </div>
-            </div>
-          </div>    
-              <div className="flex items-center w-full gap-6 mt-4">
+            <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_paint_cost"
@@ -1217,32 +1222,27 @@ vendor_cost1:
                   Paint Charge
                 </label>
                 <input
-  id="vendor_paint_cost"
-  name="vendor_paint_cost"
-  type="number"
-  value={form.vendor_paint_cost}
-  readOnly
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isVendorCostEnabled}
-  placeholder={
-    !isVendorCostEnabled
-      ? "Disabled for this Division"
-      : "Vendor"
-  }
-  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${
-      errs_label.vendor_paint_cost
-        ? "border-red-300"
-        : "border-gray-300"
-    }
+                  id="vendor_paint_cost"
+                  name="vendor_paint_cost"
+                  type="number"
+                  value={form.vendor_paint_cost}
+                  readOnly
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isVendorCostEnabled}
+                  placeholder={
+                    !isVendorCostEnabled
+                      ? "Disabled for this Division"
+                      : "Vendor"
+                  }
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${errs_label.vendor_paint_cost ? "border-red-300" : "border-gray-300"}
     ${
       isLocked || submitting || !isVendorCostEnabled
         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
         : "bg-gray-50 text-gray-900 "
     }
   `}
-/>
-
+                />
               </div>
 
               <div className="flex items-center w-1/2 gap-2">
@@ -1257,29 +1257,25 @@ vendor_cost1:
                   name="paint_cost"
                   type="number"
                   value={form.paint_cost}
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isVendorCostEnabled}
-  placeholder={
-    !isVendorCostEnabled
-      ? "Disabled for this Division"
-      : "Customer"
-  }
-  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${
-      errs_label.paint_cost
-        ? "border-red-300"
-        : "border-gray-300"
-    }
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isVendorCostEnabled}
+                  placeholder={
+                    !isVendorCostEnabled
+                      ? "Disabled for this Division"
+                      : "Customer"
+                  }
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${errs_label.paint_cost ? "border-red-300" : "border-gray-300"}
     ${
       isLocked || submitting || !isVendorCostEnabled
         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
         : "bg-gray-50 text-gray-900 "
     }
   `}
-/>
+                />
               </div>
-            </div>        
-             <div className="flex items-center w-full gap-6 mt-4">
+            </div>
+            <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_stator_cost"
@@ -1293,26 +1289,22 @@ vendor_cost1:
                   type="number"
                   value={form.vendor_stator_cost}
                   readOnly
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isVendorCostEnabled}
-  placeholder={
-    !isVendorCostEnabled
-      ? "Disabled for this Division"
-      : "Vendor"
-  }
-  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${
-      errs_label.vendor_stator_cost
-        ? "border-red-300"
-        : "border-gray-300"
-    }
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isVendorCostEnabled}
+                  placeholder={
+                    !isVendorCostEnabled
+                      ? "Disabled for this Division"
+                      : "Vendor"
+                  }
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${errs_label.vendor_stator_cost ? "border-red-300" : "border-gray-300"}
     ${
       isLocked || submitting || !isVendorCostEnabled
         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
         : "bg-gray-50 text-gray-900 "
     }
   `}
-/>
+                />
               </div>
 
               <div className="flex items-center w-1/2 gap-2">
@@ -1327,28 +1319,24 @@ vendor_cost1:
                   name="stator_cost"
                   type="number"
                   value={form.stator_cost}
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isVendorCostEnabled}
-  placeholder={
-    !isVendorCostEnabled
-      ? "Disabled for this Division"
-      : "Customer"
-  }
-  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${
-      errs_label.stator_cost
-        ? "border-red-300"
-        : "border-gray-300"
-    }
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isVendorCostEnabled}
+                  placeholder={
+                    !isVendorCostEnabled
+                      ? "Disabled for this Division"
+                      : "Customer"
+                  }
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${errs_label.stator_cost ? "border-red-300" : "border-gray-300"}
     ${
       isLocked || submitting || !isVendorCostEnabled
         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
         : "bg-gray-50 text-gray-900 "
     }
   `}
-/>
+                />
               </div>
-            </div> 
+            </div>
             <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
                 <label
@@ -1363,26 +1351,22 @@ vendor_cost1:
                   type="number"
                   value={form.vendor_leg_cost}
                   readOnly
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isVendorCostEnabled}
-  placeholder={
-    !isVendorCostEnabled
-      ? "Disabled for this Division"
-      : "Vendor"
-  }
-  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${
-      errs_label.vendor_leg_cost
-        ? "border-red-300"
-        : "border-gray-300"
-    }
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isVendorCostEnabled}
+                  placeholder={
+                    !isVendorCostEnabled
+                      ? "Disabled for this Division"
+                      : "Vendor"
+                  }
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${errs_label.vendor_leg_cost ? "border-red-300" : "border-gray-300"}
     ${
       isLocked || submitting || !isVendorCostEnabled
         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
         : "bg-gray-50 text-gray-900 "
     }
   `}
-/>
+                />
               </div>
 
               <div className="flex items-center w-1/2 gap-2">
@@ -1397,29 +1381,25 @@ vendor_cost1:
                   name="leg_cost"
                   type="number"
                   value={form.leg_cost}
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isVendorCostEnabled}
-  placeholder={
-    !isVendorCostEnabled
-      ? "Disabled for this Division"
-      : "Customer"
-  }
-  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${
-      errs_label.leg_cost
-        ? "border-red-300"
-        : "border-gray-300"
-    }
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isVendorCostEnabled}
+                  placeholder={
+                    !isVendorCostEnabled
+                      ? "Disabled for this Division"
+                      : "Customer"
+                  }
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${errs_label.leg_cost ? "border-red-300" : "border-gray-300"}
     ${
       isLocked || submitting || !isVendorCostEnabled
         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
         : "bg-gray-50 text-gray-900 "
     }
   `}
-/>
+                />
               </div>
-            </div>             
-        </div>
+            </div>
+          </div>
 
           <div
             className="flex items-center gap-2 w-full"
@@ -1642,9 +1622,7 @@ vendor_cost1:
                 />
                 <YesNoToggle
                   value={form.gst}
-                  onChange={(val) =>
-                    setForm(prev => ({ ...prev, gst: val }))
-                  }
+                  onChange={(val) => setForm((prev) => ({ ...prev, gst: val }))}
                   disabled={isLocked || submitting}
                 />
               </div>

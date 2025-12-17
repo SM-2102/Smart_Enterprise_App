@@ -42,7 +42,14 @@ const divisionOptions = [
   "OTHERS",
 ];
 
-const subDivisionOptions = ["STPM", "PRESSURE", "OPENWELL", "SUBMERSIBLE", "MINI", "AGRICULTURE"];
+const subDivisionOptions = [
+  "STPM",
+  "PRESSURE",
+  "OPENWELL",
+  "SUBMERSIBLE",
+  "MINI",
+  "AGRICULTURE",
+];
 
 const OutOfWarrantyCreatePage = () => {
   const [form, setForm] = useState(initialForm);
@@ -95,7 +102,7 @@ const OutOfWarrantyCreatePage = () => {
         setForm((prev) => ({ ...prev, service_charge: "" }));
         return;
       }
-      payload = { division: form.division , sub_division : form.sub_division };
+      payload = { division: form.division, sub_division: form.sub_division };
     } else {
       // For other divisions, send only division, sub_division=null
       payload = { division: form.division };
@@ -510,7 +517,7 @@ const OutOfWarrantyCreatePage = () => {
               />
             </div>
           </div>
-          
+
           <div className="flex items-center w-full">
             {/* Head & Service Charge - same line */}
 
@@ -658,55 +665,57 @@ const OutOfWarrantyCreatePage = () => {
               </label>
               <div style={{ position: "relative", width: "100%" }}>
                 <input
-                id="model"
-                name="model"
-                type="text"
-                required
-                value={form.model}
-                onChange={handleChange}
-                ref={modelInputRef}
-                onFocus={() => {
-                  if (form.model.length > 0 && modelSuggestions.length > 0)
-                    setShowModelSuggestions(true);
-                }}
-                onBlur={() => setTimeout(() => setShowModelSuggestions(false), 150)}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.model ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                maxLength={30}
-                disabled={submitting}
-              />
-              {showModelSuggestions && (
-                <ul
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    zIndex: 10,
-                    background: "#fff",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.5rem",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                    width: modelInputWidth,
-                    maxHeight: 180,
-                    overflowY: "auto",
-                    margin: 0,
-                    padding: 0,
-                    listStyle: "none",
+                  id="model"
+                  name="model"
+                  type="text"
+                  required
+                  value={form.model}
+                  onChange={handleChange}
+                  ref={modelInputRef}
+                  onFocus={() => {
+                    if (form.model.length > 0 && modelSuggestions.length > 0)
+                      setShowModelSuggestions(true);
                   }}
-                >
-                  {modelSuggestions.map((m) => (
-                    <li
-                      key={m}
-                      style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
-                      onMouseDown={() => {
-                        setForm((prev) => ({ ...prev, model: m }));
-                        setShowModelSuggestions(false);
-                      }}
-                    >
-                      {m}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                  onBlur={() =>
+                    setTimeout(() => setShowModelSuggestions(false), 150)
+                  }
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.model ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  maxLength={30}
+                  disabled={submitting}
+                />
+                {showModelSuggestions && (
+                  <ul
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      zIndex: 10,
+                      background: "#fff",
+                      border: "1px solid #d1d5db",
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                      width: modelInputWidth,
+                      maxHeight: 180,
+                      overflowY: "auto",
+                      margin: 0,
+                      padding: 0,
+                      listStyle: "none",
+                    }}
+                  >
+                    {modelSuggestions.map((m) => (
+                      <li
+                        key={m}
+                        style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
+                        onMouseDown={() => {
+                          setForm((prev) => ({ ...prev, model: m }));
+                          setShowModelSuggestions(false);
+                        }}
+                      >
+                        {m}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
             <div className="flex items-center w-1/2 gap-2">

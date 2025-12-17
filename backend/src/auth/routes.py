@@ -71,11 +71,7 @@ async def login(user: UserLogin, session: AsyncSession = Depends(get_session)):
 
 @auth_router.post("/logout", status_code=status.HTTP_200_OK)
 async def logout():
-    response = JSONResponse(
-        content={
-            "message": "User logged out successfully."
-        }
-    )
+    response = JSONResponse(content={"message": "User logged out successfully."})
     # Clear the cookies
     response.delete_cookie(key="access_token", path="/")
     response.delete_cookie(key="refresh_token", path="/")

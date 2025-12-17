@@ -7,16 +7,13 @@ import { authFetch } from "./authFetchService";
  * @returns {Promise<void>} Throws on error
  */
 async function getRewindingCharge(modelData) {
-  const response = await authFetch(
-    API_ENDPOINTS.REWINDING_RATE_FOR_MODEL,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(modelData),
+  const response = await authFetch(API_ENDPOINTS.REWINDING_RATE_FOR_MODEL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(modelData),
+  });
   const data = await response.json();
   if (!response.ok) {
     throw {
