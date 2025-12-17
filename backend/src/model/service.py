@@ -3,18 +3,78 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 
 from model.models import Model
-from model.schemas import RewindingCharge, CreateModel
+from rewinding_rate.models import RewindingRate
+from model.schemas import RewindingCharge, CreateModel, CostDetails
 from exceptions import ModelAlreadyExists
 
 class ModelService:
 
-    # async def get_rewinding_rate(self, session: AsyncSession, division: str, model: str):
-    #     statement = select(Model.rewinding_charge).where(
-    #         Model.division == division,
-    #         Model.model == model
-    #     )
-    #     result = await session.execute(statement)
-    #     return result.scalars().first()
+    async def get_cost_details(
+        self,
+        session: AsyncSession,
+        division: str,
+        model: str
+    ):
+        # STEP 1: Fetch frame, hp_rating, rewinding_charge from model table
+        model_statement = select(
+            Model.frame,
+            Model.hp_rating,
+            Model.rewinding_charge
+        ).where(
+            Model.division == division,
+            Model.model == model
+        )
+
+        model_result = await session.execute(model_statement)
+        model_row = model_result.first()
+
+        frame = model_row.frame
+        hp_rating = model_row.hp_rating
+        rewinding_charge = model_row.rewinding_charge
+
+        # STEP 2: Fetch vendor charges from rewinding_rate table
+        if division == "LT MOTOR":
+            rate_statement = select(
+                RewindingRate.paint_charge,
+                RewindingRate.stator_charge,
+                RewindingRate.leg_charge
+            ).where(
+                RewindingRate.division == division,
+                RewindingRate.frame == frame
+            )
+
+        elif division == "FHP MOTOR":
+            rate_statement = select(
+                RewindingRate.paint_charge,
+                RewindingRate.stator_charge,
+                RewindingRate.leg_charge
+            ).where(
+                RewindingRate.division == division,
+                RewindingRate.hp_rating == hp_rating
+            )
+
+        else:
+            rate_statement = None
+
+        paint_charge = 0
+        stator_charge = 0
+        leg_charge = 0
+
+        if rate_statement is not None:
+            rate_result = await session.execute(rate_statement)
+            rate_row = rate_result.first()
+
+            if rate_row:
+                paint_charge = rate_row.paint_charge or 0
+                stator_charge = rate_row.stator_charge or 0
+                leg_charge = rate_row.leg_charge or 0
+
+        return CostDetails(
+            rewinding_charge=rewinding_charge,
+            paint_charge=paint_charge,
+            stator_charge=stator_charge,
+            leg_charge=leg_charge
+        )
     
     async def check_model_name_available(
         self, model: str, session: AsyncSession

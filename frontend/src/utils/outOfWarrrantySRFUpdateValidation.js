@@ -22,11 +22,11 @@ function validateOutOfWarrantyUpdate(form) {
       errs_label[`cost${i}`] = true;
     }
   }
-  if (!form.vendor_date1 && form.vendor_date2) {
+  if (!form.challan_date && form.vendor_date2) {
     errs.push("Create Challan First");
-    errs_label["vendor_date1"] = true;
+    errs_label["challan_date"] = true;
   }
-  if (form.vendor_date1 && !form.vendor_date2 && form.repair_date) {
+  if (form.challan_date && !form.vendor_date2 && form.repair_date) {
     errs.push("Return Date Required");
     errs_label["repair_date"] = true;
   }
@@ -34,7 +34,7 @@ function validateOutOfWarrantyUpdate(form) {
     errs.push("Estimate Date Required");
     errs_label["estimate_date"] = true;
   }
-  if (form.estimate_date && form.vendor_date1 && !form.vendor_date2) {
+  if (form.estimate_date && form.challan_date && !form.vendor_date2) {
     errs.push("Return Date Required");
     errs_label["vendor_date2"] = true;
   }
@@ -42,12 +42,12 @@ function validateOutOfWarrantyUpdate(form) {
     errs.push("Repair Date Required");
     errs_label["repair_date"] = true;
   }
-  if (form.vendor_cost1 > 0 && !form.vendor_date1) {
+  if (form.vendor_cost1 > 0 && !form.challan_date) {
     errs.push("Vendor Dates Required");
     errs_label["vendor_date2"] = true;
   }
-  if (form.vendor_date1 && form.vendor_date2) {
-    const vendorDate1 = new Date(form.vendor_date1);
+  if (form.challan_date && form.vendor_date2) {
+    const vendorDate1 = new Date(form.challan_date);
     const vendorDate2 = new Date(form.vendor_date2);
     if (!isNaN(vendorDate1) && !isNaN(vendorDate2)) {
       if (vendorDate1 > vendorDate2) {
@@ -103,8 +103,8 @@ function validateOutOfWarrantyUpdate(form) {
   const minVendorOther = form.other_cost * 0.8;
 
   if (form.rewinding_cost) {
-    if (form.vendor_cost1 > minVendorRewinding) {
-      errs.push("Vendor Rewinding Cost Too High");
+    if (form.vendor_cost1 != minVendorRewinding) {
+      errs.push("Invalid Vendor Rewinding Cost");
       errs_label["vendor_cost1"] = true;
     }
   }
@@ -131,6 +131,18 @@ function validateOutOfWarrantyUpdate(form) {
   }
 
   if (form.final_status === "Y") {
+    if(form.leg_cost < form.vendor_leg_cost) {
+      errs.push("Insufficient Leg Charge");
+      errs_label["leg_cost"] = true;
+    }
+    if(form.stator_cost < form.vendor_stator_cost) {
+      errs.push("Insufficient Stator Charge");
+      errs_label["stator_cost"] = true;
+    }
+    if(form.paint_cost < form.vendor_paint_cost) {
+      errs.push("Insufficient Paint Charge");
+      errs_label["paint_cost"] = true;
+    }
     if (!form.delivery_date) {
       errs.push("Delivery Date is required");
       errs_label["delivery_date"] = true;

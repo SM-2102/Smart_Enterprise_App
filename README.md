@@ -124,7 +124,7 @@
 - [x] **/service_center/create** - [ADMIN]
 
 ### Model Module
-- [x] **/model/get_rewinding_rate**
+- [x] **/model/cost_details**
 - [x] **/model/create**
 - [x] **/model/model_list**
 

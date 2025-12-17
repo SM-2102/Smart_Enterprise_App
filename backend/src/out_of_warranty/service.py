@@ -162,6 +162,7 @@ class OutOfWarrantyService:
                 srf_number=row.OutOfWarranty.srf_number,
                 srf_date=format_date_ddmmyyyy(row.OutOfWarranty.srf_date),
                 name=row.name,
+                division=row.OutOfWarranty.division,
                 model=row.OutOfWarranty.model,
                 serial_number=row.OutOfWarranty.serial_number,
                 service_charge=row.OutOfWarranty.service_charge,
@@ -177,6 +178,15 @@ class OutOfWarrantyService:
                 repair_date=row.OutOfWarranty.repair_date,
                 rewinding_done=row.OutOfWarranty.rewinding_done,
                 rewinding_cost=row.OutOfWarranty.rewinding_cost,
+                vendor_paint = row.OutOfWarranty.vendor_paint,
+                vendor_stator = row.OutOfWarranty.vendor_stator,
+                vendor_leg = row.OutOfWarranty.vendor_leg,
+                vendor_paint_cost = row.OutOfWarranty.vendor_paint_cost,
+                vendor_stator_cost = row.OutOfWarranty.vendor_stator_cost,
+                vendor_leg_cost = row.OutOfWarranty.vendor_leg_cost,
+                paint_cost = row.OutOfWarranty.paint_cost,
+                stator_cost = row.OutOfWarranty.stator_cost,
+                leg_cost = row.OutOfWarranty.leg_cost,
                 other_cost=row.OutOfWarranty.other_cost,
                 work_done=row.OutOfWarranty.work_done,
                 spare1=row.OutOfWarranty.spare1,
@@ -266,6 +276,7 @@ class OutOfWarrantyService:
             )
             .join(Master, OutOfWarranty.code == Master.code)
             .where(OutOfWarranty.srf_number.like(f"{srf_number}%"))
+            .order_by(OutOfWarranty.srf_number)
         )
         result = await session.execute(statement)
         rows = result.fetchall()
@@ -521,17 +532,6 @@ class OutOfWarrantyService:
             )
             for row in rows
         ]
-
-    # async def list_received_by(self, session: AsyncSession):
-    #     statement = (
-    #         select(OutOfWarranty.received_by)
-    #         .distinct()
-    #         .where(OutOfWarranty.received_by.isnot(None))
-    #     )
-    #     result = await session.execute(statement)
-    #     names = result.scalars().all()
-    #     return names
-
 
     async def list_srf_not_settled(self, session: AsyncSession):
         statement = (

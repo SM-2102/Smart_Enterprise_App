@@ -9,11 +9,13 @@ import PendingBar from "../components/PendingBar";
 import { fetchOutOfWarrantyPending } from "../services/outOfWarrantyPendingService";
 import { searchOutOfWarrantyBySRFNumber } from "../services/outOfWarrantySearchBySRFNumberService";
 import { updateOutOfWarranty } from "../services/outOfWarrantyUpdateService";
+import { fetchCostDetails } from "../services/modelCostDetailsService";
 
 const initialForm = {
   srf_number: "",
   name: "",
   model: "",
+  division: "",
   srf_date: "",
   serial_number: "",
   service_charge: "",
@@ -65,6 +67,12 @@ const initialForm = {
   invoice_number: "",
   final_status: "N",
 };
+const ALLOWED_VENDOR_DIVISIONS = ["LT MOTOR", "FHP MOTOR"];
+const toNumber = (value) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+};
+
 
 const OutOfWarrantyUpdatePage = () => {
   // ...existing code...
@@ -157,6 +165,8 @@ const OutOfWarrantyUpdatePage = () => {
   const [isLocked, setIsLocked] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [pendingItems, setPendingItems] = useState([]);
+  const [modelCost, setModelCost] = useState(null);
+
 
   const handleSearch = async (searchCode) => {
     // If this was called as an event handler (e.g. onClick={handleSearch}),
@@ -193,6 +203,7 @@ const OutOfWarrantyUpdatePage = () => {
         customer_challan_number: data.customer_challan_number ?? "",
         challan_number: data.challan_number ?? "",
         received_by: data.received_by ?? "",
+        division: data.division ?? "",
         challan_date: data.challan_date ?? "",
         vendor_cost1: data.vendor_cost1 ?? "",
         vendor_date2: data.vendor_date2 ?? "",
@@ -237,6 +248,19 @@ const OutOfWarrantyUpdatePage = () => {
         invoice_number: data.invoice_number ?? "",
         final_status: data.final_status ?? "",
       });
+      if (data.division && data.model) {
+        try {
+          const costDetails = await fetchCostDetails({
+            division: data.division,
+            model: data.model,
+          });
+          setModelCost(costDetails);
+        } catch (err) {
+          console.error("Cost details fetch failed:", err);
+          setModelCost(null);
+        }
+      }
+
 
       // Handle locked state
       if (data.final_status === "Y") {
@@ -259,6 +283,98 @@ const OutOfWarrantyUpdatePage = () => {
       setShowToast(true);
     }
   };
+  const isVendorCostEnabled = ALLOWED_VENDOR_DIVISIONS.includes(form.division);
+
+  useEffect(() => {
+  if (!modelCost) return;
+
+  setForm(prev => {
+    if (prev.rewinding_done === "Y") {
+      // Only auto-fill if empty OR coming from toggle
+      return {
+        ...prev,
+        vendor_cost1: modelCost.rewinding_charge ?? "",
+      };
+    }
+
+    // rewinding_done === "N"
+    return {
+      ...prev,
+      vendor_cost1: "",
+    };
+  });
+}, [form.rewinding_done, modelCost]);
+useEffect(() => {
+  if (!modelCost) return;
+
+  setForm(prev => {
+    if (prev.rewinding_done === "Y") {
+      // Only auto-fill if empty OR coming from toggle
+      return {
+        ...prev,
+        vendor_cost1: modelCost.rewinding_charge ?? "",
+      };
+    }
+
+    // rewinding_done === "N"
+    return {
+      ...prev,
+      vendor_cost1: "",
+    };
+  });
+}, [form.rewinding_done, modelCost]);
+useEffect(() => {
+  if (!modelCost) return;
+
+  setForm(prev => {
+    if (prev.vendor_paint === "Y") {
+      return {
+        ...prev,
+        vendor_paint_cost: modelCost.paint_charge ?? "",
+      };
+    }
+
+    return {
+      ...prev,
+      vendor_paint_cost: "",
+    };
+  });
+}, [form.vendor_paint, modelCost]);
+useEffect(() => {
+  if (!modelCost) return;
+
+  setForm(prev => {
+    if (prev.vendor_stator === "Y") {
+      return {
+        ...prev,
+        vendor_stator_cost: modelCost.stator_charge ?? "",
+      };
+    }
+
+    return {
+      ...prev,
+      vendor_stator_cost: "",
+    };
+  });
+}, [form.vendor_stator, modelCost]);
+useEffect(() => {
+  if (!modelCost) return;
+
+  setForm(prev => {
+    if (prev.vendor_leg === "Y") {
+      return {
+        ...prev,
+        vendor_leg_cost: modelCost.leg_charge ?? "",
+      };
+    }
+
+    return {
+      ...prev,
+      vendor_leg_cost: "",
+    };
+  });
+}, [form.vendor_leg, modelCost]);
+
 
   useEffect(() => {
     const fetchPending = async () => {
@@ -291,6 +407,12 @@ const OutOfWarrantyUpdatePage = () => {
       return;
     }
     setSubmitting(true);
+    const vendorCost =
+  toNumber(form.vendor_cost1) +
+  toNumber(form.vendor_cost2) +
+  toNumber(form.vendor_paint_cost) +
+  toNumber(form.vendor_stator_cost) +
+  toNumber(form.vendor_leg_cost); 
 
     const rawPayload = {
       vendor_date2: form.vendor_date2,
@@ -300,6 +422,17 @@ const OutOfWarrantyUpdatePage = () => {
       repair_date: form.repair_date,
       rewinding_cost: form.rewinding_cost,
       other_cost: form.other_cost,
+      vendor_paint: form.vendor_paint,
+      vendor_stator: form.vendor_stator,
+      vendor_leg: form.vendor_leg,
+      vendor_paint_cost: form.vendor_paint_cost,
+      paint_cost: form.paint_cost,
+      vendor_stator_cost: form.vendor_stator_cost,
+      stator_cost: form.stator_cost,
+      vendor_leg_cost: form.vendor_leg_cost,
+      leg_cost: form.leg_cost,
+      vendor_cost: vendorCost,
+      estimate_date: form.estimate_date,
       work_done: form.work_done,
       spare1: form.spare1,
       cost1: form.cost1,
@@ -363,12 +496,15 @@ const OutOfWarrantyUpdatePage = () => {
       // Recalculate total immediately if relevant field changes
       if (
         [
-          "rewinding_cost",
+          "rewinding_done",
           "other_cost",
           "spare_cost",
           "godown_cost",
           "service_charge",
           "discount",
+          "paint_cost",
+          "leg_cost",
+          "stator_cost",
         ].includes(name)
       ) {
         const rewinding_cost =
@@ -395,13 +531,40 @@ const OutOfWarrantyUpdatePage = () => {
           name === "discount"
             ? parseFloat(newValue) || 0
             : parseFloat(updated.discount) || 0;
-        updated.total =
-          rewinding_cost +
-          other_cost +
-          spare_cost +
-          godown_cost +
-          service_charge -
-          discount;
+        const paint_cost =
+          name === "paint_cost"
+            ? parseFloat(newValue) || 0
+            : parseFloat(updated.paint_cost) || 0;
+        const stator_cost =
+          name === "stator_cost"
+            ? parseFloat(newValue) || 0
+            : parseFloat(updated.stator_cost) || 0;
+        const leg_cost =
+          name === "leg_cost"
+            ? parseFloat(newValue) || 0
+            : parseFloat(updated.leg_cost) || 0;
+        if (form.rewinding_done == 'Y') { 
+          updated.total =
+            rewinding_cost +
+            other_cost +
+            spare_cost +
+            godown_cost +
+            paint_cost +
+            leg_cost + 
+            stator_cost -
+            discount;
+        } else {
+          updated.total =
+            rewinding_cost +
+            other_cost +
+            spare_cost +
+            godown_cost +
+            paint_cost +
+            leg_cost + 
+            stator_cost +
+            service_charge -
+            discount;
+        }
       }
       return updated;
     });
@@ -551,7 +714,7 @@ const OutOfWarrantyUpdatePage = () => {
                   name="name"
                   type="text"
                   value={form.name}
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.name ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.name ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                   readOnly
                   disabled={isLocked || submitting}
                   autoComplete="name"
@@ -574,7 +737,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="text"
                 value={form.model}
                 readOnly
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.model ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.model ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -592,7 +755,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="text"
                 required
                 value={form.srf_date}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.srf_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.srf_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 readOnly
                 disabled={isLocked || submitting}
               />
@@ -612,7 +775,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="text"
                 value={form.serial_number}
                 readOnly
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.serial_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.serial_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -628,7 +791,7 @@ const OutOfWarrantyUpdatePage = () => {
                 name="service_charge"
                 type="number"
                 value={form.service_charge}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.service_charge ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.service_charge ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 readOnly
                 disabled={isLocked || submitting}
               />
@@ -649,7 +812,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="text"
                 value={form.customer_challan_number}
                 readOnly
-                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -667,7 +830,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="text"
                 required
                 value={form.customer_challan_date}
-                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`w-full px-3 py-1 rounded-lg border border-gray-300 bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 readOnly
                 disabled={isLocked || submitting}
               />
@@ -722,7 +885,7 @@ const OutOfWarrantyUpdatePage = () => {
                   type="text"
                   value={form.received_by}
                   readOnly
-                  className={`w-full px-3 py-1 rounded-lg ${errs_label.received_by ? "border-red-300" : "border-gray-300"} border border-gray-300 bg-gray-50 text-gray-900 cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`w-full px-3 py-1 rounded-lg ${errs_label.received_by ? "border-red-300" : "border-gray-300"} border border-gray-300 bg-gray-50 text-gray-900 cursor-not-allowed  font-small`}
                   disabled={isLocked || submitting}
                   autoComplete="off"
                 ></input>
@@ -745,7 +908,7 @@ const OutOfWarrantyUpdatePage = () => {
                   value={form.estimate_date}
                   max={new Date().toLocaleDateString("en-CA")}
                   onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.estimate_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.estimate_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -763,7 +926,7 @@ const OutOfWarrantyUpdatePage = () => {
                   type="date"
                   value={form.challan_date}
                   readOnly
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -782,7 +945,7 @@ const OutOfWarrantyUpdatePage = () => {
                   type="text"
                   value={form.challan_number}
                   readOnly
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.challan_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.challan_number ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -801,7 +964,7 @@ const OutOfWarrantyUpdatePage = () => {
                   value={form.vendor_date2}
                   onChange={handleChange}
                   max={new Date().toLocaleDateString("en-CA")}
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.vendor_date2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.vendor_date2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -849,7 +1012,7 @@ const OutOfWarrantyUpdatePage = () => {
                 value={form.repair_date}
                 onChange={handleChange}
                 max={new Date().toLocaleDateString("en-CA")}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -868,10 +1031,11 @@ const OutOfWarrantyUpdatePage = () => {
                   id="vendor_cost1"
                   name="vendor_cost1"
                   type="number"
+                  readOnly
                   value={form.vendor_cost1}
                   onChange={handleChange}
                   placeholder="Vendor"
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_cost1 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_cost1 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -890,7 +1054,7 @@ const OutOfWarrantyUpdatePage = () => {
                   placeholder="Customer"
                   value={form.rewinding_cost}
                   onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -911,7 +1075,7 @@ const OutOfWarrantyUpdatePage = () => {
                   placeholder="Vendor"
                   value={form.vendor_cost2}
                   onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_cost2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_cost2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -930,7 +1094,7 @@ const OutOfWarrantyUpdatePage = () => {
                   value={form.other_cost}
                   placeholder="Customer"
                   onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.other_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.other_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -960,7 +1124,7 @@ const OutOfWarrantyUpdatePage = () => {
                 onChange={(val) =>
                   setForm(prev => ({ ...prev, vendor_paint: val }))
                 }
-                disabled={isLocked || submitting}
+                disabled={isLocked || submitting || !isVendorCostEnabled}
               />
               </div>
             </div>
@@ -988,7 +1152,7 @@ const OutOfWarrantyUpdatePage = () => {
   onChange={(val) =>
     setForm(prev => ({ ...prev, vendor_stator: val }))
   }
-  disabled={isLocked || submitting}
+                disabled={isLocked || submitting || !isVendorCostEnabled}
 />
               </div>
             </div>
@@ -1016,7 +1180,7 @@ const OutOfWarrantyUpdatePage = () => {
   onChange={(val) =>
     setForm(prev => ({ ...prev, vendor_leg: val }))
   }
-  disabled={isLocked || submitting}
+                disabled={isLocked || submitting || !isVendorCostEnabled}
 />
               </div>
             </div>
@@ -1030,15 +1194,32 @@ const OutOfWarrantyUpdatePage = () => {
                   Paint Charge
                 </label>
                 <input
-                  id="vendor_paint_cost"
-                  name="vendor_paint_cost"
-                  type="number"
-                  placeholder="Vendor"
-                  value={form.vendor_paint_cost}
-                  onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_paint_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                  disabled={isLocked || submitting}
-                />
+  id="vendor_paint_cost"
+  name="vendor_paint_cost"
+  type="number"
+  value={form.vendor_paint_cost}
+  readOnly
+  onChange={handleChange}
+  disabled={isLocked || submitting || !isVendorCostEnabled}
+  placeholder={
+    !isVendorCostEnabled
+      ? "Disabled for this Division"
+      : "Vendor"
+  }
+  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${
+      errs_label.vendor_paint_cost
+        ? "border-red-300"
+        : "border-gray-300"
+    }
+    ${
+      isLocked || submitting || !isVendorCostEnabled
+        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+        : "bg-gray-50 text-gray-900 "
+    }
+  `}
+/>
+
               </div>
 
               <div className="flex items-center w-1/2 gap-2">
@@ -1053,11 +1234,26 @@ const OutOfWarrantyUpdatePage = () => {
                   name="paint_cost"
                   type="number"
                   value={form.paint_cost}
-                  placeholder="Customer"
-                  onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.paint_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                  disabled={isLocked || submitting}
-                />
+  onChange={handleChange}
+  disabled={isLocked || submitting || !isVendorCostEnabled}
+  placeholder={
+    !isVendorCostEnabled
+      ? "Disabled for this Division"
+      : "Customer"
+  }
+  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${
+      errs_label.paint_cost
+        ? "border-red-300"
+        : "border-gray-300"
+    }
+    ${
+      isLocked || submitting || !isVendorCostEnabled
+        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+        : "bg-gray-50 text-gray-900 "
+    }
+  `}
+/>
               </div>
             </div>        
              <div className="flex items-center w-full gap-6 mt-4">
@@ -1072,12 +1268,28 @@ const OutOfWarrantyUpdatePage = () => {
                   id="vendor_stator_cost"
                   name="vendor_stator_cost"
                   type="number"
-                  placeholder="Vendor"
                   value={form.vendor_stator_cost}
-                  onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_stator_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                  disabled={isLocked || submitting}
-                />
+                  readOnly
+  onChange={handleChange}
+  disabled={isLocked || submitting || !isVendorCostEnabled}
+  placeholder={
+    !isVendorCostEnabled
+      ? "Disabled for this Division"
+      : "Vendor"
+  }
+  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${
+      errs_label.vendor_stator_cost
+        ? "border-red-300"
+        : "border-gray-300"
+    }
+    ${
+      isLocked || submitting || !isVendorCostEnabled
+        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+        : "bg-gray-50 text-gray-900 "
+    }
+  `}
+/>
               </div>
 
               <div className="flex items-center w-1/2 gap-2">
@@ -1091,12 +1303,27 @@ const OutOfWarrantyUpdatePage = () => {
                   id="stator_cost"
                   name="stator_cost"
                   type="number"
-                  placeholder="Customer"
                   value={form.stator_cost}
-                  onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.stator_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                  disabled={isLocked || submitting}
-                />
+  onChange={handleChange}
+  disabled={isLocked || submitting || !isVendorCostEnabled}
+  placeholder={
+    !isVendorCostEnabled
+      ? "Disabled for this Division"
+      : "Customer"
+  }
+  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${
+      errs_label.stator_cost
+        ? "border-red-300"
+        : "border-gray-300"
+    }
+    ${
+      isLocked || submitting || !isVendorCostEnabled
+        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+        : "bg-gray-50 text-gray-900 "
+    }
+  `}
+/>
               </div>
             </div> 
             <div className="flex items-center w-full gap-6 mt-4">
@@ -1111,12 +1338,28 @@ const OutOfWarrantyUpdatePage = () => {
                   id="vendor_leg_cost"
                   name="vendor_leg_cost"
                   type="number"
-                  placeholder="Vendor"
                   value={form.vendor_leg_cost}
-                  onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_leg_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                  disabled={isLocked || submitting}
-                />
+                  readOnly
+  onChange={handleChange}
+  disabled={isLocked || submitting || !isVendorCostEnabled}
+  placeholder={
+    !isVendorCostEnabled
+      ? "Disabled for this Division"
+      : "Vendor"
+  }
+  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${
+      errs_label.vendor_leg_cost
+        ? "border-red-300"
+        : "border-gray-300"
+    }
+    ${
+      isLocked || submitting || !isVendorCostEnabled
+        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+        : "bg-gray-50 text-gray-900 "
+    }
+  `}
+/>
               </div>
 
               <div className="flex items-center w-1/2 gap-2">
@@ -1130,12 +1373,27 @@ const OutOfWarrantyUpdatePage = () => {
                   id="leg_cost"
                   name="leg_cost"
                   type="number"
-                  placeholder="Customer"
                   value={form.leg_cost}
-                  onChange={handleChange}
-                  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.leg_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
-                  disabled={isLocked || submitting}
-                />
+  onChange={handleChange}
+  disabled={isLocked || submitting || !isVendorCostEnabled}
+  placeholder={
+    !isVendorCostEnabled
+      ? "Disabled for this Division"
+      : "Customer"
+  }
+  className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
+    ${
+      errs_label.leg_cost
+        ? "border-red-300"
+        : "border-gray-300"
+    }
+    ${
+      isLocked || submitting || !isVendorCostEnabled
+        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+        : "bg-gray-50 text-gray-900 "
+    }
+  `}
+/>
               </div>
             </div>             
         </div>
@@ -1158,7 +1416,7 @@ const OutOfWarrantyUpdatePage = () => {
                   type="text"
                   value={form.work_done}
                   onChange={handleChange}
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.work_done ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.work_done ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                   autoComplete="work_done"
                 ></input>
@@ -1265,7 +1523,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.spare_cost}
                 readOnly
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.spare_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.spare_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -1282,7 +1540,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 onChange={handleChange}
                 value={form.godown_cost}
-                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.godown_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.godown_cost ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -1301,7 +1559,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.discount}
                 onChange={handleChange}
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.discount ? "border-red-300" : "border-gray-300"} ${!isAdmin ? "bg-gray-200 text-gray-600 cursor-not-allowed" : "bg-gray-50 text-gray-900"} focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.discount ? "border-red-300" : "border-gray-300"} ${!isAdmin ? "bg-gray-200 text-gray-600 cursor-not-allowed" : "bg-gray-50 text-gray-900"}  font-small`}
                 disabled={isLocked || submitting || !isAdmin}
                 placeholder={!isAdmin ? "Disabled" : form.discount}
               />
@@ -1320,7 +1578,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.total}
                 readOnly
-                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.total ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.total ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -1383,7 +1641,7 @@ const OutOfWarrantyUpdatePage = () => {
                 readOnly
                 value={form.gst_amount}
                 onChange={handleChange}
-                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.gst_amount ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.gst_amount ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -1402,7 +1660,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.round_off}
                 readOnly
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.round_off ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.round_off ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -1420,7 +1678,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.final_amount}
                 readOnly
-                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.final_amount ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small cursor-not-allowed`}
+                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.final_amount ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -1439,7 +1697,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.pc_number}
                 onChange={handleChange}
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.pc_number ? "border-red-300" : "border-gray-300"} ${form.gst === "Y" ? "bg-gray-200 text-gray-600 cursor-not-allowed" : "bg-gray-50 text-gray-900"} focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.pc_number ? "border-red-300" : "border-gray-300"} ${form.gst === "Y" ? "bg-gray-200 text-gray-600 cursor-not-allowed" : "bg-gray-50 text-gray-900"}  font-small`}
                 disabled={isLocked || submitting || form.gst === "Y"}
                 placeholder={form.gst === "Y" ? "Disabled" : undefined}
               />
@@ -1458,7 +1716,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.receive_amount}
                 onChange={handleChange}
-                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.receive_amount ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.receive_amount ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                 disabled={isLocked || submitting}
               />
             </div>
@@ -1477,7 +1735,7 @@ const OutOfWarrantyUpdatePage = () => {
                 type="number"
                 value={form.invoice_number}
                 onChange={handleChange}
-                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.invoice_number ? "border-red-300" : "border-gray-300"} ${form.gst === "N" ? "bg-gray-200 text-gray-600 cursor-not-allowed" : "bg-gray-50 text-gray-900"} focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.invoice_number ? "border-red-300" : "border-gray-300"} ${form.gst === "N" ? "bg-gray-200 text-gray-600 cursor-not-allowed" : "bg-gray-50 text-gray-900"}  font-small`}
                 disabled={isLocked || submitting || form.gst === "N"}
                 placeholder={form.gst === "N" ? "Disabled" : undefined}
               />
@@ -1497,7 +1755,7 @@ const OutOfWarrantyUpdatePage = () => {
                 value={form.delivery_date}
                 onChange={handleChange}
                 max={new Date().toLocaleDateString("en-CA")}
-                className={`w-full px-3 py-1 rounded-lg border ${errs_label.delivery_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 font-small`}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.delivery_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                 disabled={isLocked || submitting}
               />
             </div>

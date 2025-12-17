@@ -39,6 +39,7 @@ class OutOfWarrantySRFNumber(BaseModel):
 class OutOfWarrantyUpdateResponse(BaseModel):
     srf_number: str
     name: str
+    division: str
     model: str
     srf_date: str
     serial_number: str
@@ -56,6 +57,15 @@ class OutOfWarrantyUpdateResponse(BaseModel):
     rewinding_done: str
     rewinding_cost: Optional[float]
     other_cost: Optional[float]
+    vendor_paint: str
+    vendor_stator: str
+    vendor_leg: str
+    vendor_paint_cost: Optional[int]
+    paint_cost: Optional[int]
+    vendor_stator_cost: Optional[int]
+    stator_cost: Optional[int]
+    vendor_leg_cost: Optional[int]
+    leg_cost: Optional[int]
     work_done: Optional[str]
     spare1: Optional[str]
     cost1: Optional[float]
@@ -89,6 +99,16 @@ class OutOfWarrantyUpdate(BaseModel):
     vendor_cost1: Optional[float]
     vendor_cost2: Optional[float]
     estimate_date: Optional[date]
+    vendor_paint: str
+    vendor_stator: str
+    vendor_leg: str
+    vendor_paint_cost: Optional[int]
+    paint_cost: Optional[int]
+    vendor_stator_cost: Optional[int]
+    stator_cost: Optional[int]
+    vendor_leg_cost: Optional[int]
+    leg_cost: Optional[int]
+    vendor_cost: Optional[float]
     repair_date: Optional[date]
     rewinding_cost: Optional[float]
     other_cost: Optional[float]

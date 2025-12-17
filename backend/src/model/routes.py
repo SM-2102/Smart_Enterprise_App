@@ -7,7 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from auth.dependencies import AccessTokenBearer
 from db.db import get_session
-from model.schemas import ModelRequest, RewindingCharge, CreateModel, ModelList
+from model.schemas import ModelRequest, RewindingCharge, CreateModel, ModelList, CostDetails
 from model.service import ModelService
 
 model_router = APIRouter()
@@ -15,19 +15,19 @@ model_service = ModelService()
 access_token_bearer = AccessTokenBearer()
 
 """
-Get rewinding rate details by division and model
+Get rewinding rate, paint, stator and leg cost details by division and model
 """
 
 
-# @model_router.post("/rewinding-rate-for-update", status_code=status.HTTP_200_OK)
-# async def get_rewinding_rate_for_updation(
-#     data: ModelRequest,
-#     session: AsyncSession = Depends(get_session),
-#     _=Depends(access_token_bearer),
-# ):
+@model_router.post("/cost_details", status_code=status.HTTP_200_OK, response_model=CostDetails)
+async def cost_details(
+    data: ModelRequest,
+    session: AsyncSession = Depends(get_session),
+    _=Depends(access_token_bearer),
+):
 
-#     rewinding_cost = await model_service.get_rewinding_rate(session, data.division, data.model)
-#     return JSONResponse(content={"rewinding_cost": rewinding_cost})
+    cost_details = await model_service.get_cost_details(session, data.division, data.model)
+    return cost_details
 
 """
 Create new Model if model not present.

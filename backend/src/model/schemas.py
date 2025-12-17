@@ -21,3 +21,11 @@ class CreateModel(BaseModel):
     
 class ModelList(BaseModel):
     division: str
+
+class CostDetails(BaseModel):
+    rewinding_charge: Optional[int]
+    paint_charge: Optional[int]
+    leg_charge: Optional[int]
+    stator_charge: Optional[int]
+
+

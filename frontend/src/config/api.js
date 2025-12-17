@@ -61,7 +61,7 @@ const API_ENDPOINTS = {
 
   MODEL_CREATE: `${BASE_API_URL}model/create`,
   MODEL_LIST: `${BASE_API_URL}model/model_list`,
-  // MODEL_GET_REWINDING_FOR_CREATION: `${BASE_API_URL}model/rewinding-rate-for-model`,
+  MODEL_COST_DETAILS: `${BASE_API_URL}model/cost_details`,
 
   REWINDING_RATE_FOR_MODEL:`${BASE_API_URL}rewinding_rate/rewinding_rate`,
 
