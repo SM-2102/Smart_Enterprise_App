@@ -56,7 +56,7 @@ class WarrantyUpdateResponse(BaseModel):
     serial_number: str
     cg_srf_number: Optional[str]
     challan_number: Optional[str]
-    challan_date: Optional[date]
+    challan_date: Optional[str]
     received_by: Optional[str]
     vendor_date2: Optional[date]
     vendor_cost2: Optional[float]
@@ -102,7 +102,8 @@ class WarrantyUpdateResponse(BaseModel):
     purchase_date: Optional[date]
     customer_challan_number: Optional[str]
     customer_challan_date: Optional[date]
-
+    chargeable: str
+    final_status: str
 
 class WarrantyUpdate(BaseModel):
     vendor_date2: Optional[date]
@@ -144,7 +145,7 @@ class WarrantyUpdate(BaseModel):
     delivery_date: Optional[date]
     pc_number: Optional[int]
     invoice_number: Optional[str] = Field(None, max_length=16)
-    complaint_number: Optional[str] = Field(None, max_length=20)
+    complaint_number: Optional[str] = Field(None, max_length=15)
     cg_srf_number: Optional[str] = Field(None, max_length=10)
     final_status: str = Field(..., max_length=1)
     dealer_name: Optional[str] = Field(None, max_length=30)
@@ -153,3 +154,22 @@ class WarrantyUpdate(BaseModel):
     purchase_date: Optional[date]
     customer_challan_number: Optional[str] = Field(None, max_length=15)
     customer_challan_date: Optional[date]
+
+class WarrantySRFSettleRecord(BaseModel):
+    srf_number: str
+    name: str
+    model: str
+    delivery_date: Optional[date]
+    final_amount: Optional[float]
+    received_by: Optional[str]
+    pc_number: Optional[int]
+    invoice_number: Optional[int]
+
+class UpdateSRFUnsettled(BaseModel):
+    srf_number: str
+    settlement_date: date
+
+
+class UpdateSRFFinalSettlement(BaseModel):
+    srf_number: str
+    final_settled: str = Field(..., max_length=1)

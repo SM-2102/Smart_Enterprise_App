@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from auth.dependencies import AccessTokenBearer
+from auth.dependencies import AccessTokenBearer, RoleChecker
 from db.db import get_session
 from exceptions import WarrantyNotFound
 from warranty.schemas import (
@@ -15,12 +15,17 @@ from warranty.schemas import (
     WarrantySrfNumber,
     WarrantyUpdate,
     WarrantyUpdateResponse,
+    WarrantySRFSettleRecord,
+    UpdateSRFUnsettled,
+    UpdateSRFFinalSettlement,
 )
 from warranty.service import WarrantyService
 
 warranty_router = APIRouter()
 warranty_service = WarrantyService()
 access_token_bearer = AccessTokenBearer()
+role_checker = Depends(RoleChecker(allowed_roles=["ADMIN"]))
+
 
 """
 Create new warranty record, after checking master name and ASC name
@@ -211,3 +216,73 @@ async def enquiry_warranty(
         return result
     except:
         return []
+
+"""
+List all unsettled srf records.
+"""
+
+
+@warranty_router.get(
+    "/srf_not_settled",
+    response_model=List[WarrantySRFSettleRecord],
+    status_code=status.HTTP_200_OK,
+)
+async def list_srf_unsettled(
+    session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
+):
+    unsettled = await warranty_service.list_srf_not_settled(session)
+    return unsettled
+
+
+"""
+Update out of warranty srf records - List of Records
+"""
+
+
+@warranty_router.patch(
+    "/update_srf_unsettled", status_code=status.HTTP_202_ACCEPTED
+)
+async def update_srf_unsettled(
+    list_srf: List[UpdateSRFUnsettled],
+    session: AsyncSession = Depends(get_session),
+    _=Depends(access_token_bearer),
+):
+    await warranty_service.update_srf_unsettled(list_srf, session)
+    return JSONResponse(content={"message": f"SRF Records Proposed for Settlement"})
+
+
+"""
+List all final srf settlement records
+"""
+
+
+@warranty_router.get(
+    "/list_of_final_srf_settlement",
+    response_model=List[WarrantySRFSettleRecord],
+    status_code=status.HTTP_200_OK,
+    dependencies=[role_checker],
+)
+async def list_final_srf_settlement(
+    session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
+):
+    final_settlement = await warranty_service.list_final_srf_settlement(session)
+    return final_settlement
+
+
+"""
+Update final srf settlement records - List of Records
+"""
+
+
+@warranty_router.patch(
+    "/update_final_srf_settlement",
+    status_code=status.HTTP_202_ACCEPTED,
+    dependencies=[role_checker],
+)
+async def update_final_srf_settlement(
+    list_srf: List[UpdateSRFFinalSettlement],
+    session: AsyncSession = Depends(get_session),
+    _=Depends(access_token_bearer),
+):
+    await warranty_service.update_final_srf_settlement(list_srf, session)
+    return JSONResponse(content={"message": f"Vendor Records Settled"})

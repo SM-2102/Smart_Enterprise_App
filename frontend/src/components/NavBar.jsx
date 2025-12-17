@@ -55,7 +55,8 @@ function filterActionsForRole(actions, isAdmin) {
         a.path === "/ShowAllUsers" ||
         a.path === "/FinalSettlementRetailRecord" ||
         a.path === "/FinalSettlementOutOfWarrantySRF" ||
-        a.path === "/FinalSettlementOutOfWarrantyVendor" ||
+        a.path === "/FinalSettlementWarrantySRF" ||
+        a.path === "/FinalSettlementVendor" ||
         a.path === "/UploadComplaintNumber" ||
         a.path === "/CreateASCName"
       ),

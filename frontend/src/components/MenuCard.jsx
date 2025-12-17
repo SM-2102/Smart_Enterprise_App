@@ -37,6 +37,7 @@ const MenuCard = ({
             a.path === "/DeleteUser" ||
             a.path === "/ShowAllUsers" ||
             a.path === "/FinalSettlementRetailRecord" ||
+            a.path === "/FinalSettlementWarrantySRF" ||
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
             a.path === "/FinalSettlementVendor" ||
             a.path === "/UploadComplaintNumber" ||
@@ -52,6 +53,7 @@ const MenuCard = ({
             a.path === "/DeleteUser" ||
             a.path === "/ShowAllUsers" ||
             a.path === "/FinalSettlementRetailRecord" ||
+            a.path === "/FinalSettlementWarrantySRF" ||
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
             a.path === "/FinalSettlementVendor" ||
             a.path === "/UploadComplaintNumber" ||

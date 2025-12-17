@@ -53,6 +53,10 @@ const API_ENDPOINTS = {
   WARRANTY_LAST_SRF_NUMBER: `${BASE_API_URL}warranty/last_srf_number`,
   WARRANTY_SRF_PRINT: `${BASE_API_URL}warranty/srf_print`,
   WARRANTY_ENQUIRY: `${BASE_API_URL}warranty/enquiry`, //append params
+  WARRANTY_SRF_NOT_SETTLED: `${BASE_API_URL}warranty/srf_not_settled`,
+  WARRANTY_UPDATE_SRF_UNSETTLED: `${BASE_API_URL}warranty/update_srf_unsettled`,
+  WARRANTY_LIST_FINAL_SRF_SETTLEMENT: `${BASE_API_URL}warranty/list_of_final_srf_settlement`,
+  WARRANTY_UPDATE_FINAL_SRF_SETTLEMENT: `${BASE_API_URL}warranty/update_final_srf_settlement`,
 
   SERVICE_CENTER_LIST_NAMES: `${BASE_API_URL}service_center/list_names`,
   SERVICE_CENTER_CREATE: `${BASE_API_URL}service_center/create`,

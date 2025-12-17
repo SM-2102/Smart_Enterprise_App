@@ -26,6 +26,9 @@ from warranty.schemas import (
     WarrantySrfNumber,
     WarrantyUpdate,
     WarrantyUpdateResponse,
+    WarrantySRFSettleRecord,
+    UpdateSRFUnsettled,
+    UpdateSRFFinalSettlement
 )
 
 master_service = MasterService()
@@ -219,6 +222,8 @@ class WarrantyService:
                 purchase_date=row.Warranty.purchase_date,
                 customer_challan_number=row.Warranty.customer_challan_number,
                 customer_challan_date=row.Warranty.customer_challan_date,
+                chargeable=row.Warranty.chargeable,
+                final_status=row.Warranty.final_status,
             )
         else:
             raise WarrantyNotFound()
@@ -545,3 +550,83 @@ class WarrantyService:
         if existing_record:
             return True
         return False
+
+    async def list_srf_not_settled(self, session: AsyncSession):
+        statement = (
+            select(Warranty, Master)
+            .join(Master, Warranty.code == Master.code)
+            .where(
+                (Warranty.chargeable == 'Y')
+                & (Warranty.settlement_date.is_(None))
+                & (Warranty.final_status == "Y")
+            )
+            .order_by(Warranty.srf_number)
+        )
+        result = await session.execute(statement)
+        rows = result.all()
+        return [
+            WarrantySRFSettleRecord(
+                srf_number=row.Warranty.srf_number,
+                name=row.Master.name,
+                model=row.Warranty.model,
+                delivery_date=row.Warranty.delivery_date,
+                final_amount=row.Warranty.final_amount,
+                received_by=row.Warranty.received_by,
+                pc_number=row.Warranty.pc_number,
+                invoice_number=row.Warranty.invoice_number,
+            )
+            for row in rows
+        ]
+
+    async def update_srf_unsettled(
+        self, list_srf: List[UpdateSRFUnsettled], session: AsyncSession
+    ):
+        for srf in list_srf:
+            statement = select(Warranty).where(
+                Warranty.srf_number == srf.srf_number
+            )
+            result = await session.execute(statement)
+            existing_srf = result.scalar_one_or_none()
+            if existing_srf:
+                existing_srf.settlement_date = srf.settlement_date
+        await session.commit()
+
+    async def list_final_srf_settlement(self, session: AsyncSession):
+        statement = (
+            select(Warranty, Master)
+            .join(Master, Warranty.code == Master.code)
+            .where(
+                (Warranty.chargeable == 'Y')
+                & (Warranty.settlement_date.isnot(None))
+                & (Warranty.final_settled == "N")
+            )
+            .order_by(Warranty.srf_number)
+        )
+        result = await session.execute(statement)
+        rows = result.all()
+        return [
+            WarrantySRFSettleRecord(
+                srf_number=row.Warranty.srf_number,
+                name=row.Master.name,
+                model=row.Warranty.model,
+                delivery_date=row.Warranty.delivery_date,
+                final_amount=row.Warranty.final_amount,
+                received_by=row.Warranty.received_by,
+                pc_number=row.Warranty.pc_number,
+                invoice_number=row.Warranty.invoice_number,
+            )
+            for row in rows
+        ]
+
+    async def update_final_srf_settlement(
+        self, list_srf: List[UpdateSRFFinalSettlement], session: AsyncSession
+    ):
+        for srf in list_srf:
+            statement = select(Warranty).where(
+                Warranty.srf_number == srf.srf_number
+            )
+            result = await session.execute(statement)
+            existing_srf = result.scalar_one_or_none()
+            if existing_srf:
+                existing_srf.final_settled = srf.final_settled
+        await session.commit()

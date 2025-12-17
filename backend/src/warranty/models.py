@@ -105,6 +105,13 @@ class Warranty(SQLModel, table=True):
     vendor_settled: str = Field(
         sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
     )
+    chargeable: str = Field(
+        sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
+    )
+    settlement_date: date = Field(sa_column=Column(pg.DATE, nullable=True))
+    final_settled: str = Field(
+        sa_column=Column(pg.VARCHAR(1), nullable=False, default="N")
+    )
 
     def _repr_(self):
         return f"<Warranty {self.srf_number} - {self.srf_date}>"

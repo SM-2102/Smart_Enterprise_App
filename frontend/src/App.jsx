@@ -41,6 +41,9 @@ import SettleVendorUserPage from "./pages/VendorSettleUserPage.jsx";
 import VendorSettleAdminPage from "./pages/VendorSettleAdminPage.jsx";
 import ModelCreatePage from "./pages/ModelCreatePage.jsx";
 import ComplaintNumberUploadPage from "./pages/ComplaintNumberUploadPage.jsx";
+import WarrantySettleSRFUserPage from "./pages/WarrantySRFSettleUserPage.jsx";
+import WarrantySettleSRFAdminPage from "./pages/WarrantySRFSettleAdminPage.jsx";
+
 
 function AppRoutesWithNav() {
   return (
@@ -290,6 +293,14 @@ function AppRoutesWithNav() {
             }
           />
           <Route
+            path="/ProposeToSettleWarrantySRF"
+            element={
+              <PrivateRoute>
+                <WarrantySettleSRFUserPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/CreateVendorChallan"
             element={
               <PrivateRoute>
@@ -326,6 +337,14 @@ function AppRoutesWithNav() {
             element={
               <PrivateRoute requiredRole="ADMIN">
                 <OutOfWarrantySettleSRFAdminPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/FinalSettlementWarrantySRF"
+            element={
+              <PrivateRoute requiredRole="ADMIN">
+                <WarrantySettleSRFAdminPage />
               </PrivateRoute>
             }
           />

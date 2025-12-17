@@ -48,10 +48,12 @@
 - [ ] **WarrantyUpdatePage** - Update Warranty record
 - [x] **WarrantySRFPrintPage** - Warranty SRF Print
 - [x] **WarrantyEnquiryPage** - Warranty Enquiry Page
+- [x] **WarrantySRFSettleUserPage** - Warranty SRF Propose to Settle
+- [x] **WarrantySRFSettleAdminPage** - Warranty SRF Settlement [ADMIN]
 
 ### OutOfWarranty Module
 - [x] **OutOFWarrantyCreatePage** - Create Out Of Warranty record
-- [ ] **OutOFWarrantyUpdatePage** - Update Out Of Warranty record
+- [x] **OutOFWarrantyUpdatePage** - Update Out Of Warranty record
 - [x] **OutOFWarrantySRFPrintPage** - Out Of Warranty SRF Print
 - [x] **OutOFWarrantySRFSettleUserPage** - Out Of Warranty SRF Propose to Settle
 - [x] **OutOFWarrantySRFSettleAdminPage** - Out Of Warranty SRF Settlement [ADMIN]
@@ -140,13 +142,17 @@
 - [x] **warranty/last_srf_number**
 - [x] **warranty/srf_print**
 - [x] **warranty/enquiry{params}**
+- [x] **warranty/srf_not_settled**
+- [x] **warranty/update_srf_unsettled**
+- [x] **warranty/list_of_final_srf_settlement** - [ADMIN]
+- [x] **warranty/update_final_srf_settlement** - [ADMIN]
 
 ### OutOfWarranty Module
 - [x] **out_of_warranty/next_srf_number**
 - [x] **out_of_warranty/create**
 - [x] **out_of_warranty/list_pending**
-- [ ] **out_of_warranty/by_srf_number**
-- [ ] **out_of_warranty/update/{srf_number}**
+- [x] **out_of_warranty/by_srf_number**
+- [x] **out_of_warranty/update/{srf_number}**
 - [x] **out_of_warranty/last_srf_number**
 - [x] **out_of_warranty/srf_print**
 - [x] **out_of_warranty/enquiry{params}**
@@ -183,7 +189,7 @@
 ## Application Development
 
 - [x] **Authorization**
-- [ ] **Database Schema**
+- [x] **Database Schema**
 - [x] **Initial Deployment**
 - [x] **Backup**
 - [x] **Login & Menu**
@@ -192,7 +198,7 @@
 - [x] **Retail**
 - [x] **Challan**
 - [x] **Vendor**
-- [ ] **Warranty**
+- [x] **Warranty**
 - [ ] **Out of Warranty**
 - [ ] **Final Deployment**
 

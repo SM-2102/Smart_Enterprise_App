@@ -1,8 +1,8 @@
-"""Initial Commit
+"""Initial Migration
 
-Revision ID: 90cdd2878e75
+Revision ID: 6c799356721b
 Revises: 
-Create Date: 2025-12-14 22:31:35.252135
+Create Date: 2025-12-17 11:04:06.780124
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '90cdd2878e75'
+revision: str = '6c799356721b'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,7 @@ def upgrade() -> None:
     op.create_table('complaint_number',
     sa.Column('complaint_number', sa.VARCHAR(length=15), nullable=False),
     sa.Column('status', sa.VARCHAR(length=15), nullable=True),
-    sa.Column('remark', sa.VARCHAR(length=30), nullable=True),
+    sa.Column('remark', sa.VARCHAR(length=50), nullable=True),
     sa.PrimaryKeyConstraint('complaint_number')
     )
     op.create_table('service_centre',
@@ -35,7 +35,7 @@ def upgrade() -> None:
     op.create_table('service_charge',
     sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
     sa.Column('division', sa.VARCHAR(length=10), nullable=False),
-    sa.Column('head', sa.VARCHAR(length=15), nullable=True),
+    sa.Column('sub_division', sa.VARCHAR(length=15), nullable=True),
     sa.Column('service_charge', sa.INTEGER(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
@@ -72,9 +72,9 @@ def upgrade() -> None:
     sa.Column('division', sa.VARCHAR(length=15), nullable=False),
     sa.Column('frame', sa.VARCHAR(length=10), nullable=True),
     sa.Column('winding_type', sa.VARCHAR(length=15), nullable=True),
-    sa.Column('rating', sa.FLOAT(), nullable=True),
+    sa.Column('hp_rating', sa.FLOAT(), nullable=True),
     sa.Column('rewinding_charge', sa.INTEGER(), nullable=True),
-    sa.Column('created_by', sa.VARCHAR(length=15), nullable=False),
+    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.PrimaryKeyConstraint('model')
     )
@@ -89,7 +89,7 @@ def upgrade() -> None:
     sa.Column('paint_charge', sa.INTEGER(), nullable=True),
     sa.Column('leg_charge', sa.INTEGER(), nullable=True),
     sa.Column('stator_charge', sa.INTEGER(), nullable=True),
-    sa.Column('created_by', sa.VARCHAR(length=15), nullable=False),
+    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -126,7 +126,7 @@ def upgrade() -> None:
     sa.Column('invoice_number', sa.VARCHAR(length=15), nullable=True),
     sa.Column('invoice_date', sa.DATE(), nullable=True),
     sa.Column('remark', sa.VARCHAR(length=50), nullable=False),
-    sa.Column('created_by', sa.VARCHAR(length=15), nullable=False),
+    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
     sa.ForeignKeyConstraint(['code'], ['master.code'], ),
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.PrimaryKeyConstraint('challan_number')
@@ -166,14 +166,14 @@ def upgrade() -> None:
     sa.Column('invoice_number', sa.VARCHAR(length=15), nullable=True),
     sa.Column('invoice_date', sa.DATE(), nullable=True),
     sa.Column('remark', sa.VARCHAR(length=50), nullable=False),
-    sa.Column('created_by', sa.VARCHAR(length=15), nullable=False),
+    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
     sa.ForeignKeyConstraint(['code'], ['master.code'], ),
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.PrimaryKeyConstraint('challan_number')
     )
     op.create_index(op.f('ix_challan_unique_challan_number'), 'challan_unique', ['challan_number'], unique=False)
     op.create_index(op.f('ix_challan_unique_code'), 'challan_unique', ['code'], unique=False)
-    op.create_table('outofwarranty',
+    op.create_table('out_of_warranty',
     sa.Column('srf_number', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('code', sa.VARCHAR(length=5), nullable=False),
     sa.Column('srf_date', sa.DATE(), nullable=False),
@@ -184,9 +184,9 @@ def upgrade() -> None:
     sa.Column('problem', sa.VARCHAR(length=30), nullable=False),
     sa.Column('remark', sa.VARCHAR(length=40), nullable=True),
     sa.Column('complaint_number', sa.VARCHAR(length=20), nullable=True),
-    sa.Column('vendor_challan_number', sa.VARCHAR(length=15), nullable=False),
-    sa.Column('vendor_challan_date', sa.DATE(), nullable=False),
-    sa.Column('customer_challan', sa.VARCHAR(length=1), nullable=False),
+    sa.Column('challan_number', sa.VARCHAR(length=15), nullable=True),
+    sa.Column('challan_date', sa.DATE(), nullable=True),
+    sa.Column('challan', sa.VARCHAR(length=1), nullable=False),
     sa.Column('service_charge', sa.FLOAT(), nullable=False),
     sa.Column('receive_date', sa.DATE(), nullable=True),
     sa.Column('customer_invoice_number', sa.VARCHAR(length=16), nullable=True),
@@ -236,8 +236,8 @@ def upgrade() -> None:
     sa.Column('rpm', sa.INTEGER(), nullable=True),
     sa.Column('purchase_number', sa.VARCHAR(length=15), nullable=True),
     sa.Column('purchase_date', sa.DATE(), nullable=True),
-    sa.Column('customer_challan_number', sa.VARCHAR(length=6), nullable=True),
-    sa.Column('customer_challan_date', sa.DATE(), nullable=True),
+    sa.Column('customer_challan_number', sa.VARCHAR(length=6), nullable=False),
+    sa.Column('customer_challan_date', sa.DATE(), nullable=False),
     sa.Column('receive_amount', sa.FLOAT(), nullable=True),
     sa.Column('delivery_date', sa.DATE(), nullable=True),
     sa.Column('delivered_by', sa.VARCHAR(length=20), nullable=True),
@@ -246,19 +246,20 @@ def upgrade() -> None:
     sa.Column('final_status', sa.CHAR(length=1), nullable=False),
     sa.Column('pc_number', sa.INTEGER(), nullable=True),
     sa.Column('invoice_number', sa.INTEGER(), nullable=True),
-    sa.Column('created_by', sa.VARCHAR(length=15), nullable=False),
-    sa.Column('updated_by', sa.VARCHAR(length=15), nullable=True),
+    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
+    sa.Column('updated_by', sa.VARCHAR(length=30), nullable=True),
     sa.Column('service_charge_waive', sa.VARCHAR(length=1), nullable=False),
     sa.Column('waive_details', sa.VARCHAR(length=40), nullable=True),
     sa.Column('vendor_settled', sa.VARCHAR(length=1), nullable=False),
+    sa.Column('estimate_date', sa.DATE(), nullable=True),
     sa.Column('final_settled', sa.VARCHAR(length=1), nullable=False),
     sa.ForeignKeyConstraint(['code'], ['master.code'], ),
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.ForeignKeyConstraint(['updated_by'], ['users.username'], ),
     sa.PrimaryKeyConstraint('srf_number')
     )
-    op.create_index(op.f('ix_outofwarranty_code'), 'outofwarranty', ['code'], unique=False)
-    op.create_index(op.f('ix_outofwarranty_srf_number'), 'outofwarranty', ['srf_number'], unique=False)
+    op.create_index(op.f('ix_out_of_warranty_code'), 'out_of_warranty', ['code'], unique=False)
+    op.create_index(op.f('ix_out_of_warranty_srf_number'), 'out_of_warranty', ['srf_number'], unique=False)
     op.create_table('retail',
     sa.Column('rcode', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('retail_date', sa.DATE(), nullable=False),
@@ -269,8 +270,8 @@ def upgrade() -> None:
     sa.Column('received', sa.CHAR(length=1), nullable=False),
     sa.Column('settlement_date', sa.DATE(), nullable=True),
     sa.Column('final_status', sa.CHAR(length=1), nullable=False),
-    sa.Column('created_by', sa.VARCHAR(length=15), nullable=False),
-    sa.Column('updated_by', sa.VARCHAR(length=15), nullable=True),
+    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
+    sa.Column('updated_by', sa.VARCHAR(length=30), nullable=True),
     sa.ForeignKeyConstraint(['code'], ['master.code'], ),
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.ForeignKeyConstraint(['updated_by'], ['users.username'], ),
@@ -349,15 +350,17 @@ def upgrade() -> None:
     sa.Column('final_status', sa.CHAR(length=1), nullable=False),
     sa.Column('pc_number', sa.INTEGER(), nullable=True),
     sa.Column('invoice_number', sa.INTEGER(), nullable=True),
-    sa.Column('created_by', sa.VARCHAR(length=15), nullable=False),
-    sa.Column('updated_by', sa.VARCHAR(length=15), nullable=True),
+    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
+    sa.Column('updated_by', sa.VARCHAR(length=30), nullable=True),
     sa.Column('vendor_settled', sa.VARCHAR(length=1), nullable=False),
-    sa.Column('user_settlement_date', sa.VARCHAR(length=1), nullable=True),
+    sa.Column('chargeable', sa.VARCHAR(length=1), nullable=False),
+    sa.Column('settlement_date', sa.DATE(), nullable=True),
     sa.Column('final_settled', sa.VARCHAR(length=1), nullable=False),
     sa.ForeignKeyConstraint(['code'], ['master.code'], ),
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.ForeignKeyConstraint(['updated_by'], ['users.username'], ),
-    sa.PrimaryKeyConstraint('srf_number')
+    sa.PrimaryKeyConstraint('srf_number'),
+    sa.UniqueConstraint('complaint_number')
     )
     op.create_index(op.f('ix_warranty_code'), 'warranty', ['code'], unique=False)
     op.create_index(op.f('ix_warranty_srf_number'), 'warranty', ['srf_number'], unique=False)
@@ -373,9 +376,9 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_retail_rcode'), table_name='retail')
     op.drop_index(op.f('ix_retail_code'), table_name='retail')
     op.drop_table('retail')
-    op.drop_index(op.f('ix_outofwarranty_srf_number'), table_name='outofwarranty')
-    op.drop_index(op.f('ix_outofwarranty_code'), table_name='outofwarranty')
-    op.drop_table('outofwarranty')
+    op.drop_index(op.f('ix_out_of_warranty_srf_number'), table_name='out_of_warranty')
+    op.drop_index(op.f('ix_out_of_warranty_code'), table_name='out_of_warranty')
+    op.drop_table('out_of_warranty')
     op.drop_index(op.f('ix_challan_unique_code'), table_name='challan_unique')
     op.drop_index(op.f('ix_challan_unique_challan_number'), table_name='challan_unique')
     op.drop_table('challan_unique')

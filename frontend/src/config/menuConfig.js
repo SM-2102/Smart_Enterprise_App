@@ -31,6 +31,8 @@ export const menuConfig = [
       { label: "Create SRF Record", path: "/CreateWarrantySRF" },
       { label: "Update SRF Record", path: "/UpdateWarrantySRF" },
       { label: "Print SRF Record", path: "/PrintWarrantySRF" },
+      { label: "Settle SRF Record", path: "/ProposeToSettleWarrantySRF" },
+      { label: "Settle Final SRF", path: "/FinalSettlementWarrantySRF" },
       { label: "Enquiry", path: "/WarrantyEnquiry", showInDashboard: false },
     ],
   },

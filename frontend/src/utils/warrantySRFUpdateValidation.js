@@ -30,11 +30,7 @@ function validateWarrantyUpdate(form) {
     errs.push("Return Date Required");
     errs_label["repair_date"] = true;
   }
-  if (form.repair_date && !form.estimate_date) {
-    errs.push("Estimate Date Required");
-    errs_label["estimate_date"] = true;
-  }
-  if (form.estimate_date && form.challan_date && !form.vendor_date2) {
+  if (form.challan_date && !form.vendor_date2) {
     errs.push("Return Date Required");
     errs_label["vendor_date2"] = true;
   }
@@ -53,28 +49,6 @@ function validateWarrantyUpdate(form) {
       if (vendorDate1 > vendorDate2) {
         errs.push("Invalid Return Date");
         errs_label["vendor_date2"] = true;
-      }
-    }
-  }
-
-  if (form.estimate_date) {
-    const estimateDate = new Date(form.estimate_date);
-    const srfDate = parseDDMMYYYY(form.srf_date);
-    if (!isNaN(estimateDate) && !isNaN(srfDate)) {
-      if (srfDate > estimateDate) {
-        errs.push("Invalid Estimate Date");
-        errs_label["estimate_date"] = true;
-      }
-    }
-  }
-
-  if (form.estimate_date && form.repair_date) {
-    const estimateDate = new Date(form.estimate_date);
-    const repairDate = new Date(form.repair_date);
-    if (!isNaN(estimateDate) && !isNaN(repairDate)) {
-      if (estimateDate > repairDate) {
-        errs.push("Invalid Repair Date");
-        errs_label["repair_date"] = true;
       }
     }
   }
@@ -152,6 +126,11 @@ function validateWarrantyUpdate(form) {
       errs.push("Other Cost is required");
       errs_label["other_cost"] = true;
     }
+  }
+  if(form.chargeable === 'N' && form.final_amount > 0)
+  {
+   errs.push("Make the record chargeable");
+      errs_label["final_amount"] = true; 
   }
 
   return [errs, errs_label];
