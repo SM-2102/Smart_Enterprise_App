@@ -99,22 +99,24 @@ function validateOutOfWarrantyUpdate(form) {
       }
     }
   }
-  const minVendorRewinding = form.rewinding_cost * 0.8;
   const minVendorOther = form.other_cost * 0.8;
-
-  if (form.rewinding_cost) {
-    if (form.vendor_cost1 != minVendorRewinding) {
-      errs.push("Invalid Vendor Rewinding Cost");
-      errs_label["vendor_cost1"] = true;
-    }
-  }
 
   if (form.other_cost) {
     if (form.vendor_cost2 > minVendorOther) {
       errs.push("Vendor Other Cost Too High");
-      errs_label["vendor_cost2"] = true;
+      errs_label["other_cost"] = true;
     }
   }
+
+ if (form.rewinding_done === "Y" && form.rewinding_cost) {
+  const minCustomerCost = Number(form.rewinding_base_cost || 0);
+
+  if (form.rewinding_cost < minCustomerCost) {
+    errs.push("Rewinding Cost too Low");
+    errs_label["rewinding_cost"] = true;
+  }
+}
+
 
   if (form.delivery_date && !form.work_done) {
     errs.push("Work Done is required");

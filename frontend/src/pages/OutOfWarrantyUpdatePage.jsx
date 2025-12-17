@@ -66,6 +66,7 @@ const initialForm = {
   pc_number: "",
   invoice_number: "",
   final_status: "N",
+  rewinding_base_cost: "",
 };
 const ALLOWED_VENDOR_DIVISIONS = ["LT MOTOR", "FHP MOTOR"];
 const toNumber = (value) => {
@@ -285,44 +286,50 @@ const OutOfWarrantyUpdatePage = () => {
   };
   const isVendorCostEnabled = ALLOWED_VENDOR_DIVISIONS.includes(form.division);
 
-  useEffect(() => {
-  if (!modelCost) return;
-
-  setForm(prev => {
-    if (prev.rewinding_done === "Y") {
-      // Only auto-fill if empty OR coming from toggle
-      return {
-        ...prev,
-        vendor_cost1: modelCost.rewinding_charge ?? "",
-      };
-    }
-
-    // rewinding_done === "N"
-    return {
-      ...prev,
-      vendor_cost1: "",
-    };
-  });
-}, [form.rewinding_done, modelCost]);
 useEffect(() => {
   if (!modelCost) return;
 
   setForm(prev => {
     if (prev.rewinding_done === "Y") {
-      // Only auto-fill if empty OR coming from toggle
+      const base = Number(modelCost.rewinding_charge || 0);
+      const minCustomerCost = Math.round(base * 1.3);
+
       return {
         ...prev,
-        vendor_cost1: modelCost.rewinding_charge ?? "",
+        rewinding_base_cost: minCustomerCost,
+        rewinding_cost: minCustomerCost,
+vendor_cost1: prev.vendor_date2
+  ? Math.round(minCustomerCost * 0.8)
+  : 0,
       };
     }
 
-    // rewinding_done === "N"
     return {
       ...prev,
+      rewinding_base_cost: "",
+      rewinding_cost: "",
       vendor_cost1: "",
     };
   });
 }, [form.rewinding_done, modelCost]);
+
+useEffect(() => {
+  if (form.rewinding_done !== "Y") return;
+  if (!form.vendor_date2) return;
+
+  const customerCost = Number(form.rewinding_cost || 0);
+  const vendorCost = Math.round(customerCost * 0.8);
+
+  if (vendorCost !== Number(form.vendor_cost1)) {
+    setForm(prev => ({
+      ...prev,
+      vendor_cost1: vendorCost,
+    }));
+  }
+}, [form.rewinding_cost, form.rewinding_done, form.vendor_date2]);
+
+
+
 useEffect(() => {
   if (!modelCost) return;
 
@@ -416,7 +423,10 @@ useEffect(() => {
 
     const rawPayload = {
       vendor_date2: form.vendor_date2,
-      vendor_cost1: form.vendor_cost1,
+vendor_cost1:
+  form.rewinding_done === "Y" && !form.vendor_date2
+    ? 0
+    : form.vendor_cost1,
       vendor_cost2: form.vendor_cost2,
       estimate_date: form.estimate_date,
       repair_date: form.repair_date,
@@ -646,6 +656,15 @@ useEffect(() => {
     form.service_charge,
     form.discount,
   ]); // Trigger when any cost component changes
+
+  useEffect(() => {
+  if (form.rewinding_done === "Y" && !form.vendor_date2) {
+    setForm(prev => ({
+      ...prev,
+      vendor_cost1: 0,
+    }));
+  }
+}, [form.rewinding_done, form.vendor_date2]);
 
   return (
     <div className="flex min-h-[80vh] mt-6 justify-center items-center">
@@ -1036,7 +1055,11 @@ useEffect(() => {
                   onChange={handleChange}
                   placeholder="Vendor"
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.vendor_cost1 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
-                  disabled={isLocked || submitting}
+                  disabled={
+                    isLocked ||
+                    submitting ||
+                    (form.rewinding_done === "Y" && !form.vendor_date2)
+                  }
                 />
               </div>
 

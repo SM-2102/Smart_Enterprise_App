@@ -241,7 +241,6 @@ function AppRoutesWithNav() {
               </PrivateRoute>
             }
           />
-          {/*
           <Route
             path="/UpdateWarrantySRF"
             element={
@@ -249,7 +248,7 @@ function AppRoutesWithNav() {
                 <WarrantyUpdatePage />
               </PrivateRoute>
             }
-          />*/}
+          />
           <Route
             path="/WarrantyEnquiry"
             element={
