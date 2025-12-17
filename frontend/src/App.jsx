@@ -44,7 +44,6 @@ import ComplaintNumberUploadPage from "./pages/ComplaintNumberUploadPage.jsx";
 import WarrantySettleSRFUserPage from "./pages/WarrantySRFSettleUserPage.jsx";
 import WarrantySettleSRFAdminPage from "./pages/WarrantySRFSettleAdminPage.jsx";
 
-
 function AppRoutesWithNav() {
   return (
     <>

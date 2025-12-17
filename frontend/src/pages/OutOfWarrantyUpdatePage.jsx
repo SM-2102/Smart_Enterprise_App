@@ -295,7 +295,7 @@ const OutOfWarrantyUpdatePage = () => {
           ...prev,
           rewinding_base_cost: minCustomerCost,
           rewinding_cost: minCustomerCost,
-          vendor_cost1: prev.vendor_date2
+          vendor_cost1: prev.vendor_cost1
             ? Math.round(minCustomerCost * 0.8)
             : 0,
         };
@@ -436,7 +436,6 @@ const OutOfWarrantyUpdatePage = () => {
       vendor_leg_cost: form.vendor_leg_cost,
       leg_cost: form.leg_cost,
       vendor_cost: vendorCost,
-      estimate_date: form.estimate_date,
       work_done: form.work_done,
       spare1: form.spare1,
       cost1: form.cost1,

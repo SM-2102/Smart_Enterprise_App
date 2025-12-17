@@ -59,6 +59,8 @@ const Filter = ({
   setFinalStatus,
   vendorSettled,
   setVendorSettled,
+  finalSettled,
+  setFinalSettled,
   name,
   setName,
   division,
@@ -557,6 +559,42 @@ const Filter = ({
               </select>
             </div>
           </div>
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <label
+                htmlFor="finalSettled"
+                style={{
+                  fontWeight: 600,
+                  color: "#1976d2",
+                  letterSpacing: 0.5,
+                  fontSize: 13,
+                  width: 150,
+                }}
+              >
+                Final SRF
+              </label>
+              <select
+                id="finalSettled"
+                name="finalSettled"
+                value={finalSettled}
+                onChange={(e) => setFinalSettled(e.target.value)}
+                style={{
+                  padding: "4px 8px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: 6,
+                  fontSize: 13,
+                  background: "#f7f9fc",
+                  outline: "none",
+                  boxShadow: "0 1px 2px rgba(25, 118, 210, 0.04)",
+                  width: "100%",
+                }}
+              >
+                <option value=""></option>
+                <option value="Y">Settled</option>
+                <option value="N">Not Settled</option>
+              </select>
+            </div>
+          </div>
 
           {/* Centered Search & Clear Buttons */}
           <div
@@ -629,6 +667,7 @@ const WarrantyEnquiryPage = () => {
   // Filter states for master_enquiry params
   const [finalStatus, setFinalStatus] = useState("");
   const [vendorSettled, setVendorSettled] = useState("");
+  const [finalSettled, setFinalSettled] = useState("");
   const [name, setName] = useState("");
   const [division, setDivision] = useState("");
   const getDefaultFromSRFDate = () => {
@@ -656,6 +695,7 @@ const WarrantyEnquiryPage = () => {
   const handleClear = () => {
     setFinalStatus("");
     setVendorSettled("");
+    setFinalSettled("");
     setName("");
     setDivision("");
     setFromSRFDate(getDefaultFromSRFDate());
@@ -695,6 +735,7 @@ const WarrantyEnquiryPage = () => {
       const params = {};
       if (finalStatus) params.final_status = finalStatus;
       if (vendorSettled) params.vendor_settled = vendorSettled;
+      if (finalSettled) params.final_settled = finalSettled;
       if (name) params.name = name;
       if (division) params.division = division;
       if (fromSRFDate) params.from_srf_date = fromSRFDate;
@@ -723,6 +764,8 @@ const WarrantyEnquiryPage = () => {
         setFinalStatus={setFinalStatus}
         vendorSettled={vendorSettled}
         setVendorSettled={setVendorSettled}
+        finalSettled={finalSettled}
+        setFinalSettled={setFinalSettled}
         name={name}
         setName={setName}
         division={division}

@@ -11,7 +11,13 @@ from sqlalchemy import case, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from exceptions import IncorrectCodeFormat, ModelNotFound, WarrantyNotFound
+from complaint_number.service import ComplaintNumberService
+from exceptions import (
+    ComplaintNumberAlreadyExists,
+    IncorrectCodeFormat,
+    ModelNotFound,
+    WarrantyNotFound,
+)
 from master.models import Master
 from master.service import MasterService
 from model.service import ModelService
@@ -20,20 +26,21 @@ from utils.date_utils import format_date_ddmmyyyy, parse_date
 from utils.file_utils import safe_join, split_text_to_lines
 from warranty.models import Warranty
 from warranty.schemas import (
+    UpdateSRFFinalSettlement,
+    UpdateSRFUnsettled,
     WarrantyCreate,
     WarrantyEnquiry,
     WarrantyPending,
     WarrantySrfNumber,
+    WarrantySRFSettleRecord,
     WarrantyUpdate,
     WarrantyUpdateResponse,
-    WarrantySRFSettleRecord,
-    UpdateSRFUnsettled,
-    UpdateSRFFinalSettlement
 )
 
 master_service = MasterService()
 service_center_service = ServiceCenterService()
 model_service = ModelService()
+complaint_number_service = ComplaintNumberService()
 
 
 class WarrantyService:
@@ -74,6 +81,12 @@ class WarrantyService:
                 warranty.model, session
             ):
                 raise ModelNotFound()
+
+        if warranty.complaint_number:
+            if await self.check_complaint_number_available(
+                warranty.complaint_number, session
+            ):
+                raise ComplaintNumberAlreadyExists()
 
         # If frontend requests a new base, generate next base number
         base_part = parts[0]
@@ -240,6 +253,11 @@ class WarrantyService:
         existing_warranty = result.scalars().first()
         if not existing_warranty:
             raise WarrantyNotFound()
+        if warranty.complaint_number:
+            if await self.check_complaint_number_available(
+                warranty.complaint_number, session
+            ):
+                raise ComplaintNumberAlreadyExists()
         for var, value in vars(warranty).items():
             setattr(existing_warranty, var, value)
         existing_warranty.updated_by = token["user"]["username"]
@@ -443,6 +461,7 @@ class WarrantyService:
         self,
         session: AsyncSession,
         final_status: Optional[str] = None,
+        final_settled: Optional[str] = None,
         vendor_settled: Optional[str] = None,
         name: Optional[str] = None,
         division: Optional[str] = None,
@@ -503,6 +522,17 @@ class WarrantyService:
                 statement = statement.where(
                     Warranty.repair_date.is_(None) & (Warranty.head == "REPAIR")
                 )
+
+        if final_settled:
+            if final_settled == "Y":
+                statement = statement.where(
+                    (Warranty.final_settled == "Y") & (Warranty.chargeable == "Y")
+                )
+            else:
+                statement = statement.where(
+                    (Warranty.final_settled == "N") & (Warranty.chargeable == "Y")
+                )
+
         if head:
             statement = statement.where(Warranty.head == head)
         statement = statement.order_by(Warranty.srf_number)
@@ -556,7 +586,7 @@ class WarrantyService:
             select(Warranty, Master)
             .join(Master, Warranty.code == Master.code)
             .where(
-                (Warranty.chargeable == 'Y')
+                (Warranty.chargeable == "Y")
                 & (Warranty.settlement_date.is_(None))
                 & (Warranty.final_status == "Y")
             )
@@ -582,9 +612,7 @@ class WarrantyService:
         self, list_srf: List[UpdateSRFUnsettled], session: AsyncSession
     ):
         for srf in list_srf:
-            statement = select(Warranty).where(
-                Warranty.srf_number == srf.srf_number
-            )
+            statement = select(Warranty).where(Warranty.srf_number == srf.srf_number)
             result = await session.execute(statement)
             existing_srf = result.scalar_one_or_none()
             if existing_srf:
@@ -596,7 +624,7 @@ class WarrantyService:
             select(Warranty, Master)
             .join(Master, Warranty.code == Master.code)
             .where(
-                (Warranty.chargeable == 'Y')
+                (Warranty.chargeable == "Y")
                 & (Warranty.settlement_date.isnot(None))
                 & (Warranty.final_settled == "N")
             )
@@ -622,9 +650,7 @@ class WarrantyService:
         self, list_srf: List[UpdateSRFFinalSettlement], session: AsyncSession
     ):
         for srf in list_srf:
-            statement = select(Warranty).where(
-                Warranty.srf_number == srf.srf_number
-            )
+            statement = select(Warranty).where(Warranty.srf_number == srf.srf_number)
             result = await session.execute(statement)
             existing_srf = result.scalar_one_or_none()
             if existing_srf:

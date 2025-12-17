@@ -82,7 +82,11 @@ function validateWarrantyUpdate(form) {
     }
   }
 
-  if (form.rewinding_done === "Y" && form.rewinding_cost) {
+  if (
+    form.chargeable === "Y" &&
+    form.rewinding_done === "Y" &&
+    form.rewinding_cost
+  ) {
     const minCustomerCost = Number(form.rewinding_base_cost || 0);
 
     if (form.rewinding_cost < minCustomerCost) {
@@ -110,6 +114,14 @@ function validateWarrantyUpdate(form) {
       errs.push("Delivery Date is required");
       errs_label["delivery_date"] = true;
     }
+    if (!form.cg_srf_number) {
+      errs.push("CG SRF Number is required");
+      errs_label["cg_srf_number"] = true;
+    }
+    if (!form.complaint_number) {
+      errs.push("Complaint Number is required");
+      errs_label["complaint_number"] = true;
+    }
     if (!form.pc_number && form.gst === "N") {
       errs.push("PC Number is required");
       errs_label["pc_number"] = true;
@@ -118,19 +130,10 @@ function validateWarrantyUpdate(form) {
       errs.push("Invoice Number is required");
       errs_label["invoice_number"] = true;
     }
-    if (form.vendor_cost1 && !form.rewinding_cost) {
-      errs.push("Rewinding Cost is required");
-      errs_label["rewinding_cost"] = true;
-    }
-    if (form.vendor_cost2 && !form.other_cost) {
-      errs.push("Other Cost is required");
-      errs_label["other_cost"] = true;
-    }
   }
-  if(form.chargeable === 'N' && form.final_amount > 0)
-  {
-   errs.push("Make the record chargeable");
-      errs_label["final_amount"] = true; 
+  if (form.chargeable === "N" && form.final_amount > 0) {
+    errs.push("Make the record chargeable");
+    errs_label["final_amount"] = true;
   }
 
   return [errs, errs_label];

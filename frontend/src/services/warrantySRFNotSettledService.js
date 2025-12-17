@@ -7,15 +7,12 @@ import { authFetch } from "./authFetchService";
  * @returns {Promise<Array>} List of users
  */
 async function fetchWarrantySRFNotSettled() {
-  const response = await authFetch(
-    API_ENDPOINTS.WARRANTY_SRF_NOT_SETTLED,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const response = await authFetch(API_ENDPOINTS.WARRANTY_SRF_NOT_SETTLED, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+  });
   const data = await response.json();
   if (!response.ok) {
     throw {

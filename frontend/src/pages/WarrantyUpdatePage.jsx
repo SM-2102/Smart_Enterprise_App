@@ -69,7 +69,7 @@ const initialForm = {
   purchase_number: "",
   purchase_date: "",
   chargeable: "N",
-  cg_srf_number:"",
+  cg_srf_number: "",
 };
 const ALLOWED_VENDOR_DIVISIONS = ["LT MOTOR", "FHP MOTOR"];
 const toNumber = (value) => {
@@ -83,7 +83,7 @@ const WarrantyUpdatePage = () => {
   const [form, setForm] = useState(initialForm);
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
-  
+
   // Spares table state (max 6)
   // Only show one row by default, unless editing existing record with spares
   const initialSpares = (() => {
@@ -151,11 +151,7 @@ const WarrantyUpdatePage = () => {
         const godown_cost = parseFloat(newForm.godown_cost) || 0;
         const discount = parseFloat(newForm.discount) || 0;
         newForm.total =
-          rewinding_cost +
-          other_cost +
-          spareCostSum +
-          godown_cost +
-          discount;
+          rewinding_cost + other_cost + spareCostSum + godown_cost + discount;
         return newForm;
       });
       return updated;
@@ -247,12 +243,10 @@ const WarrantyUpdatePage = () => {
         rpm: data.rpm ?? "",
         purchase_number: data.purchase_number ?? "",
         purchase_date: data.purchase_date ?? "",
-        customer_challan_number: data.customer_challan_number ?? "",
-        customer_challan_date: data.customer_challan_date ?? "",
         chargeable: data.chargeable ?? "",
         complaint_number: data.complaint_number ?? "",
         cg_srf_number: data.cg_srf_number ?? "",
-        dealer_name:data.dealer_name ?? "",
+        dealer_name: data.dealer_name ?? "",
       });
       if (data.division && data.model) {
         try {
@@ -291,52 +285,31 @@ const WarrantyUpdatePage = () => {
   const isVendorCostEnabled = ALLOWED_VENDOR_DIVISIONS.includes(form.division);
 
   useEffect(() => {
-  if (!modelCost) return;
+    if (!modelCost) return;
 
-  setForm((prev) => {
-    if (prev.rewinding_done === "Y") {
-      const base = Number(modelCost.rewinding_charge || 0);
-      const customerCost = Math.round(base * 1.3);
-      const vendorCost = prev.vendor_date2
-        ? Math.round(base * 0.8)
-        : 0;
+    setForm((prev) => {
+      if (prev.rewinding_done === "Y") {
+        const base = Number(modelCost.rewinding_charge || 0);
+        const customerCost = Math.round(base * 1.3);
+        const vendorCost = prev.vendor_cost1 ? Math.round(base * 0.8) : 0;
+
+        return {
+          ...prev,
+          rewinding_base_cost: customerCost,
+          rewinding_cost:
+            prev.chargeable === "Y" ? customerCost : prev.rewinding_cost,
+          vendor_cost1: vendorCost,
+        };
+      }
 
       return {
         ...prev,
-        rewinding_base_cost: customerCost,
-        // ✅ update only when chargeable = Y
-        rewinding_cost:
-          prev.chargeable === "Y" ? customerCost : prev.rewinding_cost,
-        vendor_cost1: vendorCost,
+        rewinding_base_cost: "",
+        rewinding_cost: "",
+        vendor_cost1: "",
       };
-    }
-
-    return {
-      ...prev,
-      rewinding_base_cost: "",
-      rewinding_cost: "",
-      vendor_cost1: "",
-    };
-  });
-}, [form.rewinding_done, form.chargeable, modelCost, form.vendor_date2]);
-
-
- useEffect(() => {
-  if (form.rewinding_done !== "Y") return;
-  if (!form.vendor_date2) return;
-  if (!modelCost) return;
-
-  const base = Number(modelCost.rewinding_charge || 0);
-  const vendorCost = Math.round(base * 0.8);
-
-  if (vendorCost !== Number(form.vendor_cost1)) {
-    setForm((prev) => ({
-      ...prev,
-      vendor_cost1: vendorCost,
-    }));
-  }
-}, [form.rewinding_done, form.vendor_date2, modelCost]);
-
+    });
+  }, [form.rewinding_done, form.chargeable, modelCost, form.vendor_date2]);
 
   useEffect(() => {
     if (!modelCost) return;
@@ -389,6 +362,41 @@ const WarrantyUpdatePage = () => {
       };
     });
   }, [form.vendor_leg, modelCost]);
+  useEffect(() => {
+    if (form.rewinding_done !== "Y") {
+      if (form.vendor_cost1 !== 0) {
+        setForm((prev) => ({ ...prev, vendor_cost1: 0 }));
+      }
+      return;
+    }
+
+    // CASE 1: Chargeable = Y → 80% of user-entered rewinding_cost
+    if (form.chargeable === "Y") {
+      const rewindingCost = Number(form.rewinding_cost) || 0;
+      const vendorCost = Math.round(rewindingCost * 0.8);
+
+      if (vendorCost !== Number(form.vendor_cost1)) {
+        setForm((prev) => ({
+          ...prev,
+          vendor_cost1: vendorCost,
+        }));
+      }
+      return;
+    }
+
+    // CASE 2: Chargeable = N → 90% of fetched model rewinding_charge
+    if (form.chargeable === "N" && modelCost) {
+      const base = Number(modelCost.rewinding_charge) || 0;
+      const vendorCost = Math.round(base * 0.9);
+
+      if (vendorCost !== Number(form.vendor_cost1)) {
+        setForm((prev) => ({
+          ...prev,
+          vendor_cost1: vendorCost,
+        }));
+      }
+    }
+  }, [form.rewinding_done, form.chargeable, form.rewinding_cost, modelCost]);
 
   useEffect(() => {
     const fetchPending = async () => {
@@ -436,6 +444,7 @@ const WarrantyUpdatePage = () => {
           : form.vendor_cost1,
       vendor_cost2: form.vendor_cost2,
       repair_date: form.repair_date,
+      rewinding_done: form.rewinding_done,
       rewinding_cost: form.rewinding_cost,
       other_cost: form.other_cost,
       vendor_paint: form.vendor_paint,
@@ -444,7 +453,7 @@ const WarrantyUpdatePage = () => {
       vendor_paint_cost: form.vendor_paint_cost,
       vendor_stator_cost: form.vendor_stator_cost,
       vendor_leg_cost: form.vendor_leg_cost,
-      vendor_cost: vendorCost,
+      vendor_cost: toNumber(vendorCost),
       work_done: form.work_done,
       spare1: form.spare1,
       cost1: form.cost1,
@@ -466,11 +475,14 @@ const WarrantyUpdatePage = () => {
       gst_amount: form.gst_amount,
       round_off: form.round_off,
       final_amount: form.final_amount,
-      receive_amount: form.receive_amount,
+      receive_amount: toNumber(form.receive_amount),
       delivery_date: form.delivery_date,
-      pc_number: form.pc_number,
-      invoice_number: form.invoice_number,
+      pc_number: form.gst === "Y" ? null : toNumber(form.pc_number),
+      invoice_number: form.gst === "N" ? null : toNumber(form.invoice_number),
       final_status: form.final_status === "Y" ? "Y" : "N",
+      chargeable: form.chargeable === "Y" ? "Y" : "N",
+      cg_srf_number: form.cg_srf_number,
+      complaint_number: form.complaint_number,
     };
 
     // Map empty string values to null
@@ -538,18 +550,10 @@ const WarrantyUpdatePage = () => {
             : parseFloat(updated.discount) || 0;
         if (updated.rewinding_done === "Y") {
           updated.total =
-            rewinding_cost +
-            other_cost +
-            spare_cost +
-            godown_cost -
-            discount;
+            rewinding_cost + other_cost + spare_cost + godown_cost - discount;
         } else {
           updated.total =
-            rewinding_cost +
-            other_cost +
-            spare_cost +
-            godown_cost +
-            discount;
+            rewinding_cost + other_cost + spare_cost + godown_cost + discount;
         }
       }
       return updated;
@@ -596,53 +600,52 @@ const WarrantyUpdatePage = () => {
     }
   }, [form.total, form.gst]);
   useEffect(() => {
-  if (form.chargeable === "N") {
-    setForm((prev) => ({
-      ...prev,
-      rewinding_cost: "",
-      other_cost: "",
-      godown_cost: "",
-      discount: "",
-      spare1: "",
-      cost1: "",
-      spare2: "",
-      cost2: "",
-      spare3: "",
-      cost3: "",
-      spare4: "",
-      cost4: "",
-      spare5: "",
-      cost5: "",
-      spare6: "",
-      cost6: "",
-      spare_cost: 0,
-      total: 0,
-    }));
-  }
-}, [form.chargeable]);
+    if (form.chargeable === "N") {
+      setForm((prev) => ({
+        ...prev,
+        rewinding_cost: "",
+        other_cost: "",
+        godown_cost: "",
+        discount: "",
+        spare1: "",
+        cost1: "",
+        spare2: "",
+        cost2: "",
+        spare3: "",
+        cost3: "",
+        spare4: "",
+        cost4: "",
+        spare5: "",
+        cost5: "",
+        spare6: "",
+        cost6: "",
+        spare_cost: 0,
+        total: 0,
+      }));
+    }
+  }, [form.chargeable]);
 
   useEffect(() => {
-  const vendorTotal =
-    toNumber(form.vendor_cost1) +
-    toNumber(form.vendor_cost2) +
-    toNumber(form.vendor_paint_cost) +
-    toNumber(form.vendor_stator_cost) +
-    toNumber(form.vendor_leg_cost);
+    const vendorTotal =
+      toNumber(form.vendor_cost1) +
+      toNumber(form.vendor_cost2) +
+      toNumber(form.vendor_paint_cost) +
+      toNumber(form.vendor_stator_cost) +
+      toNumber(form.vendor_leg_cost);
 
-  if (vendorTotal !== toNumber(form.vendor_cost)) {
-    setForm((prev) => ({
-      ...prev,
-      vendor_cost: vendorTotal,
-    }));
-  }
-}, [
-  form.vendor_cost1,
-  form.vendor_cost2,
-  form.vendor_paint_cost,
-  form.vendor_stator_cost,
-  form.vendor_leg_cost,
-]);
-
+    if (vendorTotal !== toNumber(form.vendor_cost)) {
+      setForm((prev) => ({
+        ...prev,
+        vendor_cost: vendorTotal,
+      }));
+    }
+  }, [
+    form.vendor_cost1,
+    form.vendor_cost2,
+    form.vendor_paint_cost,
+    form.vendor_stator_cost,
+    form.vendor_leg_cost,
+  ]);
 
   // Calculate total when form loads or when component values change (for initial load or null total from backend)
   useEffect(() => {
@@ -653,11 +656,7 @@ const WarrantyUpdatePage = () => {
     const discount = parseFloat(form.discount) || 0;
 
     const calculatedTotal =
-      rewinding_cost +
-      other_cost +
-      spare_cost +
-      godown_cost +
-      discount;
+      rewinding_cost + other_cost + spare_cost + godown_cost + discount;
 
     // Only update if total is null/empty or if there's an actual difference
     if (
@@ -679,16 +678,7 @@ const WarrantyUpdatePage = () => {
     form.rewinding_done,
   ]); // Trigger when any cost component changes
 
-  useEffect(() => {
-    if (form.rewinding_done === "Y" && !form.vendor_date2) {
-      setForm((prev) => ({
-        ...prev,
-        vendor_cost1: 0,
-      }));
-    }
-  }, [form.rewinding_done, form.vendor_date2]);
-
-return (
+  return (
     <div className="flex min-h-[80vh] mt-6 justify-center items-center">
       <form
         onSubmit={handleSubmit}
@@ -877,7 +867,7 @@ return (
               />
             </div>
           </div>
-          
+
           {/* Division and Receive Date - label beside input, w-1/2 each */}
           <div className="flex items-center w-full gap-6">
             <div className="flex items-center w-3/5 gap-2">
@@ -1000,8 +990,6 @@ return (
 
             {/* Vendor Cost and Dates */}
             <div className="flex items-center w-full gap-3 mt-4">
-              
-
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="challan_date"
@@ -1043,7 +1031,7 @@ return (
                     onChange={(val) =>
                       setForm((prev) => ({ ...prev, chargeable: val }))
                     }
-                    disabled={isLocked || submitting }
+                    disabled={isLocked || submitting}
                   />
                 </div>
               </div>
@@ -1169,19 +1157,18 @@ return (
                   Rewinding Cost
                 </label>
                 <input
-  id="rewinding_cost"
-  name="rewinding_cost"
-  type="number"
-  value={form.rewinding_cost}
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isChargeable}
-  placeholder={!isChargeable ? "Not chargeable" : "Customer"}
-  className={`flex-1 px-3 py-1 rounded-lg border
+                  id="rewinding_cost"
+                  name="rewinding_cost"
+                  type="number"
+                  value={form.rewinding_cost}
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isChargeable}
+                  placeholder={!isChargeable ? "Not chargeable" : "Customer"}
+                  className={`flex-1 px-3 py-1 rounded-lg border
     ${!isChargeable ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}
     ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"}
   `}
-/>
-
+                />
               </div>
             </div>
             {/* Vendor Cost and Dates */}
@@ -1213,24 +1200,23 @@ return (
                   Other Cost
                 </label>
                 <input
-  id="other_cost"
-  name="other_cost"
-  type="number"
-  value={form.other_cost}
-  onChange={handleChange}
-  disabled={isLocked || submitting || !isChargeable}
-  placeholder={!isChargeable ? "Not chargeable" : "Customer"}
-  className={`flex-1 px-3 py-1 rounded-lg border
+                  id="other_cost"
+                  name="other_cost"
+                  type="number"
+                  value={form.other_cost}
+                  onChange={handleChange}
+                  disabled={isLocked || submitting || !isChargeable}
+                  placeholder={!isChargeable ? "Not chargeable" : "Customer"}
+                  className={`flex-1 px-3 py-1 rounded-lg border
     ${!isChargeable ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}
         ${errs_label.other_cost ? "border-red-300" : "border-gray-300"}
 
   `}
-/>
-
+                />
               </div>
             </div>
             <div className="flex items-center w-full gap-6 mt-4">
-               <div className="flex items-center w-1/2 gap-2">
+              <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_paint"
                   className="w-60 text-md font-medium text-gray-700"
@@ -1288,8 +1274,6 @@ return (
   `}
                 />
               </div>
-
-             
             </div>
             <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
@@ -1350,8 +1334,6 @@ return (
   `}
                 />
               </div>
-
-            
             </div>
             <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
@@ -1413,7 +1395,6 @@ return (
                 />
               </div>
             </div>
-            
           </div>
 
           <div
@@ -1488,8 +1469,12 @@ return (
                             handleSpareChange(idx, "spare", e.target.value)
                           }
                           disabled={isLocked || submitting || !isChargeable}
-  placeholder={!isChargeable ? "Disabled for Non Chargeable Record" : "Spare name"}
-  className={`w-full px-3 py-1 rounded-lg border border-gray-300
+                          placeholder={
+                            !isChargeable
+                              ? "Disabled for Non Chargeable Record"
+                              : "Spare name"
+                          }
+                          className={`w-full px-3 py-1 rounded-lg border border-gray-300
     ${!isChargeable ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}
   `}
                           maxLength={30}
@@ -1737,6 +1722,7 @@ return (
                 onChange={handleChange}
                 className={`flex-1 min-w-0 px-3 py-1 rounded-lg border ${errs_label.receive_amount ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                 disabled={isLocked || submitting}
+                maxLength={10}
               />
             </div>
           </div>
@@ -1757,6 +1743,7 @@ return (
                 className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border ${errs_label.invoice_number ? "border-red-300" : "border-gray-300"} ${form.gst === "N" ? "bg-gray-200 text-gray-600 cursor-not-allowed" : "bg-gray-50 text-gray-900"}  font-small`}
                 disabled={isLocked || submitting || form.gst === "N"}
                 placeholder={form.gst === "N" ? "Disabled" : undefined}
+                maxLength={15}
               />
             </div>
 
@@ -1809,7 +1796,7 @@ return (
               <input
                 id="complaint_number"
                 name="complaint_number"
-                type="number"
+                type="text"
                 maxLength={15}
                 value={form.complaint_number}
                 onChange={handleChange}

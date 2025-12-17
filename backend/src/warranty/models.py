@@ -7,7 +7,7 @@ from sqlmodel import Column, Field, SQLModel
 
 
 class Warranty(SQLModel, table=True):
-    _tablename_ = "warranty"
+    __tablename__ = "warranty"
     srf_number: str = Field(primary_key=True, index=True)
     code: str = Field(
         sa_column=Column(

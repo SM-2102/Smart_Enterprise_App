@@ -9,15 +9,15 @@ from auth.dependencies import AccessTokenBearer, RoleChecker
 from db.db import get_session
 from exceptions import WarrantyNotFound
 from warranty.schemas import (
+    UpdateSRFFinalSettlement,
+    UpdateSRFUnsettled,
     WarrantyCreate,
     WarrantyEnquiry,
     WarrantyPending,
     WarrantySrfNumber,
+    WarrantySRFSettleRecord,
     WarrantyUpdate,
     WarrantyUpdateResponse,
-    WarrantySRFSettleRecord,
-    UpdateSRFUnsettled,
-    UpdateSRFFinalSettlement,
 )
 from warranty.service import WarrantyService
 
@@ -112,6 +112,7 @@ async def update_warranty(
     session: AsyncSession = Depends(get_session),
     token=Depends(access_token_bearer),
 ):
+    print("ROUTE ENTERED")
     existing_warranty = await warranty_service.get_warranty_by_srf_number(
         srf_number, session
     )
@@ -185,6 +186,7 @@ Warranty enquiry using query parameters.
 )
 async def enquiry_warranty(
     final_status: Optional[str] = None,
+    final_settled: Optional[str] = None,
     vendor_settled: Optional[str] = None,
     name: Optional[str] = None,
     division: Optional[str] = None,
@@ -202,6 +204,7 @@ async def enquiry_warranty(
         result = await warranty_service.enquiry_warranty(
             session,
             final_status,
+            final_settled,
             vendor_settled,
             name,
             division,
@@ -216,6 +219,7 @@ async def enquiry_warranty(
         return result
     except:
         return []
+
 
 """
 List all unsettled srf records.
@@ -239,9 +243,7 @@ Update out of warranty srf records - List of Records
 """
 
 
-@warranty_router.patch(
-    "/update_srf_unsettled", status_code=status.HTTP_202_ACCEPTED
-)
+@warranty_router.patch("/update_srf_unsettled", status_code=status.HTTP_202_ACCEPTED)
 async def update_srf_unsettled(
     list_srf: List[UpdateSRFUnsettled],
     session: AsyncSession = Depends(get_session),

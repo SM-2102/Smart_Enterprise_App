@@ -280,39 +280,33 @@ const WarrantySettleSRFAdminPage = () => {
                           }),
                         }}
                       >
-                        {col.key === "final_amount" ? (
-                          row[col.key] !== null &&
-                          row[col.key] !== undefined &&
-                          row[col.key] !== "" ? (
-                            `₹ ${(Number(row[col.key]) || 0).toLocaleString(
-                              undefined,
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              },
-                            )}`
-                          ) : (
-                            "-"
-                          )
-                        ) : col.key === "pc_invoice" ? (
-                          row.pc_number &&
-                          row.pc_number !== null &&
-                          row.pc_number !== "" ? (
-                            row.pc_number
-                          ) : row.invoice_number &&
-                            row.invoice_number !== null &&
-                            row.invoice_number !== "" ? (
-                            row.invoice_number
-                          ) : (
-                            "-"
-                          )
-                        ) : row[col.key] !== null &&
-                          row[col.key] !== undefined &&
-                          row[col.key] !== "" ? (
-                          row[col.key]
-                        ) : (
-                          "-"
-                        )}
+                        {col.key === "final_amount"
+                          ? row[col.key] !== null &&
+                            row[col.key] !== undefined &&
+                            row[col.key] !== ""
+                            ? `₹ ${(Number(row[col.key]) || 0).toLocaleString(
+                                undefined,
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                },
+                              )}`
+                            : "-"
+                          : col.key === "pc_invoice"
+                            ? row.pc_number &&
+                              row.pc_number !== null &&
+                              row.pc_number !== ""
+                              ? row.pc_number
+                              : row.invoice_number &&
+                                  row.invoice_number !== null &&
+                                  row.invoice_number !== ""
+                                ? row.invoice_number
+                                : "-"
+                            : row[col.key] !== null &&
+                                row[col.key] !== undefined &&
+                                row[col.key] !== ""
+                              ? row[col.key]
+                              : "-"}
                       </TableCell>
                     ))}
                   </TableRow>
