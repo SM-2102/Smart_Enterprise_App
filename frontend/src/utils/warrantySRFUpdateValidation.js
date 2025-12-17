@@ -12,127 +12,145 @@ function parseDDMMYYYY(dateStr) {
 function validateWarrantyUpdate(form) {
   const errs = [];
   const errs_label = {};
-  if (form.head == "REPLACE") {
-    if (form.receive_date && !form.challan_date) {
-      errs.push("Challan Creation is required");
-      errs_label.challan_date = true;
-    }
-    if (form.receive_date && !form.invoice_date) {
-      errs.push("Invoice Date is required");
-      errs_label.invoice_date = true;
-    }
-    if (form.receive_date && !form.invoice_number) {
-      errs.push("Invoice Number is required");
-      errs_label.invoice_number = true;
-    }
-    if (form.delivery_date && !form.receive_date) {
-      errs.push("Receive Date is required");
-      errs_label.receive_date = true;
-    }
-    if (form.delivery_date && !form.invoice_date) {
-      errs_label.invoice_date = true;
-      errs.push("Invoice Date is required");
-    }
-    if (form.delivery_date && !form.invoice_number) {
-      errs.push("Invoice Number is required");
-      errs_label.invoice_number = true;
+  // Validate each spare row (max 6)
+  for (let i = 1; i <= 6; i++) {
+    const desc = form[`spare${i}`];
+    const qty = form[`cost${i}`];
+    // Only validate if description is present
+    if (desc && !qty) {
+      errs.push(`Cost for Spare ${i} is required`);
+      errs_label[`cost${i}`] = true;
     }
   }
-  if (form.head == "REPAIR") {
-    if (form.delivery_date && !form.complaint_number) {
-      errs.push("Complaint Number is required");
-      errs_label.complaint_number = true;
-    }
-    if (form.delivery_date && !form.repair_date) {
-      errs.push("Repair Date is required");
-      errs_label.repair_date = true;
+  if (!form.challan_date && form.vendor_date2) {
+    errs.push("Create Challan First");
+    errs_label["challan_date"] = true;
+  }
+  if (form.challan_date && !form.vendor_date2 && form.repair_date) {
+    errs.push("Return Date Required");
+    errs_label["repair_date"] = true;
+  }
+  if (form.repair_date && !form.estimate_date) {
+    errs.push("Estimate Date Required");
+    errs_label["estimate_date"] = true;
+  }
+  if (form.estimate_date && form.challan_date && !form.vendor_date2) {
+    errs.push("Return Date Required");
+    errs_label["vendor_date2"] = true;
+  }
+  if (!form.repair_date && form.delivery_date) {
+    errs.push("Repair Date Required");
+    errs_label["repair_date"] = true;
+  }
+  if (form.vendor_cost1 > 0 && !form.challan_date) {
+    errs.push("Vendor Dates Required");
+    errs_label["vendor_date2"] = true;
+  }
+  if (form.challan_date && form.vendor_date2) {
+    const vendorDate1 = new Date(form.challan_date);
+    const vendorDate2 = new Date(form.vendor_date2);
+    if (!isNaN(vendorDate1) && !isNaN(vendorDate2)) {
+      if (vendorDate1 > vendorDate2) {
+        errs.push("Invalid Return Date");
+        errs_label["vendor_date2"] = true;
+      }
     }
   }
 
-  if (form.challan_date) {
-    const challanDate = new Date(form.challan_date);
-    const receiveDate = new Date(form.receive_date);
-    const repairDate = new Date(form.repair_date);
-    const invoiceDate = new Date(form.invoice_date);
-    if (!isNaN(challanDate) && !isNaN(receiveDate)) {
-      if (challanDate > receiveDate) {
-        errs.push("Challan Date is greater than Receive Date");
-        errs_label.challan_date = true;
-        errs_label.receive_date = true;
-      }
-    }
-    if (!isNaN(challanDate) && !isNaN(repairDate)) {
-      if (challanDate > repairDate) {
-        errs.push("Challan Date is greater than Repair Date");
-        errs_label.challan_date = true;
-        errs_label.repair_date = true;
-      }
-    }
-    if (!isNaN(challanDate) && !isNaN(invoiceDate)) {
-      if (challanDate > invoiceDate) {
-        errs.push("Challan Date is greater than Invoice Date");
-        errs_label.challan_date = true;
-        errs_label.invoice_date = true;
-      }
-    }
-  }
-  if (form.repair_date) {
-    const repairDate = new Date(form.repair_date);
+  if (form.estimate_date) {
+    const estimateDate = new Date(form.estimate_date);
     const srfDate = parseDDMMYYYY(form.srf_date);
-    if (!isNaN(repairDate) && !isNaN(srfDate)) {
-      if (repairDate < srfDate) {
-        errs.push("Repair Date is less than SRF Date");
-        errs_label.repair_date = true;
-        errs_label.srf_date = true;
+    if (!isNaN(estimateDate) && !isNaN(srfDate)) {
+      if (srfDate > estimateDate) {
+        errs.push("Invalid Estimate Date");
+        errs_label["estimate_date"] = true;
       }
     }
   }
-  if (form.receive_date) {
-    const receiveDate = new Date(form.receive_date);
-    const srfDate = parseDDMMYYYY(form.srf_date);
-    const invoiceDate = new Date(form.invoice_date);
-    if (!isNaN(receiveDate) && !isNaN(srfDate)) {
-      if (receiveDate < srfDate) {
-        errs.push("Receive Date is less than SRF Date");
-        errs_label.receive_date = true;
-        errs_label.srf_date = true;
-      }
-    }
-    if (!isNaN(receiveDate) && !isNaN(invoiceDate)) {
-      if (receiveDate < invoiceDate) {
-        errs.push("Receive Date is less than Invoice Date");
-        errs_label.receive_date = true;
-        errs_label.invoice_date = true;
+
+  if (form.estimate_date && form.repair_date) {
+    const estimateDate = new Date(form.estimate_date);
+    const repairDate = new Date(form.repair_date);
+    if (!isNaN(estimateDate) && !isNaN(repairDate)) {
+      if (estimateDate > repairDate) {
+        errs.push("Invalid Repair Date");
+        errs_label["repair_date"] = true;
       }
     }
   }
-  if (form.delivery_date) {
+
+  if (form.vendor_date2 && form.repair_date) {
+    const vendorDate2 = new Date(form.vendor_date2);
+    const repairDate = new Date(form.repair_date);
+    if (!isNaN(vendorDate2) && !isNaN(repairDate)) {
+      if (vendorDate2 > repairDate) {
+        errs.push("Invalid Repair Date");
+        errs_label["repair_date"] = true;
+      }
+    }
+  }
+  if (form.repair_date && form.delivery_date) {
+    const repairDate = new Date(form.repair_date);
     const deliveryDate = new Date(form.delivery_date);
-    const receiveDate = new Date(form.receive_date);
-    const repairDate = new Date(form.repair_date);
-    if (!isNaN(deliveryDate) && !isNaN(receiveDate)) {
-      if (deliveryDate < receiveDate) {
-        errs.push("Delivery Date is less than Receive Date");
-        errs_label.delivery_date = true;
-        errs_label.receive_date = true;
-      }
-    }
-    if (!isNaN(deliveryDate) && !isNaN(repairDate)) {
-      if (deliveryDate < repairDate) {
-        errs.push("Delivery Date is less than Repair Date");
-        errs_label.delivery_date = true;
-        errs_label.repair_date = true;
+    if (!isNaN(repairDate) && !isNaN(deliveryDate)) {
+      if (repairDate > deliveryDate) {
+        errs.push("Invalid Delivery Date");
+        errs_label["delivery_date"] = true;
       }
     }
   }
-  if (form.final_status === "Y") {
-    if (!form.delivered_by) {
-      errs.push("Delivered By is required");
-      errs_label.delivered_by = true;
+  const minVendorOther = form.other_cost * 0.8;
+
+  if (form.other_cost) {
+    if (form.vendor_cost2 > minVendorOther) {
+      errs.push("Vendor Other Cost Too High");
+      errs_label["other_cost"] = true;
     }
+  }
+
+  if (form.rewinding_done === "Y" && form.rewinding_cost) {
+    const minCustomerCost = Number(form.rewinding_base_cost || 0);
+
+    if (form.rewinding_cost < minCustomerCost) {
+      errs.push("Rewinding Cost too Low");
+      errs_label["rewinding_cost"] = true;
+    }
+  }
+
+  if (form.delivery_date && !form.work_done) {
+    errs.push("Work Done is required");
+    errs_label["work_done"] = true;
+  }
+
+  if (form.delivery_date && form.receive_amount < form.final_amount) {
+    errs.push("Full Payment Not Received");
+    errs_label["receive_amount"] = true;
+  }
+  if (form.delivery_date && form.receive_amount > form.final_amount) {
+    errs.push("Excess Payment Received");
+    errs_label["receive_amount"] = true;
+  }
+
+  if (form.final_status === "Y") {
     if (!form.delivery_date) {
       errs.push("Delivery Date is required");
-      errs_label.delivery_date = true;
+      errs_label["delivery_date"] = true;
+    }
+    if (!form.pc_number && form.gst === "N") {
+      errs.push("PC Number is required");
+      errs_label["pc_number"] = true;
+    }
+    if (!form.invoice_number && form.gst === "Y") {
+      errs.push("Invoice Number is required");
+      errs_label["invoice_number"] = true;
+    }
+    if (form.vendor_cost1 && !form.rewinding_cost) {
+      errs.push("Rewinding Cost is required");
+      errs_label["rewinding_cost"] = true;
+    }
+    if (form.vendor_cost2 && !form.other_cost) {
+      errs.push("Other Cost is required");
+      errs_label["other_cost"] = true;
     }
   }
 

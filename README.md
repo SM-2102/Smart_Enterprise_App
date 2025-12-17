@@ -96,11 +96,13 @@
 - [x] **/master/update{code}**
 - [x] **/master/fetch_address**
 
-### Challan Module
+### Challan - Smart Module
 - [x] **/challan_smart/next_code**
 - [x] **/challan_smart/create**
 - [x] **/challan_smart/last_challan_code**
 - [x] **/challan_smart/print**
+
+### Challan - Unique Module
 - [x] **/challan_unique/next_code**
 - [x] **/challan_unique/create**
 - [x] **/challan_unique/last_challan_code**

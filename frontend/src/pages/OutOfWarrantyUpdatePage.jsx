@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import Toast from "../components/Toast";
-import { validateOutOfWarrantyUpdate } from "../utils/outOfWarrrantySRFUpdateValidation";
+import { validateOutOfWarrantyUpdate } from "../utils/outOfWarrantySRFUpdateValidation";
 import { FiSearch } from "react-icons/fi";
 import FinalStatusToggle from "../components/FinalStatus";
 import YesNoToggle from "../components/YesNoToggle";
@@ -898,7 +898,7 @@ const OutOfWarrantyUpdatePage = () => {
             <div className="flex items-center w-full gap-3 mt-1">
               <label
                 htmlFor="received_by"
-                className="w-40.5 text-md font-medium text-gray-700"
+                className="w-41 text-md font-medium text-gray-700"
               >
                 Handover To
               </label>
@@ -921,7 +921,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="estimate_date"
-                  className="w-33 text-md font-medium text-gray-700"
+                  className="w-34 text-md font-medium text-gray-700"
                 >
                   Estimate Date
                 </label>
@@ -959,7 +959,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="challan_number"
-                  className="w-33 text-md font-medium text-gray-700"
+                  className="w-34 text-md font-medium text-gray-700"
                 >
                   Challan Number
                 </label>
@@ -1047,7 +1047,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_cost1"
-                  className="w-33 text-md font-medium text-gray-700"
+                  className="w-34 text-md font-medium text-gray-700"
                 >
                   Rewinding Cost
                 </label>
@@ -1071,7 +1071,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="rewinding_cost"
-                  className="w-30.5 text-md font-medium text-gray-700"
+                  className="w-33.5 text-md font-medium text-gray-700"
                 >
                   Rewinding Cost
                 </label>
@@ -1092,7 +1092,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_cost2"
-                  className="w-33 text-md font-medium text-gray-700"
+                  className="w-34 text-md font-medium text-gray-700"
                 >
                   Other Cost
                 </label>
@@ -1111,7 +1111,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="other_cost"
-                  className="w-30.5 text-md font-medium text-gray-700"
+                  className="w-33.5 text-md font-medium text-gray-700"
                 >
                   Other Cost
                 </label>
@@ -1217,7 +1217,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_paint_cost"
-                  className="w-33 text-md font-medium text-gray-700"
+                  className="w-34 text-md font-medium text-gray-700"
                 >
                   Paint Charge
                 </label>
@@ -1248,7 +1248,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="paint_cost"
-                  className="w-30.5 text-md font-medium text-gray-700"
+                  className="w-33.5 text-md font-medium text-gray-700"
                 >
                   Paint Charge
                 </label>
@@ -1279,7 +1279,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_stator_cost"
-                  className="w-33 text-md font-medium text-gray-700"
+                  className="w-34 text-md font-medium text-gray-700"
                 >
                   Stator Charge
                 </label>
@@ -1310,7 +1310,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="stator_cost"
-                  className="w-30.5 text-md font-medium text-gray-700"
+                  className="w-33.5 text-md font-medium text-gray-700"
                 >
                   Stator Charge
                 </label>
@@ -1341,7 +1341,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="vendor_leg_cost"
-                  className="w-33 text-md font-medium text-gray-700"
+                  className="w-34 text-md font-medium text-gray-700"
                 >
                   Leg Charge
                 </label>
@@ -1372,7 +1372,7 @@ const OutOfWarrantyUpdatePage = () => {
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="leg_cost"
-                  className="w-30.5 text-md font-medium text-gray-700"
+                  className="w-33.5 text-md font-medium text-gray-700"
                 >
                   Leg Charge
                 </label>
