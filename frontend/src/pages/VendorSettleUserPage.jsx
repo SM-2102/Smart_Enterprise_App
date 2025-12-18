@@ -11,8 +11,8 @@ import {
   Box,
 } from "@mui/material";
 import Toast from "../components/Toast";
-import { fetchVendorNotSettled } from "../services/VendorNotSettledService";
-import { updateVendorSettled } from "../services/VendorUpdateSettledService";
+import { fetchVendorNotSettled } from "../services/vendorNotSettledService";
+import { updateVendorSettled } from "../services/vendorUpdateSettledService";
 
 const columns = [
   { key: "srf_number", label: "SRF No." },

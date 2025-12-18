@@ -13,8 +13,8 @@ import {
   InputAdornment,
 } from "@mui/material";
 import Toast from "../components/Toast";
-import { updateVendorFinalSettled } from "../services/VendorUpdateFinalSettledService";
-import { fetchVendorFinalSettled } from "../services/VendorFinalSettledService";
+import { updateVendorFinalSettled } from "../services/vendorUpdateFinalSettledService";
+import { fetchVendorFinalSettled } from "../services/vendorFinalSettledService";
 import { fetchComplaintNumbers } from "../services/complaintNumberListService";
 import Tooltip from "@mui/material/Tooltip";
 import { updateComplaintNumber } from "../services/vendorComplaintNumberUpdateService";

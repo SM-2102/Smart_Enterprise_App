@@ -73,6 +73,29 @@ function validateWarrantyUpdate(form) {
       }
     }
   }
+  if (form.repair_date && form.srf_date) {
+    const repairDate = new Date(form.repair_date); // YYYY-MM-DD
+    const srfDate = parseDDMMYYYY(form.srf_date); // DD-MM-YYYY
+
+    if (!isNaN(repairDate) && !isNaN(srfDate)) {
+      if (srfDate > repairDate) {
+        errs.push("Invalid Repair Date");
+        errs_label["repair_date"] = true;
+      }
+    }
+  }
+  if (form.vendor_date2 && form.srf_date) {
+    const vendorDate2 = new Date(form.vendor_date2); // YYYY-MM-DD
+    const srfDate = parseDDMMYYYY(form.srf_date); // DD-MM-YYYY
+
+    if (!isNaN(vendorDate2) && !isNaN(srfDate)) {
+      if (srfDate > vendorDate2) {
+        errs.push("Invalid Return Date");
+        errs_label["vendor_date2"] = true;
+      }
+    }
+  }
+
   const minVendorOther = form.other_cost * 0.8;
 
   if (form.other_cost) {

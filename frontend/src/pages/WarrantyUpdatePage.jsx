@@ -560,6 +560,14 @@ const WarrantyUpdatePage = () => {
     });
     setError((prev) => ({ ...prev, [name]: undefined }));
   };
+  useEffect(() => {
+    if (form.rewinding_done === "Y" && !form.vendor_date2) {
+      setForm((prev) => ({
+        ...prev,
+        vendor_cost1: 0,
+      }));
+    }
+  }, [form.rewinding_done, form.vendor_date2]);
 
   // Recalculate gst_amount, final_amount, and round_off whenever total or gst changes
   useEffect(() => {
@@ -989,54 +997,7 @@ const WarrantyUpdatePage = () => {
             </div>
 
             {/* Vendor Cost and Dates */}
-            <div className="flex items-center w-full gap-3 mt-4">
-              <div className="flex items-center w-1/2 gap-2">
-                <label
-                  htmlFor="challan_date"
-                  className={`w-60.5 text-md font-medium text-gray-700`}
-                >
-                  Handover Date
-                </label>
-                <input
-                  id="challan_date"
-                  name="challan_date"
-                  type="text"
-                  value={form.challan_date}
-                  readOnly
-                  className={`w-full px-3 py-1 mr-1.5 rounded-lg border ${errs_label.challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
-                  disabled={isLocked || submitting}
-                />
-              </div>
-              <div className="flex items-center w-1/2 gap-2">
-                <label
-                  htmlFor="chargeable"
-                  className="w-60 text-md font-medium text-gray-700 ml-2"
-                >
-                  Chargeable
-                </label>
-
-                <div className="flex justify-center w-full">
-                  {/* Hidden input for accessibility and autofill */}
-                  <input
-                    id="chargeable"
-                    name="chargeable"
-                    type="text"
-                    value={form.chargeable}
-                    style={{ display: "none" }}
-                    readOnly
-                    tabIndex={-1}
-                  />
-                  <YesNoToggle
-                    value={form.chargeable}
-                    onChange={(val) =>
-                      setForm((prev) => ({ ...prev, chargeable: val }))
-                    }
-                    disabled={isLocked || submitting}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center w-full gap-3 mt-4">
+            <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
                 <label
                   htmlFor="challan_number"
@@ -1057,23 +1018,23 @@ const WarrantyUpdatePage = () => {
 
               <div className="flex items-center w-1/2 gap-2">
                 <label
-                  htmlFor="vendor_date2"
-                  className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
+                  htmlFor="challan_date"
+                  className={`w-58 text-md font-medium text-gray-700`}
                 >
-                  Return Date
+                  Handover Date
                 </label>
                 <input
-                  id="vendor_date2"
-                  name="vendor_date2"
-                  type="date"
-                  value={form.vendor_date2}
-                  onChange={handleChange}
-                  max={new Date().toLocaleDateString("en-CA")}
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.vendor_date2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
+                  id="challan_date"
+                  name="challan_date"
+                  type="text"
+                  value={form.challan_date}
+                  readOnly
+                  className={`w-full px-3 py-1  rounded-lg border ${errs_label.challan_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small cursor-not-allowed`}
                   disabled={isLocked || submitting}
                 />
               </div>
             </div>
+
             <div className="flex items-center w-full gap-3 mt-4">
               <div className="flex items-center w-1/2 gap-2">
                 <label
@@ -1105,19 +1066,19 @@ const WarrantyUpdatePage = () => {
               </div>
               <div className="flex items-center w-1/2 gap-2">
                 <label
-                  htmlFor="repair_date"
+                  htmlFor="vendor_date2"
                   className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
                 >
-                  Repair Date
+                  Return Date
                 </label>
                 <input
-                  id="repair_date"
-                  name="repair_date"
+                  id="vendor_date2"
+                  name="vendor_date2"
                   type="date"
-                  value={form.repair_date}
+                  value={form.vendor_date2}
                   onChange={handleChange}
                   max={new Date().toLocaleDateString("en-CA")}
-                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
+                  className={`w-full px-3 py-1 rounded-lg border ${errs_label.vendor_date2 ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
                   disabled={isLocked || submitting}
                 />
               </div>
@@ -1151,30 +1112,6 @@ const WarrantyUpdatePage = () => {
 
               <div className="flex items-center w-1/2 gap-2">
                 <label
-                  htmlFor="rewinding_cost"
-                  className="w-33.5 text-md font-medium text-gray-700"
-                >
-                  Rewinding Cost
-                </label>
-                <input
-                  id="rewinding_cost"
-                  name="rewinding_cost"
-                  type="number"
-                  value={form.rewinding_cost}
-                  onChange={handleChange}
-                  disabled={isLocked || submitting || !isChargeable}
-                  placeholder={!isChargeable ? "Not chargeable" : "Customer"}
-                  className={`flex-1 px-3 py-1 rounded-lg border
-    ${!isChargeable ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}
-    ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"}
-  `}
-                />
-              </div>
-            </div>
-            {/* Vendor Cost and Dates */}
-            <div className="flex items-center w-full gap-6 mt-4">
-              <div className="flex items-center w-1/2 gap-2">
-                <label
                   htmlFor="vendor_cost2"
                   className="w-34 text-md font-medium text-gray-700"
                 >
@@ -1191,30 +1128,8 @@ const WarrantyUpdatePage = () => {
                   disabled={isLocked || submitting}
                 />
               </div>
-
-              <div className="flex items-center w-1/2 gap-2">
-                <label
-                  htmlFor="other_cost"
-                  className="w-33.5 text-md font-medium text-gray-700"
-                >
-                  Other Cost
-                </label>
-                <input
-                  id="other_cost"
-                  name="other_cost"
-                  type="number"
-                  value={form.other_cost}
-                  onChange={handleChange}
-                  disabled={isLocked || submitting || !isChargeable}
-                  placeholder={!isChargeable ? "Not chargeable" : "Customer"}
-                  className={`flex-1 px-3 py-1 rounded-lg border
-    ${!isChargeable ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}
-        ${errs_label.other_cost ? "border-red-300" : "border-gray-300"}
-
-  `}
-                />
-              </div>
             </div>
+
             <div className="flex items-center w-full gap-6 mt-4">
               <div className="flex items-center w-1/2 gap-2">
                 <label
@@ -1265,13 +1180,13 @@ const WarrantyUpdatePage = () => {
                       : "Vendor"
                   }
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${errs_label.vendor_paint_cost ? "border-red-300" : "border-gray-300"}
-    ${
-      isLocked || submitting || !isVendorCostEnabled
-        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-        : "bg-gray-50 text-gray-900 "
-    }
-  `}
+                    ${errs_label.vendor_paint_cost ? "border-red-300" : "border-gray-300"}
+                    ${
+                      isLocked || submitting || !isVendorCostEnabled
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-gray-50 text-gray-900 "
+                    }
+                  `}
                 />
               </div>
             </div>
@@ -1325,13 +1240,13 @@ const WarrantyUpdatePage = () => {
                       : "Vendor"
                   }
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${errs_label.vendor_stator_cost ? "border-red-300" : "border-gray-300"}
-    ${
-      isLocked || submitting || !isVendorCostEnabled
-        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-        : "bg-gray-50 text-gray-900 "
-    }
-  `}
+                    ${errs_label.vendor_stator_cost ? "border-red-300" : "border-gray-300"}
+                    ${
+                      isLocked || submitting || !isVendorCostEnabled
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-gray-50 text-gray-900 "
+                    }
+                  `}
                 />
               </div>
             </div>
@@ -1385,18 +1300,125 @@ const WarrantyUpdatePage = () => {
                       : "Vendor"
                   }
                   className={`flex-1 min-w-0 w-full px-3 py-1 rounded-lg border font-small
-    ${errs_label.vendor_leg_cost ? "border-red-300" : "border-gray-300"}
-    ${
-      isLocked || submitting || !isVendorCostEnabled
-        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-        : "bg-gray-50 text-gray-900 "
-    }
-  `}
+                    ${errs_label.vendor_leg_cost ? "border-red-300" : "border-gray-300"}
+                    ${
+                      isLocked || submitting || !isVendorCostEnabled
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-gray-50 text-gray-900 "
+                    }
+                  `}
                 />
               </div>
             </div>
           </div>
 
+          {/* Elegant divider above Vendor Activity button for clarity */}
+          <div className="w-full flex items-center">
+            <div className="flex-grow h-0.5 rounded-full bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 opacity-80 shadow-sm"></div>
+            <span
+              className="mx-3 text-blue-400 font-semibold text-xs tracking-widest select-none"
+              style={{ letterSpacing: 2 }}
+            >
+              CUSTOMER SECTION
+            </span>
+            <div className="flex-grow h-0.5 rounded-full bg-gradient-to-l from-blue-200 via-blue-400 to-blue-200 opacity-80 shadow-sm"></div>
+          </div>
+          {/* Vendor Cost and Dates */}
+          <div className="flex items-center w-full gap-3 mt-4">
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="chargeable"
+                className="w-60 text-md font-medium text-gray-700"
+              >
+                Chargeable
+              </label>
+
+              <div className="flex justify-center w-full">
+                {/* Hidden input for accessibility and autofill */}
+                <input
+                  id="chargeable"
+                  name="chargeable"
+                  type="text"
+                  value={form.chargeable}
+                  style={{ display: "none" }}
+                  readOnly
+                  tabIndex={-1}
+                />
+                <YesNoToggle
+                  value={form.chargeable}
+                  onChange={(val) =>
+                    setForm((prev) => ({ ...prev, chargeable: val }))
+                  }
+                  disabled={isLocked || submitting}
+                />
+              </div>
+            </div>
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="repair_date"
+                className={`w-60 text-md font-medium text-gray-700 gap-1 ml-3`}
+              >
+                Repair Date
+              </label>
+              <input
+                id="repair_date"
+                name="repair_date"
+                type="date"
+                value={form.repair_date}
+                onChange={handleChange}
+                max={new Date().toLocaleDateString("en-CA")}
+                className={`w-full px-3 py-1 rounded-lg border ${errs_label.repair_date ? "border-red-300" : "border-gray-300"} bg-gray-50 text-gray-900  font-small`}
+                disabled={isLocked || submitting}
+              />
+            </div>
+          </div>
+          {/* Vendor Cost and Dates */}
+          <div className="flex items-center w-full gap-6">
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="rewinding_cost"
+                className="w-34 text-md font-medium text-gray-700"
+              >
+                Rewinding Cost
+              </label>
+              <input
+                id="rewinding_cost"
+                name="rewinding_cost"
+                type="number"
+                value={form.rewinding_cost}
+                onChange={handleChange}
+                disabled={isLocked || submitting || !isChargeable}
+                placeholder={!isChargeable ? "Not chargeable" : "Customer"}
+                className={`flex-1 px-3 py-1 rounded-lg border
+                    ${!isChargeable ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}
+                    ${errs_label.rewinding_cost ? "border-red-300" : "border-gray-300"}
+                  `}
+              />
+            </div>
+
+            <div className="flex items-center w-1/2 gap-2">
+              <label
+                htmlFor="other_cost"
+                className="w-33.5 text-md font-medium text-gray-700"
+              >
+                Other Cost
+              </label>
+              <input
+                id="other_cost"
+                name="other_cost"
+                type="number"
+                value={form.other_cost}
+                onChange={handleChange}
+                disabled={isLocked || submitting || !isChargeable}
+                placeholder={!isChargeable ? "Not chargeable" : "Customer"}
+                className={`flex-1 px-3 py-1 rounded-lg border
+                    ${!isChargeable ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}
+                        ${errs_label.other_cost ? "border-red-300" : "border-gray-300"}
+
+                  `}
+              />
+            </div>
+          </div>
           <div
             className="flex items-center gap-2 w-full"
             style={{ position: "relative" }}

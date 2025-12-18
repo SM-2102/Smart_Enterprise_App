@@ -11,8 +11,8 @@ import {
   Box,
 } from "@mui/material";
 import Toast from "../components/Toast";
-import { fetchWarrantySRFFinalSettled } from "../services/WarrantySRFFinalSettledService";
-import { updateWarrantySRFFinalSettled } from "../services/WarrantySRFUpdateFinalSettledService";
+import { fetchWarrantySRFFinalSettled } from "../services/warrantySRFFinalSettledService";
+import { updateWarrantySRFFinalSettled } from "../services/warrantySRFUpdateFinalSettledService";
 import Tooltip from "@mui/material/Tooltip";
 
 const columns = [

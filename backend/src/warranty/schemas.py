@@ -101,7 +101,7 @@ class WarrantyUpdateResponse(BaseModel):
     purchase_number: Optional[str]
     purchase_date: Optional[date]
     customer_challan_number: Optional[str]
-    customer_challan_date: Optional[date]
+    customer_challan_date: Optional[str]
     chargeable: str
     final_status: str
 

@@ -18,50 +18,53 @@ class ModelService:
 
         model_result = await session.execute(model_statement)
         model_row = model_result.first()
+        if model_row:
+            frame = model_row.frame
+            hp_rating = model_row.hp_rating
+            rewinding_charge = model_row.rewinding_charge
 
-        frame = model_row.frame
-        hp_rating = model_row.hp_rating
-        rewinding_charge = model_row.rewinding_charge
+            # STEP 2: Fetch vendor charges from rewinding_rate table
+            if division == "LT MOTOR":
+                rate_statement = select(
+                    RewindingRate.paint_charge,
+                    RewindingRate.stator_charge,
+                    RewindingRate.leg_charge,
+                ).where(
+                    RewindingRate.division == division, RewindingRate.frame == frame
+                )
 
-        # STEP 2: Fetch vendor charges from rewinding_rate table
-        if division == "LT MOTOR":
-            rate_statement = select(
-                RewindingRate.paint_charge,
-                RewindingRate.stator_charge,
-                RewindingRate.leg_charge,
-            ).where(RewindingRate.division == division, RewindingRate.frame == frame)
+            elif division == "FHP MOTOR":
+                rate_statement = select(
+                    RewindingRate.paint_charge,
+                    RewindingRate.stator_charge,
+                    RewindingRate.leg_charge,
+                ).where(
+                    RewindingRate.division == division,
+                    RewindingRate.hp_rating == hp_rating,
+                )
 
-        elif division == "FHP MOTOR":
-            rate_statement = select(
-                RewindingRate.paint_charge,
-                RewindingRate.stator_charge,
-                RewindingRate.leg_charge,
-            ).where(
-                RewindingRate.division == division, RewindingRate.hp_rating == hp_rating
+            else:
+                rate_statement = None
+
+            paint_charge = 0
+            stator_charge = 0
+            leg_charge = 0
+
+            if rate_statement is not None:
+                rate_result = await session.execute(rate_statement)
+                rate_row = rate_result.first()
+
+                if rate_row:
+                    paint_charge = rate_row.paint_charge or 0
+                    stator_charge = rate_row.stator_charge or 0
+                    leg_charge = rate_row.leg_charge or 0
+
+            return CostDetails(
+                rewinding_charge=rewinding_charge,
+                paint_charge=paint_charge,
+                stator_charge=stator_charge,
+                leg_charge=leg_charge,
             )
-
-        else:
-            rate_statement = None
-
-        paint_charge = 0
-        stator_charge = 0
-        leg_charge = 0
-
-        if rate_statement is not None:
-            rate_result = await session.execute(rate_statement)
-            rate_row = rate_result.first()
-
-            if rate_row:
-                paint_charge = rate_row.paint_charge or 0
-                stator_charge = rate_row.stator_charge or 0
-                leg_charge = rate_row.leg_charge or 0
-
-        return CostDetails(
-            rewinding_charge=rewinding_charge,
-            paint_charge=paint_charge,
-            stator_charge=stator_charge,
-            leg_charge=leg_charge,
-        )
 
     async def check_model_name_available(
         self, model: str, session: AsyncSession

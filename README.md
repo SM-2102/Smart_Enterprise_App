@@ -1,11 +1,6 @@
 
 ## Unique Services App - Developer Guide
 
-
-### To Do list
-- Out of warranty Update - 2hr
-- Warranty Update - 2hr
-
 ## Frontend Pages
 
 ### Auth Module
@@ -45,7 +40,7 @@
 
 ### Warranty Module
 - [x] **WarrantyCreatePage** - Create Warranty record
-- [ ] **WarrantyUpdatePage** - Update Warranty record
+- [x] **WarrantyUpdatePage** - Update Warranty record
 - [x] **WarrantySRFPrintPage** - Warranty SRF Print
 - [x] **WarrantyEnquiryPage** - Warranty Enquiry Page
 - [x] **WarrantySRFSettleUserPage** - Warranty SRF Propose to Settle
@@ -199,8 +194,8 @@
 - [x] **Challan**
 - [x] **Vendor**
 - [x] **Warranty**
-- [ ] **Out of Warranty**
-- [ ] **Final Deployment**
+- [x] **Out of Warranty**
+- [x] **Final Deployment**
 
 ---
 

@@ -234,7 +234,9 @@ class WarrantyService:
                 purchase_number=row.Warranty.purchase_number,
                 purchase_date=row.Warranty.purchase_date,
                 customer_challan_number=row.Warranty.customer_challan_number,
-                customer_challan_date=row.Warranty.customer_challan_date,
+                customer_challan_date=format_date_ddmmyyyy(
+                    row.Warranty.customer_challan_date
+                ),
                 chargeable=row.Warranty.chargeable,
                 final_status=row.Warranty.final_status,
             )
