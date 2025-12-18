@@ -22,7 +22,7 @@ const cards = menuConfig.map(({ actions, ...rest }) => ({
   dashboardActions: actions.filter((a) => a.showInDashboard !== false),
 }));
 
-const MenuDashboardPageInner = () => {
+const MenuDashboardPage = () => {
   const { data, loading, error, refetch } = useDashboardData();
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,43 +41,7 @@ const MenuDashboardPageInner = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-7rem)] pt-8 px-6 md:px-10 lg:px-20 bg-[#fff] mb-5">
-      <div className="relative mb-6 flex items-center justify-between">
-        <div className="flex items-center w-full">
-          <h2
-            className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-900 via-blue-700 to-blue-800 bg-clip-text text-transparent drop-shadow-sm"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
-          >
-            Menu Dashboard
-          </h2>
-          <button
-            type="button"
-            aria-label="Refresh"
-            onClick={refetch}
-            className="ml-6 w-14 h-14 rounded-full bg-white text-blue-600 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300"
-            style={{ marginLeft: "auto" }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-8 h-8"
-            >
-              <path d="M21 2v6h-6" />
-              <path d="M3 12a9 9 0 0 1 9-9c2.39 0 4.58.94 6.23 2.62" />
-              <path d="M3 22v-6h6" />
-              <path d="M21 12a9 9 0 0 1-9 9c-2.39 0-4.58-.94-6.23-2.62" />
-            </svg>
-          </button>
-        </div>
-        <div className="absolute -bottom-2 left-0 w-1/3 h-1 bg-gradient-to-r from-blue-600 to-transparent"></div>
-        <div className="absolute -bottom-2 left-0 w-1/4 h-1 bg-gradient-to-r from-blue-400 to-transparent animate-pulse"></div>
-      </div>
-
+    <div className="flex flex-col min-h-[calc(100vh-7rem)] pt-6 px-6 md:px-10 lg:px-20 bg-[#fff]">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 flex-grow min-w-0 w-full">
         {cards.map(
           ({ key, title, icon, actions, dashboardActions, bgColor }) => (
@@ -197,7 +161,5 @@ const MenuDashboardPageInner = () => {
     </div>
   );
 };
-
-const MenuDashboardPage = () => <MenuDashboardPageInner />;
 
 export default MenuDashboardPage;

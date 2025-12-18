@@ -412,7 +412,7 @@ const RetailEnquiryPage = () => {
   const [name, setName] = useState("");
   const [division, setDivision] = useState("");
   const [received, setReceived] = useState("");
-  
+
   // Data states
 
   const [data, setData] = useState([]);
@@ -429,9 +429,11 @@ const RetailEnquiryPage = () => {
   const getDefaultToRetailDate = () => {
     return new Date().toLocaleDateString("en-CA");
   };
-  const [fromRetailDate, setFromRetailDate] = useState(getDefaultFromRetailDate);
+  const [fromRetailDate, setFromRetailDate] = useState(
+    getDefaultFromRetailDate,
+  );
   const [toRetailDate, setToRetailDate] = useState(getDefaultToRetailDate);
-  
+
   const handleClear = () => {
     setFinalStatus("");
     setName("");

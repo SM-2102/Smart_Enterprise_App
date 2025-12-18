@@ -7,12 +7,15 @@ import UserMenu from "./UserMenu";
 import Logout from "./Logout";
 import DashboardButton from "./Dashboard";
 import GoBackIcon from "./GoBackIcon";
+import { useDashboardData } from "../hooks/useDashboardData";
+import { FiRefreshCw } from "react-icons/fi";
 
 const Header = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === "/";
   const isMenuPage = location.pathname === "/MenuDashboard";
   const [navOpen, setNavOpen] = React.useState(false);
+  const { refetch, loading } = useDashboardData();
 
   const navigate = useNavigate();
 
@@ -67,8 +70,26 @@ const Header = () => {
       {!isLoginPage && (
         <div className="flex items-center space-x-2 sm:space-x-4 mt-2 sm:mt-0 mr-0 sm:mr-14">
           {/* Reserved space for GoBack button */}
-          <div className="w-6 h-10 flex items-center justify-center">
+          <div className="flex items-center gap-3 mt-2 sm:mt-0 mr-0 sm:mr-4">
             {showGoBackIcon && <GoBackIcon onClick={() => navigate(-1)} />}
+
+            {isMenuPage && (
+              <button
+                onClick={refetch}
+                disabled={loading}
+                aria-label="Refresh Dashboard"
+                title="Refresh Dashboard"
+                className="w-10 h-10 text-white
+               disabled:opacity-60 disabled:cursor-not-allowed
+               flex items-center justify-center hover:bg-blue-700 rounded-full"
+              >
+                <FiRefreshCw
+                  size={20}
+                  strokeWidth={3}
+                  className={loading ? "animate-spin" : ""}
+                />
+              </button>
+            )}
           </div>
 
           <DashboardButton />
@@ -76,7 +97,6 @@ const Header = () => {
           <Logout />
         </div>
       )}
-
       {showNavIcon && <NavBar open={navOpen} setOpen={setNavOpen} />}
     </header>
   );
