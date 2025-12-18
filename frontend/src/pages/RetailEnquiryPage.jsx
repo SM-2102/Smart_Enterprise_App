@@ -411,10 +411,8 @@ const RetailEnquiryPage = () => {
   const [finalStatus, setFinalStatus] = useState("");
   const [name, setName] = useState("");
   const [division, setDivision] = useState("");
-  const [fromRetailDate, setFromRetailDate] = useState("");
-  const [toRetailDate, setToRetailDate] = useState("");
   const [received, setReceived] = useState("");
-
+  
   // Data states
 
   const [data, setData] = useState([]);
@@ -423,13 +421,23 @@ const RetailEnquiryPage = () => {
   const [filterOpen, setFilterOpen] = useState(true);
   const [searched, setSearched] = useState(false);
   const [masterNames, setMasterNames] = useState([]);
-
+  const getDefaultFromRetailDate = () => {
+    const today = new Date();
+    today.setMonth(today.getMonth() - 6);
+    return today.toLocaleDateString("en-CA");
+  };
+  const getDefaultToRetailDate = () => {
+    return new Date().toLocaleDateString("en-CA");
+  };
+  const [fromRetailDate, setFromRetailDate] = useState(getDefaultFromRetailDate);
+  const [toRetailDate, setToRetailDate] = useState(getDefaultToRetailDate);
+  
   const handleClear = () => {
     setFinalStatus("");
     setName("");
     setDivision("");
-    setFromRetailDate("");
-    setToRetailDate("");
+    setFromRetailDate(getDefaultFromRetailDate);
+    setToRetailDate(getDefaultToRetailDate);
     setReceived("");
     setSearched(false);
     setData([]);

@@ -133,6 +133,10 @@ function validateWarrantyUpdate(form) {
   }
 
   if (form.final_status === "Y") {
+    if(!form.work_done) {
+      errs.push("Work Done is required");
+      errs_label["work_done"] = true;
+    }
     if (!form.delivery_date) {
       errs.push("Delivery Date is required");
       errs_label["delivery_date"] = true;
@@ -145,11 +149,11 @@ function validateWarrantyUpdate(form) {
       errs.push("Complaint Number is required");
       errs_label["complaint_number"] = true;
     }
-    if (!form.pc_number && form.gst === "N") {
+    if (!form.pc_number && form.gst === "N" && form.chargeable === 'Y') {
       errs.push("PC Number is required");
       errs_label["pc_number"] = true;
     }
-    if (!form.invoice_number && form.gst === "Y") {
+    if (!form.invoice_number && form.gst === "Y" && form.chargeable === 'Y') {
       errs.push("Invoice Number is required");
       errs_label["invoice_number"] = true;
     }

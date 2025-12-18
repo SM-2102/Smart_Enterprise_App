@@ -144,6 +144,10 @@ function validateOutOfWarrantyUpdate(form) {
       errs.push("Insufficient Paint Charge");
       errs_label["paint_cost"] = true;
     }
+    if(!form.work_done) {
+      errs.push("Work Done is required");
+      errs_label["work_done"] = true;
+    }
     if (!form.delivery_date) {
       errs.push("Delivery Date is required");
       errs_label["delivery_date"] = true;

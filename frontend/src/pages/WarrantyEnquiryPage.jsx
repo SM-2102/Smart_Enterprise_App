@@ -672,7 +672,7 @@ const WarrantyEnquiryPage = () => {
   const [division, setDivision] = useState("");
   const getDefaultFromSRFDate = () => {
     const today = new Date();
-    today.setMonth(today.getMonth() - 2);
+    today.setMonth(today.getMonth() - 6);
     return today.toLocaleDateString("en-CA");
   };
   const getDefaultToSRFDate = () => {
