@@ -112,7 +112,6 @@ async def update_warranty(
     session: AsyncSession = Depends(get_session),
     token=Depends(access_token_bearer),
 ):
-    print("ROUTE ENTERED")
     existing_warranty = await warranty_service.get_warranty_by_srf_number(
         srf_number, session
     )

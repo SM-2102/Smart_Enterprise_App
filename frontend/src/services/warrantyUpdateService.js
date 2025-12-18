@@ -7,7 +7,6 @@ import { authFetch } from "./authFetchService";
  * @returns {Promise<object>} Response data
  */
 async function updateWarranty(srf_number, warrantyData) {
-  console.log(warrantyData);
   if (!srf_number) throw new Error("Enter warranty srf_number");
   const url = `${API_ENDPOINTS.WARRANTY_UPDATE}${srf_number}`;
   const response = await authFetch(url, {
