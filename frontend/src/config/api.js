@@ -72,6 +72,8 @@ const API_ENDPOINTS = {
   COMPLAINT_NUMBER_UPLOAD: `${BASE_API_URL}complaint_number/upload`,
   COMPLAINT_NUMBER_LIST: `${BASE_API_URL}complaint_number/list_complaints`,
 
+  CG_SRF_NUMBER_UPLOAD: `${BASE_API_URL}cg_srf_number/upload`,
+
   OUT_OF_WARRANTY_NEXT_CODE: `${BASE_API_URL}out_of_warranty/next_srf_number`,
   OUT_OF_WARRANTY_CREATE: `${BASE_API_URL}out_of_warranty/create`,
   OUT_OF_WARRANTY_LIST_PENDING: `${BASE_API_URL}out_of_warranty/list_pending`,

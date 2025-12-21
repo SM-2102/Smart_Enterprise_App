@@ -43,6 +43,7 @@ import ModelCreatePage from "./pages/ModelCreatePage.jsx";
 import ComplaintNumberUploadPage from "./pages/ComplaintNumberUploadPage.jsx";
 import WarrantySettleSRFUserPage from "./pages/WarrantySRFSettleUserPage.jsx";
 import WarrantySettleSRFAdminPage from "./pages/WarrantySRFSettleAdminPage.jsx";
+import CGSRFNumberUploadPage from "./pages/CGSRFNumberUploadPage.jsx";
 
 function AppRoutesWithNav() {
   return (
@@ -144,6 +145,14 @@ function AppRoutesWithNav() {
             element={
               <PrivateRoute requiredRole="ADMIN">
                 <ComplaintNumberUploadPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/UploadCGSRFNumber"
+            element={
+              <PrivateRoute requiredRole="ADMIN">
+                <CGSRFNumberUploadPage />
               </PrivateRoute>
             }
           />

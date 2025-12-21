@@ -97,6 +97,15 @@ class ModelNotFound(BaseException):
 class ComplaintNumberAlreadyExists(BaseException):
     """Complaint Number Already Exists"""
 
+class ComplaintNumberNotFound(BaseException):
+    """Complaint Number Not Found"""
+
+class CGSRFNumberExists(BaseException):
+    """CG SRF Number Already Exists"""
+
+class CGSRFNumberNotFound(BaseException):
+    """CG SRF Number Not Found"""
+
 
 def create_exception_handler(
     status_code: int, initial_detail: Any
@@ -368,6 +377,42 @@ def register_exceptions(app: FastAPI):
                 "message": "Complaint Number Already Exists",
                 "resolution": "Use a different complaint number",
                 "error_code": "model_already_exists",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        ComplaintNumberNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Complaint Number Not Found",
+                "resolution": "Please check the complaint number",
+                "error_code": "complaint_number_not_found",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        CGSRFNumberExists,
+        create_exception_handler(
+            status_code=status.HTTP_409_CONFLICT,
+            initial_detail={
+                "message": "CG SRF Number Already Exists",
+                "resolution": "Use a different CG SRF number",
+                "error_code": "cg_srf_number_exists",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        CGSRFNumberNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "CG SRF Number Not Found",
+                "resolution": "Please check the CG SRF number",
+                "error_code": "cg_srf_number_not_found",
             },
         ),
     )

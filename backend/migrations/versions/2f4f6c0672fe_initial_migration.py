@@ -1,8 +1,8 @@
 """Initial Migration
 
-Revision ID: 6c799356721b
+Revision ID: 2f4f6c0672fe
 Revises: 
-Create Date: 2025-12-17 11:04:06.780124
+Create Date: 2025-12-21 15:50:20.041290
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6c799356721b'
+revision: str = '2f4f6c0672fe'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,6 +27,18 @@ def upgrade() -> None:
     sa.Column('status', sa.VARCHAR(length=15), nullable=True),
     sa.Column('remark', sa.VARCHAR(length=50), nullable=True),
     sa.PrimaryKeyConstraint('complaint_number')
+    )
+    op.create_table('rewinding_rate',
+    sa.Column('id', sa.INTEGER(), sa.Identity(always=False), nullable=False),
+    sa.Column('division', sa.VARCHAR(length=15), nullable=False),
+    sa.Column('frame', sa.VARCHAR(length=10), nullable=True),
+    sa.Column('winding_type', sa.VARCHAR(length=15), nullable=True),
+    sa.Column('hp_rating', sa.FLOAT(), nullable=True),
+    sa.Column('rewinding_charge', sa.INTEGER(), nullable=True),
+    sa.Column('paint_charge', sa.INTEGER(), nullable=True),
+    sa.Column('leg_charge', sa.INTEGER(), nullable=True),
+    sa.Column('stator_charge', sa.INTEGER(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('service_centre',
     sa.Column('asc_name', sa.VARCHAR(length=30), nullable=False),
@@ -79,20 +91,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('model')
     )
     op.create_index(op.f('ix_model_model'), 'model', ['model'], unique=False)
-    op.create_table('rewinding_rate',
-    sa.Column('id', sa.INTEGER(), sa.Identity(always=False), nullable=False),
-    sa.Column('division', sa.VARCHAR(length=15), nullable=False),
-    sa.Column('frame', sa.VARCHAR(length=10), nullable=True),
-    sa.Column('winding_type', sa.VARCHAR(length=15), nullable=True),
-    sa.Column('hp_rating', sa.FLOAT(), nullable=True),
-    sa.Column('rewinding_charge', sa.INTEGER(), nullable=True),
-    sa.Column('paint_charge', sa.INTEGER(), nullable=True),
-    sa.Column('leg_charge', sa.INTEGER(), nullable=True),
-    sa.Column('stator_charge', sa.INTEGER(), nullable=True),
-    sa.Column('created_by', sa.VARCHAR(length=30), nullable=False),
-    sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('challan_smart',
     sa.Column('challan_number', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('code', sa.VARCHAR(length=5), nullable=False),
@@ -282,7 +280,7 @@ def upgrade() -> None:
     op.create_table('warranty',
     sa.Column('srf_number', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('code', sa.VARCHAR(length=5), nullable=False),
-    sa.Column('cg_srf_number', sa.VARCHAR(length=10), nullable=True),
+    sa.Column('cg_srf_number', sa.INTEGER(), nullable=True),
     sa.Column('srf_date', sa.DATE(), nullable=False),
     sa.Column('head', sa.VARCHAR(length=15), nullable=False),
     sa.Column('division', sa.VARCHAR(length=15), nullable=False),
@@ -360,6 +358,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['created_by'], ['users.username'], ),
     sa.ForeignKeyConstraint(['updated_by'], ['users.username'], ),
     sa.PrimaryKeyConstraint('srf_number'),
+    sa.UniqueConstraint('cg_srf_number'),
     sa.UniqueConstraint('complaint_number')
     )
     op.create_index(op.f('ix_warranty_code'), 'warranty', ['code'], unique=False)
@@ -385,7 +384,6 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_challan_smart_code'), table_name='challan_smart')
     op.drop_index(op.f('ix_challan_smart_challan_number'), table_name='challan_smart')
     op.drop_table('challan_smart')
-    op.drop_table('rewinding_rate')
     op.drop_index(op.f('ix_model_model'), table_name='model')
     op.drop_table('model')
     op.drop_index(op.f('ix_master_code'), table_name='master')
@@ -393,5 +391,6 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('service_charge')
     op.drop_table('service_centre')
+    op.drop_table('rewinding_rate')
     op.drop_table('complaint_number')
     # ### end Alembic commands ###

@@ -58,7 +58,8 @@ function filterActionsForRole(actions, isAdmin) {
         a.path === "/FinalSettlementWarrantySRF" ||
         a.path === "/FinalSettlementVendor" ||
         a.path === "/UploadComplaintNumber" ||
-        a.path === "/CreateASCName"
+        a.path === "/CreateASCName" ||
+        a.path === "/UploadCGSRFNumber"
       ),
   );
 }

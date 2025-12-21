@@ -20,6 +20,7 @@ export const menuConfig = [
       { label: "Add ASC Name", path: "/CreateASCName" },
       { label: "Add Model Record", path: "/CreateModel" },
       { label: "Upload Complaints", path: "/UploadComplaintNumber" },
+      { label: "Upload CG SRF", path: "/UploadCGSRFNumber" },
     ],
   },
   {

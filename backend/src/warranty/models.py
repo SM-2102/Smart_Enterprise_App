@@ -14,7 +14,7 @@ class Warranty(SQLModel, table=True):
             pg.VARCHAR(5), ForeignKey("master.code"), nullable=False, index=True
         )
     )
-    cg_srf_number: str = Field(sa_column=Column(pg.VARCHAR(10), nullable=True))
+    cg_srf_number: int = Field(sa_column=Column(pg.INTEGER, nullable=True, unique=True))
     srf_date: date = Field(sa_column=Column(pg.DATE, nullable=False))
     head: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))
     division: str = Field(sa_column=Column(pg.VARCHAR(15), nullable=False))

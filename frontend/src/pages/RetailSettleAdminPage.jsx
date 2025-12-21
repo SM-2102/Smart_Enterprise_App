@@ -22,6 +22,7 @@ const columns = [
   { key: "retail_date", label: "Retail Date" },
   { key: "details", label: "Details" },
   { key: "amount", label: "Amount" },
+  { key: "received_by", label: "Received By" },
 ];
 
 const RetailSettleAdminPage = () => {
@@ -34,14 +35,10 @@ const RetailSettleAdminPage = () => {
   const [updating, setUpdating] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const headerCheckboxRef = useRef(null);
+  const [receivedByFilter, setReceivedByFilter] = useState("ALL");
+
   // Set indeterminate property for header checkbox
-  useEffect(() => {
-    if (headerCheckboxRef.current) {
-      headerCheckboxRef.current.indeterminate =
-        selectedRows.length > 0 && selectedRows.length < data.length;
-    }
-  }, [selectedRows, data]);
-  // Handler for Update button
+  
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -49,7 +46,7 @@ const RetailSettleAdminPage = () => {
     setShowToast(false);
     setUpdating(true);
     // Prepare payload: all rows, with rcode, amount, and final_status
-    const payload = data.map((row, idx) => ({
+    const payload = filteredData.map((row, idx) => ({
       rcode: row.rcode,
       amount:
         editedAmounts[idx] !== undefined
@@ -90,20 +87,43 @@ const RetailSettleAdminPage = () => {
       )
       .finally(() => setLoading(false));
   }, []);
+  const receivedByOptions = React.useMemo(() => {
+  const names = data
+    .map((row) => row.received_by)
+    .filter((v) => v && v.trim() !== "");
+  return ["ALL", ...Array.from(new Set(names))];
+}, [data]);
+const filteredData = React.useMemo(() => {
+  if (receivedByFilter === "ALL") return data;
+  return data.filter(
+    (row) => row.received_by === receivedByFilter,
+  );
+}, [data, receivedByFilter]);
+useEffect(() => {
+    if (headerCheckboxRef.current) {
+      headerCheckboxRef.current.indeterminate =
+        selectedRows.length > 0 && selectedRows.length < filteredData.length;
+    }
+  }, [selectedRows, filteredData]);
+  // Handler for Update button  
 
   // Calculate total and selected amounts
-  const totalAmount = data.reduce(
-    (sum, row) => sum + (Number(row.amount) || 0),
-    0,
+  const totalAmount = filteredData.reduce(
+  (sum, row) => sum + (Number(row.amount) || 0),
+  0,
+);
+
+  const selectedAmount = selectedRows.reduce((sum, idx) => {
+  const row = filteredData[idx];
+  if (!row) return sum;
+  return (
+    sum +
+    (editedAmounts[idx] !== undefined
+      ? Number(editedAmounts[idx])
+      : Number(row.amount) || 0)
   );
-  const selectedAmount = selectedRows.reduce(
-    (sum, idx) =>
-      sum +
-      (editedAmounts[idx] !== undefined
-        ? Number(editedAmounts[idx])
-        : Number(data[idx]?.amount) || 0),
-    0,
-  );
+}, 0);
+
 
   return (
     <Paper
@@ -133,32 +153,50 @@ const RetailSettleAdminPage = () => {
         alignItems="center"
         mb={2}
       >
-        <Box display="flex" alignItems="center">
-          <Typography
-            variant="subtitle1"
-            sx={{
-              color: "#1976d2",
-              fontWeight: 700,
-              fontSize: 17,
-              background: "#e3eafc",
-              px: 2,
-              py: 0.5,
-              borderRadius: 2,
-              boxShadow: "0 1px 4px rgba(25,118,210,0.07)",
-              display: "inline-block",
-            }}
-          >
-            <span style={{ letterSpacing: 0.5 }}>Total Records:</span>{" "}
-            <span style={{ color: "#0d47a1", fontWeight: 600 }}>
-              {data.length}
-            </span>
-          </Typography>
-        </Box>
+        <Box display="flex" alignItems="center" gap={2}>
+  <Typography
+    variant="subtitle1"
+    sx={{
+      color: "#1976d2",
+      fontWeight: 700,
+      fontSize: 17,
+      background: "#e3eafc",
+      px: 2,
+      py: 0.5,
+      borderRadius: 2,
+      boxShadow: "0 1px 4px rgba(25,118,210,0.07)",
+    }}
+  >
+    Total Records: {filteredData.length}
+  </Typography>
+
+</Box>
+
         <Box>
+           <TextField
+    select
+    size="small"
+    label="Received By"
+    value={receivedByFilter}
+    onChange={(e) => {
+  setReceivedByFilter(e.target.value);
+  setSelectedRows([]);     // reset selection
+  setEditedAmounts({});   // optional but recommended
+}}
+
+    SelectProps={{ native: true }}
+    sx={{ minWidth: 180 }}
+  >
+    {receivedByOptions.map((name) => (
+      <option key={name} value={name}>
+        {name === "ALL" ? "All" : name}
+      </option>
+    ))}
+  </TextField>
           <button
             type="button"
             onClick={handleUpdate}
-            disabled={updating || data.length === 0}
+            disabled={updating || filteredData.length === 0}
             style={{
               background: "#1976d2",
               color: "#fff",
@@ -171,6 +209,7 @@ const RetailSettleAdminPage = () => {
               boxShadow: "0 1px 4px rgba(25,118,210,0.07)",
               opacity: updating ? 0.7 : 1,
               transition: "background 0.2s, color 0.2s",
+              marginLeft: "16px",
             }}
             aria-label="Settle Retail Records"
           >
@@ -194,18 +233,13 @@ const RetailSettleAdminPage = () => {
                     type="checkbox"
                     ref={headerCheckboxRef}
                     onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedRows(
-                          data
-                            .map((row, idx) =>
-                              row.received !== "N" ? idx : null,
-                            )
-                            .filter((idx) => idx !== null),
-                        );
-                      } else {
-                        setSelectedRows([]);
-                      }
-                    }}
+  if (e.target.checked) {
+    setSelectedRows(filteredData.map((_, idx) => idx));
+  } else {
+    setSelectedRows([]);
+  }
+}}
+
                     aria-label="Select all rows"
                   />
                 </TableCell>
@@ -228,7 +262,7 @@ const RetailSettleAdminPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.length === 0 ? (
+              {filteredData.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={columns.length + 1}
@@ -243,7 +277,7 @@ const RetailSettleAdminPage = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                data.map((row, idx) => (
+                filteredData.map((row, idx) => (
                   <TableRow
                     key={idx}
                     sx={{

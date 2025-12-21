@@ -149,6 +149,10 @@ function validateWarrantyUpdate(form) {
       errs.push("Complaint Number is required");
       errs_label["complaint_number"] = true;
     }
+    if (form.complaint_number.length < 13) {
+      errs.push("Complaint Number too short");
+      errs_label["complaint_number"] = true;
+    }
     if (!form.pc_number && form.gst === "N" && form.chargeable === "Y") {
       errs.push("PC Number is required");
       errs_label["pc_number"] = true;
@@ -162,7 +166,6 @@ function validateWarrantyUpdate(form) {
     errs.push("Make the record chargeable");
     errs_label["final_amount"] = true;
   }
-
   return [errs, errs_label];
 }
 

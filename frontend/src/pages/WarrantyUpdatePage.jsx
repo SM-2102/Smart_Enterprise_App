@@ -481,7 +481,7 @@ const WarrantyUpdatePage = () => {
       invoice_number: form.gst === "N" ? null : toNumber(form.invoice_number),
       final_status: form.final_status === "Y" ? "Y" : "N",
       chargeable: form.chargeable === "Y" ? "Y" : "N",
-      cg_srf_number: form.cg_srf_number,
+      cg_srf_number: null || toNumber(form.cg_srf_number),
       complaint_number: form.complaint_number,
     };
 
@@ -1799,7 +1799,7 @@ const WarrantyUpdatePage = () => {
               <input
                 id="cg_srf_number"
                 name="cg_srf_number"
-                type="text"
+                type="number"
                 value={form.cg_srf_number}
                 maxLength={10}
                 onChange={handleChange}

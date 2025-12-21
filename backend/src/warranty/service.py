@@ -17,11 +17,15 @@ from exceptions import (
     IncorrectCodeFormat,
     ModelNotFound,
     WarrantyNotFound,
+    ComplaintNumberNotFound,
+    CGSRFNumberExists,
+    CGSRFNumberNotFound,
 )
 from master.models import Master
 from master.service import MasterService
 from model.service import ModelService
 from service_center.service import ServiceCenterService
+from cg_srf_number.service import CGSRFNumberService
 from utils.date_utils import format_date_ddmmyyyy, parse_date
 from utils.file_utils import safe_join, split_text_to_lines
 from warranty.models import Warranty
@@ -31,7 +35,6 @@ from warranty.schemas import (
     WarrantyCreate,
     WarrantyEnquiry,
     WarrantyPending,
-    WarrantySrfNumber,
     WarrantySRFSettleRecord,
     WarrantyUpdate,
     WarrantyUpdateResponse,
@@ -41,6 +44,7 @@ master_service = MasterService()
 service_center_service = ServiceCenterService()
 model_service = ModelService()
 complaint_number_service = ComplaintNumberService()
+cg_srf_number_service = CGSRFNumberService()
 
 
 class WarrantyService:
@@ -81,12 +85,6 @@ class WarrantyService:
                 warranty.model, session
             ):
                 raise ModelNotFound()
-
-        if warranty.complaint_number:
-            if await self.check_complaint_number_available(
-                warranty.complaint_number, session
-            ):
-                raise ComplaintNumberAlreadyExists()
 
         # If frontend requests a new base, generate next base number
         base_part = parts[0]
@@ -257,9 +255,23 @@ class WarrantyService:
             raise WarrantyNotFound()
         if warranty.complaint_number:
             if await self.check_complaint_number_available(
-                warranty.complaint_number, session
+                warranty.complaint_number, srf_number, session
             ):
                 raise ComplaintNumberAlreadyExists()
+        if warranty.cg_srf_number:
+            if await self.check_cg_srf_number_available(
+                warranty.cg_srf_number, srf_number, session
+            ):
+                raise CGSRFNumberExists()
+        if warranty.final_status == "Y":
+            if not await complaint_number_service.check_complaint_number_available(
+                warranty.complaint_number, session
+            ):
+                raise ComplaintNumberNotFound()
+            if not await cg_srf_number_service.check_cg_srf_number_available(
+                warranty.cg_srf_number, session
+            ):
+                raise CGSRFNumberNotFound()
         for var, value in vars(warranty).items():
             setattr(existing_warranty, var, value)
         existing_warranty.updated_by = token["user"]["username"]
@@ -572,10 +584,24 @@ class WarrantyService:
         ]
 
     async def check_complaint_number_available(
-        self, complaint_number: str, session: AsyncSession
+        self, complaint_number: str, srf_number: str, session: AsyncSession
     ) -> bool:
-        statement = select(Warranty).where(
-            Warranty.complaint_number == complaint_number
+        statement = select(Warranty.complaint_number).where(
+            (Warranty.complaint_number == complaint_number)
+            & (Warranty.srf_number != srf_number)
+        )
+        result = await session.execute(statement)
+        existing_record = result.scalar()
+        if existing_record:
+            return True
+        return False
+    
+    async def check_cg_srf_number_available(
+        self, cg_srf_number: int, srf_number: str, session: AsyncSession
+    ) -> bool:
+        statement = select(Warranty.cg_srf_number).where(
+            (Warranty.cg_srf_number == cg_srf_number)
+            & (Warranty.srf_number != srf_number)
         )
         result = await session.execute(statement)
         existing_record = result.scalar()

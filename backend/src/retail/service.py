@@ -105,11 +105,12 @@ class RetailService:
                 existing_retail.updated_by = token["user"]["username"]
         await session.commit()
 
-    async def list_retail_unsettled(self, session: AsyncSession):
+    async def list_retail_unsettled(self, session: AsyncSession, token: dict):
+        received_by = token["user"]["username"]
         statement = (
             select(Retail, Master)
             .join(Master, Retail.code == Master.code)
-            .where(Retail.settlement_date == None)
+            .where((Retail.settlement_date == None) & ((Retail.updated_by == received_by) | (Retail.updated_by.is_(None) & (Retail.created_by == received_by))))
             .order_by(Retail.rcode)
         )
         result = await session.execute(statement)
@@ -126,7 +127,7 @@ class RetailService:
         ]
 
     async def update_unsettled(
-        self, list_retail: List[UpdateRetailUnsettled], session: AsyncSession
+        self, list_retail: List[UpdateRetailUnsettled], session: AsyncSession, token: dict
     ):
         for retail in list_retail:
             statement = select(Retail).where(Retail.rcode == retail.rcode)
@@ -135,6 +136,7 @@ class RetailService:
             if existing_retail:
                 existing_retail.received = retail.received
                 existing_retail.settlement_date = retail.settlement_date
+                existing_retail.updated_by = token["user"]["username"]
         await session.commit()
 
     async def list_retail_final_settlement(self, session: AsyncSession):
@@ -153,6 +155,7 @@ class RetailService:
                 retail_date=format_date_ddmmyyyy(row.Retail.retail_date),
                 details=row.Retail.details,
                 amount=row.Retail.amount,
+                received_by=row.Retail.updated_by,
             )
             for row in rows
         ]

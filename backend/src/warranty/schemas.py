@@ -54,7 +54,7 @@ class WarrantyUpdateResponse(BaseModel):
     model: str
     srf_date: str
     serial_number: str
-    cg_srf_number: Optional[str]
+    cg_srf_number: Optional[int]
     challan_number: Optional[str]
     challan_date: Optional[str]
     received_by: Optional[str]
@@ -147,7 +147,7 @@ class WarrantyUpdate(BaseModel):
     pc_number: Optional[int]
     invoice_number: Optional[int]
     complaint_number: Optional[str] = Field(None, max_length=15)
-    cg_srf_number: Optional[str] = Field(None, max_length=10)
+    cg_srf_number: Optional[int]
     final_status: str = Field(..., max_length=1)
     chargeable: str = Field(..., max_length=1)
 

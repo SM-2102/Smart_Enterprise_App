@@ -41,7 +41,8 @@ const MenuCard = ({
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
             a.path === "/FinalSettlementVendor" ||
             a.path === "/UploadComplaintNumber" ||
-            a.path === "/CreateASCName"
+            a.path === "/CreateASCName" ||
+            a.path === "/UploadCGSRFNumber"
           ),
       );
   const filteredDashboardActions = isAdmin
@@ -57,7 +58,8 @@ const MenuCard = ({
             a.path === "/FinalSettlementOutOfWarrantySRF" ||
             a.path === "/FinalSettlementVendor" ||
             a.path === "/UploadComplaintNumber" ||
-            a.path === "/CreateASCName"
+            a.path === "/CreateASCName" ||
+            a.path === "/UploadCGSRFNumber"
           ),
       );
   useEffect(() => {

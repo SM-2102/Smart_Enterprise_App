@@ -18,6 +18,7 @@ from service_charge.routes import service_charge_router
 from user.routes import user_router
 from vendor.routes import vendor_router
 from warranty.routes import warranty_router
+from cg_srf_number.routes import cg_srf_number_router
 
 version = "v1"
 
@@ -93,4 +94,7 @@ app.include_router(
 app.include_router(vendor_router, prefix="/vendor", tags=["Vendor"])
 app.include_router(
     complaint_number_router, prefix="/complaint_number", tags=["Complaint Number"]
+)
+app.include_router(
+    cg_srf_number_router, prefix="/cg_srf_number", tags=["CG SRF Number"]
 )

@@ -48,6 +48,7 @@ class RetailFinalSettlementResponse(BaseModel):
     retail_date: str
     details: str
     amount: int
+    received_by: str
 
 
 class UpdateRetailFinalSettlement(BaseModel):

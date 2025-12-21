@@ -15,16 +15,6 @@ from complaint_number.schemas import ComplaintNumberSchema
 class ComplaintNumberService:
 
     async def upload_complaint_number(self, session: AsyncSession, file: UploadFile):
-        """
-        Read uploaded CSV, validate rows and insert/update DB.
-
-        Rules:
-        - complaint_number: between 13 and 15 chars
-        - status: if present, must be OK or FALSE
-        - remark: max 30 chars
-        """
-
-        # ---------- READ FILE ----------
         content = await file.read()
         try:
             text = content.decode("utf-8-sig")
@@ -43,11 +33,9 @@ class ComplaintNumberService:
         records = []
         line_no = 1
 
-        # ---------- VALIDATE ROWS ----------
         for raw_row in reader:
             line_no += 1
 
-            # normalize keys + values
             row = {
                 (k or "").strip().lower(): (v.strip().upper() if v else None)
                 for k, v in raw_row.items()
@@ -99,7 +87,6 @@ class ComplaintNumberService:
                 "resolution": "No valid rows found",
             }
 
-        # ---------- FETCH EXISTING ----------
         keys = [r.complaint_number for r in records]
 
         result = await session.execute(
@@ -129,12 +116,10 @@ class ComplaintNumberService:
         table = ComplaintNumber.__table__
 
         try:
-            # ---------- BULK INSERT ----------
             if to_insert:
                 await session.execute(insert(table).values(to_insert))
                 inserted = len(to_insert)
 
-            # ---------- BULK UPDATE (SQLAlchemy 2.x) ----------
             if to_update:
                 status_case = case(
                     *[
@@ -194,3 +179,15 @@ class ComplaintNumberService:
         result = await session.execute(statement)
         complaints = result.scalars().all()
         return complaints
+    
+    async def check_complaint_number_available(
+        self, complaint_number: str, session: AsyncSession
+    ) -> bool:
+        statement = select(ComplaintNumber.complaint_number).where(
+            (ComplaintNumber.complaint_number == complaint_number)
+        )
+        result = await session.execute(statement)
+        existing_record = result.scalar()
+        if existing_record:
+            return True
+        return False

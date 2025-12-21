@@ -98,9 +98,9 @@ List all unsettled retail records.
     status_code=status.HTTP_200_OK,
 )
 async def list_retail_unsettled(
-    session: AsyncSession = Depends(get_session), _=Depends(access_token_bearer)
+    session: AsyncSession = Depends(get_session), token=Depends(access_token_bearer)
 ):
-    unsettled = await retail_service.list_retail_unsettled(session)
+    unsettled = await retail_service.list_retail_unsettled(session, token)
     return unsettled
 
 
@@ -113,9 +113,9 @@ Update retail records - List of Records
 async def update_unsettled(
     list_retail: List[UpdateRetailUnsettled],
     session: AsyncSession = Depends(get_session),
-    _=Depends(access_token_bearer),
+    token=Depends(access_token_bearer),
 ):
-    await retail_service.update_unsettled(list_retail, session)
+    await retail_service.update_unsettled(list_retail, session, token)
     return JSONResponse(content={"message": f"Retail Records Proposed for Settlement"})
 
 

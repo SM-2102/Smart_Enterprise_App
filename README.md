@@ -22,6 +22,7 @@
 - [x] **MasterCreatePage** - Create Master record
 - [x] **MasterUpdatePage** - Update Master record
 - [x] **ServiceCenterCreatePage** - Add Service Center [ADMIN]
+- [x] **CGSRFNumberCreatePage** - Add CG SRF Numbers [ADMIN]
 - [x] **ModelCreatePage** - Add Model record
 
 ### Road Challan Module
@@ -178,6 +179,9 @@
 ### ComplaintNumber Module
 - [x] **/complaint_number/upload**
 - [x] **/complaint_number/list_complaints**
+
+### CGSRFNumber Module
+- [x] **/cg_srf_number/upload**
 
 ---
 
