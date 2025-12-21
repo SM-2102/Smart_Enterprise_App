@@ -62,7 +62,7 @@
 - [x] **OutOFWarrantyChallanSettleAdminPage** - Out Of Warranty Challan Settlement [ADMIN]
 
 ### ComplaintNumber Module
-- [x] **ComplaintNumberUpload** - Upload complaint number file .xlxs
+- [x] **ComplaintNumberUploadPage** - Upload complaint number file .xlxs [ADMIN]
 
 
 ---
