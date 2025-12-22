@@ -19,6 +19,7 @@ from src.warranty.models import Warranty
 from src.model.models import Model
 from src.rewinding_rate.models import RewindingRate
 from src.complaint_number.models import ComplaintNumber
+from src.cg_srf_number.models import CGSRFNumber
 from sqlmodel import SQLModel
 from src.config import Config
 

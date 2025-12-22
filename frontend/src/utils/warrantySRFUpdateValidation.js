@@ -43,7 +43,7 @@ function validateWarrantyUpdate(form) {
     errs_label["vendor_date2"] = true;
   }
   if (form.challan_date && form.vendor_date2) {
-    const vendorDate1 = new Date(form.challan_date);
+    const vendorDate1 = parseDDMMYYYY(form.challan_date);
     const vendorDate2 = new Date(form.vendor_date2);
     if (!isNaN(vendorDate1) && !isNaN(vendorDate2)) {
       if (vendorDate1 > vendorDate2) {
