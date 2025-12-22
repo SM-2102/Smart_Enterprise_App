@@ -8,7 +8,7 @@ class RetailCreate(BaseModel):
     retail_date: date
     name: str = Field(..., min_length=3, max_length=40)
     division: str = Field(..., max_length=20)
-    details: str = Field(..., max_length=40)
+    details: str = Field(..., max_length=50)
     amount: int = Field(..., ge=1)
     received: str = Field(..., max_length=1)
 
